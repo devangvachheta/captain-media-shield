@@ -1,0 +1,443 @@
+@use './variables.scss' as *;
+
+.capms-settings-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+
+    // ── Page Header ──────────────────────────────────────────────────────────
+    .capms-settings-header {
+        .capms-settings-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--capms-text-primary);
+            margin: 0 0 6px;
+        }
+        .capms-settings-subtitle {
+            font-size: 13.5px;
+            color: var(--capms-text-secondary);
+            margin: 0;
+        }
+    }
+
+    // ── Sections Container ───────────────────────────────────────────────────
+    .capms-settings-sections {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    // ── Single Section Card ──────────────────────────────────────────────────
+    .capms-settings-section {
+        background: var(--capms-bg-primary);
+        border: 1px solid var(--capms-border);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .capms-settings-section-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--capms-border);
+        background: linear-gradient(160deg, var(--capms-info-bg) 0%, var(--capms-bg-hover) 100%);
+    }
+
+    .capms-settings-section-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--capms-primary) 0%, var(--capms-primary-hover) 100%);
+        color: var(--capms-bg-primary);
+        box-shadow: 0 3px 8px rgba(34, 113, 177, 0.28);
+
+        svg {
+            width: 18px;
+            height: 18px;
+        }
+    }
+
+    .capms-settings-section-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--capms-text-primary);
+        margin: 0 0 4px;
+    }
+
+    .capms-settings-section-desc {
+        font-size: 12.5px;
+        color: var(--capms-text-secondary);
+        margin: 0;
+        line-height: 1.55;
+    }
+
+    // ── Section Body ─────────────────────────────────────────────────────────
+    .capms-settings-section-body {
+        padding: 20px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    // ── Cache Row ────────────────────────────────────────────────────────────
+    .capms-settings-cache-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+
+        @media (max-width: $bp_mobile) {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    .capms-settings-cache-info {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        flex: 1;
+    }
+
+    .capms-settings-cache-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--capms-text-primary);
+    }
+
+    .capms-settings-cache-hint {
+        font-size: 12.5px;
+        color: var(--capms-text-secondary);
+        line-height: 1.55;
+        max-width: 440px;
+    }
+
+    // ── Cache Button ─────────────────────────────────────────────────────────
+    .capms-settings-cache-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 18px;
+        border-radius: 7px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1.5px solid transparent;
+        white-space: nowrap;
+        transition: background-color 0.18s ease,
+                    border-color 0.18s ease,
+                    color 0.18s ease,
+                    box-shadow 0.18s ease,
+                    transform 0.1s ease;
+
+        // Default / idle state
+        &--idle {
+            background-color: var(--capms-warning-bg);
+            color: var(--capms-warning-text);
+            border-color: var(--capms-warning-text);
+
+            &:hover {
+                background-color: var(--capms-warning-bg);
+                border-color: var(--capms-warning-text);
+                box-shadow: 0 3px 10px rgba(245, 158, 11, 0.22);
+                transform: translateY(-1px);
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
+        }
+
+        // Loading state
+        &--loading {
+            background-color: var(--capms-bg-secondary);
+            color: var(--capms-text-muted);
+            border-color: var(--capms-border);
+            cursor: not-allowed;
+        }
+
+        // Success state
+        &--success {
+            background-color: var(--capms-success-bg);
+            color: var(--capms-success-text);
+            border-color: var(--capms-success-text);
+        }
+
+        // Error state
+        &--error {
+            background-color: var(--capms-error-bg);
+            color: var(--capms-error-text);
+            border-color: var(--capms-error-text);
+        }
+
+        &:disabled {
+            opacity: 0.75;
+        }
+    }
+
+    // ── Spinner ──────────────────────────────────────────────────────────────
+    .capms-settings-btn-spinner {
+        width: 14px;
+        height: 14px;
+        border: 2px solid var(--capms-border-hover);
+        border-top-color: var(--capms-text-secondary);
+        border-radius: 50%;
+        animation: capms-spin 0.7s linear infinite;
+    }
+
+    @keyframes capms-spin {
+        to { transform: rotate(360deg); }
+    }
+
+    // ── Feedback Message ─────────────────────────────────────────────────────
+    .capms-settings-feedback {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        animation: capms-fade-in 0.2s ease;
+
+        &--success {
+            background-color: var(--capms-success-bg);
+            color: var(--capms-success-text);
+            border: 1px solid var(--capms-success-bg);
+        }
+
+        &--error {
+            background-color: var(--capms-error-bg);
+            color: var(--capms-error-text);
+            border: 1px solid var(--capms-error-bg);
+        }
+    }
+
+    @keyframes capms-fade-in {
+        from { opacity: 0; transform: translateY(-4px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    // ── Generic row ──────────────────────────────────────────────────────────
+    .capms-settings-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 18px 24px;
+
+        &--border {
+            border-bottom: 1px solid var(--capms-border);
+        }
+
+        .capms-settings-row-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .capms-settings-row-control {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+    }
+
+    // ── Select dropdown ──────────────────────────────────────────────────────
+    .capms-settings-select-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .capms-settings-select {
+        appearance: none;
+        -webkit-appearance: none;
+        background: var(--capms-bg-primary) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center;
+        border: 1px solid var(--capms-border);
+        border-radius: 6px;
+        padding: 8px 32px 8px 12px;
+        font-size: 13px;
+        color: var(--capms-text-primary);
+        cursor: pointer;
+        min-width: 180px;
+        transition: border-color 0.2s;
+
+        &:focus {
+            outline: none;
+            border-color: var(--capms-primary);
+            box-shadow: 0 0 0 2px rgba(34,113,177,0.12);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--capms-primary);
+            outline-offset: 2px;
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+
+    .capms-settings-inline-spinner {
+        width: 14px;
+        height: 14px;
+        border: 2px solid var(--capms-border);
+        border-top-color: var(--capms-primary);
+        border-radius: 50%;
+        animation: capms-spin 0.7s linear infinite;
+        flex-shrink: 0;
+    }
+
+    .capms-settings-inline-ok {
+        color: var(--capms-success-text);
+        font-weight: 700;
+        font-size: 15px;
+    }
+
+    .capms-settings-inline-msg {
+        font-size: 12px;
+        font-weight: 500;
+
+        &--success { color: var(--capms-success-text); }
+        &--error   { color: var(--capms-error-text); }
+    }
+
+    // ── Toggle row ───────────────────────────────────────────────────────────
+    .capms-settings-toggle-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 18px 24px;
+
+        &.capms-settings-row--border {
+            border-bottom: 1px solid var(--capms-border);
+        }
+
+        .capms-settings-toggle-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+        }
+    }
+
+    // ── Switcher ─────────────────────────────────────────────────────────────
+    .capms-switcher {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        background: var(--capms-border);
+        border: none;
+        border-radius: 999px;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: background 0.25s ease;
+        padding: 0;
+        margin-top: 2px;
+
+        &--on {
+            background: var(--capms-primary);
+        }
+
+        &--danger#{&}--on {
+            background: var(--capms-error-text);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        // Looks disabled (same as :disabled above) but stays a real, clickable
+        // button - used for per-ability switches while the master switch is
+        // off, so clicking one can still redirect attention to the master
+        // switch instead of doing nothing (see useAttentionPing / ai_tools.jsx).
+        &--locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--capms-primary);
+            outline-offset: 2px;
+        }
+
+        .capms-switcher-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 18px;
+            height: 18px;
+            background: var(--capms-bg-primary);
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            transition: transform 0.25s ease;
+        }
+
+        &--on .capms-switcher-thumb {
+            transform: translateX(20px);
+        }
+
+        // "Look here first" pulse - added by useAttentionPing when the user
+        // tries to use something locked behind this switch. Generic: any
+        // .capms-switcher anywhere can receive this state.
+        &--pinged {
+            // 4 iterations (~3.6s) so the visible pulsing itself runs noticeably
+            // longer than before - the highlighted class stays on this element
+            // a bit longer still (see AttentionPingContext's HIGHLIGHT_EXTRA_MS)
+            // so it settles naturally rather than cutting off mid-pulse.
+            animation: capms-attn-pulse 0.9s ease-out 4;
+        }
+    }
+
+    @keyframes capms-attn-pulse {
+        0%   { box-shadow: 0 0 0 0 rgba(var(--capms-primary-rgb), 0.55); }
+        70%  { box-shadow: 0 0 0 9px rgba(var(--capms-primary-rgb), 0); }
+        100% { box-shadow: 0 0 0 0 rgba(var(--capms-primary-rgb), 0); }
+    }
+
+    // ── Warning badge ─────────────────────────────────────────────────────────
+    .capms-settings-warning-text {
+        color: var(--capms-error-text);
+    }
+
+    .capms-settings-warning-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--capms-error-bg);
+        color: var(--capms-error-text);
+        border: 1px solid var(--capms-error-bg);
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 5px 10px;
+        margin-top: 4px;
+        width: fit-content;
+        animation: capms-fade-in 0.2s ease;
+    }
+}
+
+@media (max-width: $bp_tablet) {
+    .capms-settings-wrapper {
+        padding: 16px;
+        flex-direction: column;
+    }
+    .capms-settings-sidebar,
+    .capms-settings-nav {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}

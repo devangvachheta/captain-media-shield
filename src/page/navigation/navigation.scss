@@ -1,0 +1,604 @@
+@use '../../style/variables.scss' as *;
+
+// Custom White Label logo icon (light/dark) - applies wherever it renders.
+.capms-nav-logo-custom-icon {
+    width: 100%;
+    height: 100%;
+    max-width: 36px;
+    max-height: 36px;
+    object-fit: contain;
+    border-radius: 6px;
+}
+
+.capms-navigation-sidebar {
+    width: 220px;
+    position: fixed;
+    top: var(--capms-adminbar-h, 32px);   // WP admin bar height (32px desktop, 46px mobile)
+    bottom: 0; // anchor both edges - more robust than a calc()'d height,
+               // which could leave a sliver of WP's native admin menu
+               // visible past our sidebar's bottom edge in some capture/
+               // rendering edge cases (e.g. sites with many plugin icons
+               // making WP's own menu taller than one viewport).
+    flex-shrink: 0;
+    background-color: var(--capms-bg-primary);
+    border-right: 1px solid var(--capms-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    // NOTE: kept below WordPress core's own admin-menu flyout submenu
+    // z-index (9990, e.g. hovering "Media"/"Posts" in the native WP
+    // sidebar) - at 9999 our sidebar was rendering on top of and hiding
+    // that native flyout menu. 9000 is comfortably below it while still
+    // being high enough to sit above normal page content.
+    z-index: 9000;
+    transition: width 0.25s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.25s ease;
+
+    // ── Logo ─────────────────────────────────────────────────────
+    .capms-navigation-sidebar-logo {
+        flex-shrink: 0;
+        padding: 12px 7px 12px 12px;
+        border-bottom: 1px solid var(--capms-border);
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        position: relative;
+
+        img {
+            height: 36px;
+            width: auto;
+            flex-shrink: 0;
+        }
+
+        h3 {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--capms-text-primary);
+            line-height: 1.3;
+            margin: 0;
+            flex: 1;
+            min-width: 0;
+            white-space: break-spaces;
+        }
+    }
+
+    // ── Logo icon / collapse toggle hover area ──────────────────────
+    // The overlay collapse button (--overlay) shares this same round
+    // 36px slot as the brand icon, but only actually crossfades in on
+    // hover while the sidebar is collapsed (see &--collapsed below) -
+    // that's the "hover the logo to expand back" affordance. While
+    // expanded, the brand icon just always shows here.
+    .capms-nav-logo-hover-area {
+        position: relative;
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+    .capms-nav-logo-icon {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 1;
+        transition: opacity 0.15s ease;
+    }
+
+    // ── Collapse / expand toggle button - base styling shared by both
+    // the --overlay (over the logo, collapsed-state hover only) and
+    // --inline (expanded state, static/always visible, sits at the end
+    // of the title row since <h3> is flex:1 and pushes it there)
+    // variants. ─────────────────────────────────────────────────────
+    .capms-nav-collapse-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 50%;
+        cursor: pointer;
+        padding: 0;
+        color: var(--capms-text-secondary);
+        transition: opacity 0.15s ease, color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+
+        &:hover {
+            color: var(--capms-primary);
+            border-color: var(--capms-primary);
+        }
+
+        svg { flex-shrink: 0; }
+    }
+
+    .capms-nav-collapse-btn--overlay {
+        position: absolute;
+        inset: 0;
+        width: 36px;
+        height: 36px;
+        background: var(--capms-bg-hover);
+        border: 1px solid var(--capms-border);
+        opacity: 0;
+        pointer-events: none;
+
+        svg { width: 15px; height: 15px; }
+    }
+
+    .capms-nav-collapse-btn--inline {
+        width: 28px;
+        height: 28px;
+        background: transparent;
+        border: 1px solid transparent;
+
+        &:hover { background: var(--capms-bg-hover); border-color: var(--capms-border); }
+
+        svg { width: 14px; height: 14px; }
+    }
+
+    // ── Menu area ─────────────────────────────────────────────────
+    .capms-navigation-sidebar-menu {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 10px 10px;
+        gap: 5px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    // ── Regular nav link ──────────────────────────────────────────
+    .capms-nav-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        border-radius: $rs_small;
+        text-decoration: none;
+        color: var(--capms-text-secondary);
+        font-size: 13px;
+        font-weight: 500;
+        transition: $transition;
+        white-space: nowrap;
+
+        .capms-nav-icon {
+            width: 17px;
+            height: 17px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+                width: 17px;
+                height: 17px;
+            }
+        }
+
+        &:hover {
+            background: var(--capms-bg-hover);
+            color: var(--capms-text-primary);
+        }
+
+        &--active {
+            background: var(--capms-bg-active);
+            color: var(--capms-primary);
+            font-weight: 600;
+
+            .capms-nav-icon svg { stroke: var(--capms-primary); }
+        }
+    }
+
+    // ── Extra Options group ───────────────────────────────────────
+    .capms-nav-group {
+        display: flex;
+        flex-direction: column;
+        margin-top: 4px;
+    }
+
+    .capms-nav-group-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 9px 12px;
+        background: none;
+        border: none;
+        border-radius: $rs_small;
+        cursor: pointer;
+        width: 100%;
+        transition: $transition;
+
+        .capms-nav-group-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--capms-text-secondary);
+        }
+
+        .capms-nav-group-chevron {
+            display: flex;
+            align-items: center;
+            svg {
+                width: 13px;
+                height: 13px;
+                stroke: var(--capms-text-secondary);
+            }
+        }
+
+        &:hover {
+            background: var(--capms-bg-hover);
+            .capms-nav-group-label { color: var(--capms-text-primary); }
+        }
+
+        &--open .capms-nav-group-label { color: var(--capms-primary); }
+    }
+
+    // ── Sub-items inside Extra Options ────────────────────────────
+    .capms-nav-group-items {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 2px 0 4px 10px;
+        border-left: 2px solid var(--capms-border);
+        margin-left: 18px;
+        margin-bottom: 2px;
+    }
+
+    .capms-nav-sublink {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 10px;
+        border-radius: $rs_small;
+        text-decoration: none;
+        color: var(--capms-text-secondary);
+        font-size: 12.5px;
+        font-weight: 500;
+        transition: $transition;
+        white-space: nowrap;
+
+        .capms-nav-icon {
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            svg {
+                width: 15px;
+                height: 15px;
+            }
+        }
+
+        &:hover {
+            background: var(--capms-bg-hover);
+            color: var(--capms-text-primary);
+        }
+
+        &--active {
+            background: var(--capms-bg-active);
+            color: var(--capms-primary);
+            font-weight: 600;
+            .capms-nav-icon svg { stroke: var(--capms-primary); }
+        }
+    }
+
+    // ── "PRO" badge on gated nav items ──────────────────────────────
+    .capms-nav-pro-badge {
+        display: inline-flex;
+        align-items: center;
+        margin-left: auto;
+        padding: 1px 6px;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        line-height: 1.6;
+        color: #fff;
+        text-transform: uppercase;
+        background: linear-gradient(135deg, #f0a217, #e8890a);
+        border-radius: 3px;
+        flex-shrink: 0;
+    }
+
+    .capms-nav-sublink:has(.capms-nav-pro-badge) {
+        justify-content: space-between;
+    }
+
+    // ── Upgrade to Pro card lives in its own component now
+    //    (src/components/upgrade_pro_card/) - styles moved there too.
+
+    // ── Footer ────────────────────────────────────────────────────
+    .capms-navigation-sidebar-footer {
+        flex-shrink: 0;
+        padding: 12px 14px;
+        border-top: 1px solid var(--capms-border);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+
+        .capms-nav-version {
+            display: block;
+            font-size: 11px;
+            color: var(--capms-text-muted);
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+    }
+
+    // ── Theme Toggle Button (sun/moon icon style) ──────────────────
+    .capms-dm-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        background: var(--capms-bg-component);
+        border: 1px solid var(--capms-border);
+        border-radius: $rs_large;
+        cursor: pointer;
+        padding: 0;
+        transition: $transition;
+        color: var(--capms-text-secondary);
+
+        &:hover {
+            background: var(--capms-bg-hover);
+            border-color: var(--capms-primary);
+            color: var(--capms-primary);
+        }
+
+        svg {
+            width: 18px;
+            height: 18px;
+            display: none; // both hidden by default
+        }
+
+        // In light mode: show moon (click to go dark)
+        .capms-dm-moon { display: block; }
+        .capms-dm-sun  { display: none; }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // Collapsed (icon-only rail) state
+    // ══════════════════════════════════════════════════════════════
+    &--collapsed {
+        width: 72px;
+        box-shadow: none;
+
+        // The card's text/button don't fit an icon-only rail - hide it
+        // entirely when collapsed, same treatment as the VERSION label.
+        .capms-upgrade-pro-card { display: none !important; }
+
+        .capms-navigation-sidebar-logo {
+            padding: 0;
+            gap: 0;
+            height: 64px;
+            justify-content: center;
+
+            // flex: none (not just width: 0) - otherwise flex-grow:1 from the
+            // expanded-state rule still claims the row's leftover space even
+            // at 0 width, pushing the logo icon off-center instead of
+            // centering it in the collapsed rail.
+            h3 { flex: none; width: 0; opacity: 0; margin: 0; pointer-events: none; }
+
+            // Re-center the 36px hover-area box in the middle of the rail
+            // now that the label is gone.
+            .capms-nav-logo-hover-area {
+                margin: 0 auto;
+            }
+
+            // Collapsed-only: hovering the logo crossfades it into the
+            // overlay button to expand back. The --inline button never
+            // shows here (the title row it sits at the end of is hidden).
+            .capms-nav-logo-hover-area:hover {
+                .capms-nav-logo-icon           { opacity: 0; }
+                .capms-nav-collapse-btn--overlay { opacity: 1; pointer-events: auto; }
+            }
+            .capms-nav-collapse-btn--inline { display: none !important; }
+        }
+
+        .capms-navigation-sidebar-menu { padding: 10px 8px; align-items: center; }
+
+        .capms-nav-link,
+        .capms-nav-sublink,
+        .capms-nav-group-header {
+            justify-content: center !important;
+            padding: 10px !important;
+        }
+
+        .capms-nav-label,
+        .capms-nav-group-label,
+        .capms-nav-group-chevron,
+        .capms-nav-sublink span:not(.capms-nav-icon) {
+            display: none !important;
+        }
+
+        // Skip the accordion entirely when collapsed - always reveal the
+        // Extra Options icons directly so nothing becomes unreachable.
+        .capms-nav-group-header { cursor: default; pointer-events: none; }
+        .capms-nav-group-items {
+            border-left: none !important;
+            margin-left: 0 !important;
+            padding: 0 !important;
+            align-items: center;
+        }
+
+        .capms-navigation-sidebar-footer {
+            flex-direction: column-reverse;
+            padding: 12px 8px;
+
+            .capms-nav-version { display: none; }
+        }
+    }
+}
+
+// ── Mobile hamburger button ──────────────────────────────────────────────
+// Hidden on desktop. On mobile it becomes a full-width sticky top bar
+// inside the plugin's own content area - no conflict with WP admin icons.
+.capms-hamburger {
+    display: none; // hidden on desktop - shown via @media below
+}
+
+// ── Overlay (mobile only) ─────────────────────────────────────────────────
+// Rendered in React only when mobileOpen=true. Always fixed full-screen.
+.capms-nav-overlay {
+    position: fixed;
+    inset: 0;
+    top: var(--capms-adminbar-h, 32px);
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 10001;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+
+// ── Mobile breakpoint ────────────────────────────────────────────────────
+// 960px keeps us safely above WP admin's own 782px breakpoint so we never
+// fight over the same viewport width.
+@media (max-width: $bp_tablet) {
+
+    // Give the menu a bit of breathing room at the top.
+    .capms-navigation-sidebar-menu { padding-top: 16px !important; }
+
+    // The desktop collapse toggle doesn't apply on mobile - mobile already
+    // has its own dedicated close (✕) button in the slide-in menu header.
+    .capms-nav-collapse-btn { display: none !important; }
+
+    // The desktop "collapsed icon rail" concept doesn't apply on mobile -
+    // mobile always uses the full-width slide-in overlay menu, regardless
+    // of whatever collapsed/expanded preference was saved on desktop.
+    .capms-navigation-sidebar.capms-navigation-sidebar--collapsed {
+        width: 220px !important;
+
+        .capms-navigation-sidebar-logo {
+            padding: 14px 15px !important;
+            height: auto !important;
+            justify-content: flex-start !important;
+
+            h3 { width: auto !important; opacity: 1 !important; pointer-events: auto !important; }
+
+            .capms-nav-logo-icon {
+                position: static !important;
+                opacity: 1 !important;
+            }
+            .capms-nav-collapse-btn { display: none !important; }
+        }
+
+        .capms-navigation-sidebar-menu { padding: 12px !important; align-items: stretch !important; }
+
+        .capms-nav-link,
+        .capms-nav-sublink,
+        .capms-nav-group-header {
+            justify-content: flex-start !important;
+            padding: 10px 12px !important;
+            width: auto !important;
+        }
+
+        .capms-nav-label,
+        .capms-nav-group-label,
+        .capms-nav-group-chevron,
+        .capms-nav-sublink span:not(.capms-nav-icon) {
+            display: inline-flex !important;
+        }
+
+        .capms-nav-group-header { cursor: pointer !important; pointer-events: auto !important; }
+        .capms-nav-group-items {
+            border-left: 1px solid var(--capms-border) !important;
+            margin-left: 20px !important;
+            padding-left: 8px !important;
+        }
+
+        .capms-navigation-sidebar-footer {
+            flex-direction: row !important;
+
+            .capms-nav-version { display: block !important; }
+        }
+    }
+
+    // Hamburger bar - full-width sticky top bar inside .capms-app
+    .capms-hamburger {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        position: sticky;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 10003;
+        width: 100%;
+        height: 46px;
+        padding: 0 16px;
+        margin: 0;
+        border: none;
+        border-bottom: 1px solid var(--capms-border);
+        background: var(--capms-bg-primary);
+        color: var(--capms-text-primary);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        transition: background 0.2s ease;
+        flex-shrink: 0;
+        box-sizing: border-box;
+
+        svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        // Plugin name label
+        &::after {
+            content: 'Captain Media Shield';
+            flex: 1;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--capms-text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        &:hover { background: var(--capms-bg-hover); }
+
+        // Once the menu is open, this bar just duplicates the close
+        // affordance - closing now happens by tapping the dimmed side area.
+        &--hidden { display: none; }
+    }
+
+    // Main content: fill full width - sidebar is overlaid, not in flow
+    .capms-app-main-content {
+        margin-left: 0 !important;
+        min-height: calc(100vh - var(--capms-adminbar-h, 32px));
+        padding: 0; // pages handle their own internal padding
+    }
+
+    .capms-app {
+        margin-left: 0 !important;
+        flex-direction: column;
+        // Note: do NOT set overflow-x:hidden here - it clips the table horizontal scroll.
+        // The sidebar stays off-screen via left:-240px which doesn't cause overflow.
+    }
+
+    // Sidebar: hidden off-screen to the left by default
+    .capms-navigation-sidebar,
+    .capms-navigation-sidebar.capms-navigation-sidebar--edit {
+        position: fixed !important;
+        top: var(--capms-adminbar-h, 32px) !important;
+        left: -240px;     // off-screen (sidebar width 220px + 20px buffer)
+        height: calc(100vh - var(--capms-adminbar-h, 32px)) !important;
+        z-index: 10002;
+        transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+                    background-color 0.3s ease !important;
+        box-shadow: none;
+        will-change: left;
+    }
+
+    // Sidebar open state - slide in from left
+    .capms-navigation-sidebar.capms-nav--open,
+    .capms-navigation-sidebar.capms-navigation-sidebar--edit.capms-nav--open {
+        left: 0 !important;
+        box-shadow: 4px 0 32px rgba(0, 0, 0, 0.3);
+    }
+}

@@ -1,0 +1,35 @@
+$mg_fonts: 'Arial, sans-serif';
+
+$rs_small: 6px;
+$rs_medium: 8px;
+$rs_normal: 10px;
+$rs_large: 15px;
+
+// Spacing scale - single source of truth for padding/margin/gap. No
+// dedicated spacing variable existed before this; pages mostly used
+// one-off pixel values. New pages should use $sp_base (and multiples of
+// it) instead of hardcoding numbers.
+$sp_base: 15px;
+
+// Shared responsive breakpoints - keep these as the single source of
+// truth for "sidebar collapses to hamburger" (960px) and "compact single
+// column" (600px) so every page reflows at the same width.
+// Note: 782px (WP admin toolbar) and create_page.scss's progressive
+// 1240/900/768/480px grid breakpoints are intentionally page-specific
+// and are not included here.
+$bp_tablet: 960px;
+$bp_mobile: 600px;
+
+$primary_color: var(--capms-primary-text);
+$primary_color_hover: var(--capms-primary-hover);
+$secondary_color: var(--capms-secondary);
+$black_color: var(--capms-text-primary);
+$desc_color: var(--capms-text-secondary);
+
+$white_color: var(--capms-bg-card);
+$white_hover: var(--capms-bg-secondary);
+$grey_color: var(--capms-bg-secondary);
+$border_color: var(--capms-border);
+$input_bg: #f5f5f5bf;
+$component_bg: var(--capms-text-muted);
+$transition: 0.3s all linear;

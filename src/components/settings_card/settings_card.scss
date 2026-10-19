@@ -1,0 +1,574 @@
+@use '../../style/variables.scss' as *;
+
+// ── Group header ("Performance · 02 Features") ─────────────────────────────
+.capms-sgroup {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.capms-sgroup-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.capms-sgroup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: $black_color;
+}
+
+.capms-sgroup-badge {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: $desc_color;
+    background: var(--capms-bg-secondary);
+    border-radius: 20px;
+    padding: 3px 10px;
+}
+
+.capms-sgroup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+
+    @media (max-width: 640px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+// ── Individual card ──────────────────────────────────────────────────────
+.capms-scard {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px 20px;
+    background: var(--capms-bg-card);
+    border: 1px solid var(--capms-border);
+    border-radius: 12px;
+}
+
+.capms-scard-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.capms-scard-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.capms-scard-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    color: $primary_color;
+
+    svg { width: 100%; height: 100%; }
+}
+
+.capms-scard-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: $black_color;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.capms-scard-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.capms-scard-gear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid var(--capms-border);
+    background: var(--capms-bg-primary);
+    color: $desc_color;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+        color: $primary_color;
+        border-color: $primary_color;
+    }
+}
+
+.capms-scard-desc {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: $desc_color;
+    margin: 0;
+}
+
+// ── Summary card (single card per group, bullet points + gear popup) ──────
+.capms-scard--summary {
+    gap: 14px;
+}
+
+.capms-scard-points {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+
+    li {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        color: $desc_color;
+    }
+}
+
+.capms-scard-point-dot {
+    width: 5px;
+    height: 5px;
+    min-width: 5px;
+    border-radius: 50%;
+    background: $primary_color;
+}
+
+.capms-scard-point-label {
+    color: $desc_color;
+}
+
+.capms-scard-point-value {
+    font-weight: 600;
+    color: $black_color;
+    margin-left: auto;
+    text-align: right;
+}
+
+.capms-scard-point--warn {
+    .capms-scard-point-dot { background: var(--capms-warning-text); }
+    .capms-scard-point-value { color: var(--capms-warning-text); }
+}
+
+// ── Popup / modal used by the gear icon ─────────────────────────────────────
+.capms-scard-modal-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 100000;
+    padding: 20px;
+}
+
+.capms-scard-modal {
+    width: 100%;
+    max-width: 460px;
+    background: var(--capms-bg-card);
+    border-radius: 14px;
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+}
+
+.capms-scard-modal--lg {
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.capms-scard-modal-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.capms-scard-modal-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    border-radius: 10px;
+    background: var(--capms-info-bg);
+    color: $primary_color;
+
+    svg { width: 20px; height: 20px; }
+}
+
+.capms-scard-modal-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.capms-scard-modal-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--capms-success-text);
+    background: var(--capms-success-bg);
+    border-radius: 20px;
+    padding: 2px 10px;
+}
+
+.capms-scard-modal-subtitle {
+    font-size: 12px;
+    color: $desc_color;
+    line-height: 1.6;
+    margin: 4px 0 0;
+    max-width: 560px;
+}
+
+.capms-scard-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.capms-scard-modal-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: $black_color;
+    margin: 0;
+}
+
+.capms-scard-modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: none;
+    background: var(--capms-bg-secondary);
+    color: $desc_color;
+    cursor: pointer;
+
+    &:hover { color: $black_color; }
+}
+
+.capms-scard-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.capms-scard-modal-body--cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+
+    @media (max-width: 720px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.capms-scard-modal-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+// ── Sub-card inside a large popup (API Cache Lifetime, Manual Purge, etc) ──
+.capms-scard-subcard {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 16px;
+    border: 1px solid var(--capms-border);
+    border-radius: 10px;
+    background: var(--capms-bg-primary);
+}
+
+.capms-scard-subcard-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.capms-scard-subcard-heading {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    color: $black_color;
+
+    svg { color: $primary_color; width: 16px; height: 16px; }
+}
+
+.capms-scard-subcard-pill {
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+
+    &.capms-scard-subcard-pill--blue {
+        color: $primary_color;
+        background: var(--capms-info-bg);
+    }
+    &.capms-scard-subcard-pill--green {
+        color: var(--capms-success-text);
+        background: var(--capms-success-bg);
+    }
+}
+
+.capms-scard-subcard-desc {
+    font-size: 12px;
+    color: $desc_color;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.capms-scard-subcard-footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 2px;
+}
+
+.capms-scard-subcard-stat {
+    font-size: 12px;
+    color: $desc_color;
+
+    strong { color: $black_color; font-weight: 700; }
+}
+
+// ── Storage Strategy Mode: selectable boxes ────────────────────────────────
+.capms-scard-mode-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: $black_color;
+    margin: 0 0 2px;
+}
+
+.capms-scard-mode-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.capms-scard-mode-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1.5px solid var(--capms-border);
+    background: var(--capms-bg-primary);
+    cursor: pointer;
+    position: relative;
+    transition: border-color 0.15s ease;
+
+    &:hover { border-color: $primary_color; }
+
+    &.capms-scard-mode-box--active {
+        border-color: $primary_color;
+        background: var(--capms-info-bg);
+    }
+}
+
+.capms-scard-mode-box-title {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: $black_color;
+}
+
+.capms-scard-mode-box-sub {
+    font-size: 11px;
+    color: $desc_color;
+}
+
+.capms-scard-mode-box-check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: $primary_color;
+}
+
+// ── Resilience Comparison rows ─────────────────────────────────────────────
+.capms-scard-res-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--capms-border);
+
+    &:last-child { border-bottom: none; }
+}
+
+.capms-scard-res-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: $black_color;
+}
+
+.capms-scard-res-sub {
+    font-size: 11px;
+    color: $desc_color;
+    margin-top: 1px;
+}
+
+.capms-scard-res-value {
+    font-size: 11.5px;
+    font-weight: 700;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    &.capms-scard-res-value--good { color: var(--capms-success-text); }
+    &.capms-scard-res-value--neutral { color: $desc_color; }
+    &.capms-scard-res-value--warn { color: var(--capms-warning-text); }
+}
+
+// ── Info / recommendation banner ───────────────────────────────────────────
+.capms-scard-info-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--capms-info-bg);
+    color: $primary_color;
+    font-size: 11.5px;
+    line-height: 1.6;
+
+    svg { flex-shrink: 0; margin-top: 1px; }
+    strong { font-weight: 700; }
+}
+
+// ── Footer (Reset / Cancel / Save) ──────────────────────────────────────────
+.capms-scard-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 14px;
+    margin-top: 4px;
+    border-top: 1px solid var(--capms-border);
+}
+
+.capms-scard-reset-link {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: $desc_color;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+
+    &:hover { color: $black_color; text-decoration: underline; }
+}
+
+.capms-scard-footer-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.capms-scard-btn-cancel {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: $black_color;
+    background: var(--capms-bg-primary);
+    border: 1px solid var(--capms-border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+
+    &:hover { border-color: $desc_color; }
+}
+
+.capms-scard-btn-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #fff;
+    background: $primary_color;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 18px;
+    cursor: pointer;
+
+    &:hover { background: $primary_color_hover; }
+    &:disabled { opacity: 0.6; cursor: default; }
+}
+
+.capms-scard-modal-divider {
+    height: 1px;
+    background: var(--capms-border);
+    margin: 2px 0;
+}
+
+// ── Comparison table (transients vs fallback table) ────────────────────────
+.capms-settings-compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 11.5px;
+
+    th, td {
+        text-align: left;
+        padding: 7px 6px;
+        border-bottom: 1px solid var(--capms-border);
+        line-height: 1.4;
+    }
+
+    thead th {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: $black_color;
+        white-space: nowrap;
+    }
+
+    tbody td:first-child {
+        color: $desc_color;
+        width: 42%;
+    }
+
+    tbody td:not(:first-child) {
+        font-weight: 600;
+        text-align: center;
+    }
+
+    thead th:not(:first-child) {
+        text-align: center;
+    }
+}
+
+.capms-settings-compare-good {
+    color: var(--capms-success-text);
+}
+
+.capms-settings-compare-bad {
+    color: var(--capms-warning-text);
+}

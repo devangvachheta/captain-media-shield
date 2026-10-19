@@ -1,0 +1,192 @@
+// ============================================================
+//  Captain Media Shield - Theme CSS Variables
+//  One place to change = entire dashboard updates
+//  Usage: var(--capms-bg-primary) etc.
+// ============================================================
+
+// ── LIGHT MODE (default) ──────────────────────────────────────
+:root,
+[data-capms-theme="light"] {
+    // Backgrounds
+    --capms-bg-app:           #ffffff;
+    --capms-bg-primary:       #ffffff;
+    --capms-bg-secondary:     #f8f8f8;
+    --capms-bg-hover:         #f4f6f8;
+    --capms-bg-input:         #f5f5f5;
+    --capms-bg-active:        #e8f0fe;
+    --capms-bg-component:     #f0f0f0;
+    --capms-bg-card:          #ffffff;   // card/table surfaces (white in light, dark in dark)
+
+    // Text
+    --capms-text-primary:     #2C3338;
+    --capms-text-secondary:   #6b7280;
+    --capms-text-muted:       #a7a7a7;
+    --capms-text-inverse:     #ffffff;   // text ON colored backgrounds (buttons, badges)
+
+    // Borders
+    --capms-border:           #dfdfdf;
+    --capms-border-hover:     #c4c4c4;
+
+    // Brand
+    --capms-primary:          #2271B1;
+    --capms-primary-rgb:      34, 113, 177; // same color as --capms-primary, as r,g,b for rgba() use
+    --capms-primary-hover:    #1A5D96;
+    --capms-primary-light:    #e8f0fe;
+    --capms-primary-text:     #2271B1;
+    --capms-secondary:        #9F5E00;
+
+    // Status colors
+    --capms-success-bg:       #dcfce7;
+    --capms-success-border:   #bbf7d0;
+    --capms-success-text:     #166534;
+    --capms-warning-bg:       #fffbeb;
+    --capms-warning-border:   #fde68a;
+    --capms-warning-text:     #92400e;
+    --capms-info-bg:          #eff6ff;
+    --capms-info-border:      #bfdbfe;
+    --capms-info-text:        var(--capms-primary); // unified with the app's single brand blue (#2271B1)
+    --capms-error-bg:         #fee2e2;
+    --capms-error-text:       #b91c1c;
+
+    // Shadows
+    --capms-shadow-sm:        0 1px 4px rgba(0,0,0,0.08);
+    --capms-shadow-md:        0 4px 16px rgba(0,0,0,0.10);
+    --capms-shadow-footer:    0 4px 24px rgba(0,0,0,0.10);
+
+    // Toggle button
+    --capms-toggle-bg:        #e2e8f0;
+    --capms-toggle-knob:      #ffffff;
+    --capms-toggle-icon:      "☀️";
+
+    // Skeleton
+    --capms-skeleton-from:    #e0e0e0;
+    --capms-skeleton-to:      #f0f0f0;
+}
+
+// ── DARK MODE ─────────────────────────────────────────────────
+[data-capms-theme="dark"] {
+    // Backgrounds
+    --capms-bg-app:           #0f1117;
+    --capms-bg-primary:       #1a1d27;
+    --capms-bg-secondary:     #22263a;
+    --capms-bg-hover:         #2a2f45;
+    --capms-bg-input:         #22263a;
+    --capms-bg-active:        #1e2d4a;
+    --capms-bg-component:     #2a2f45;
+    --capms-bg-card:          #1a1d27;   // card/table surfaces in dark mode
+
+    // Text
+    --capms-text-primary:     #e2e8f0;
+    --capms-text-secondary:   #94a3b8;
+    --capms-text-muted:       #64748b;
+    --capms-text-inverse:     #ffffff;   // text ON colored backgrounds - always white
+
+    // Borders
+    --capms-border:           #2d3550;
+    --capms-border-hover:     #3d4a6b;
+
+    // Brand
+    --capms-primary:          #4e9de0;
+    --capms-primary-rgb:      78, 157, 224; // same color as --capms-primary, as r,g,b for rgba() use
+    --capms-primary-hover:    #3a8acc;
+    --capms-primary-light:    #1e2d4a;
+    --capms-primary-text:     #7bb8f0;
+    --capms-secondary:        #f0a940;
+
+    // Status colors
+    --capms-success-bg:       #0f2d1f;
+    --capms-success-border:   #166534;
+    --capms-success-text:     #4ade80;
+    --capms-warning-bg:       #2d1f00;
+    --capms-warning-border:   #92400e;
+    --capms-warning-text:     #fbbf24;
+    --capms-info-bg:          #0f1e3d;
+    --capms-info-border:      var(--capms-primary); // unified with the app's single brand blue
+    --capms-info-text:        #60a5fa;
+    --capms-error-bg:         #2d0f0f;
+    --capms-error-text:       #f87171;
+
+    // Shadows
+    --capms-shadow-sm:        0 1px 4px rgba(0,0,0,0.4);
+    --capms-shadow-md:        0 4px 16px rgba(0,0,0,0.5);
+    --capms-shadow-footer:    0 4px 24px rgba(0,0,0,0.5);
+
+    // Toggle
+    --capms-toggle-bg:        #4e9de0;
+    --capms-toggle-knob:      #ffffff;
+    --capms-toggle-icon:      "🌙";
+
+    // Skeleton
+    --capms-skeleton-from:    #22263a;
+    --capms-skeleton-to:      #2a2f45;
+}
+
+// ── Dark-mode icon overrides for the theme toggle button ─────────────────
+// When the root wrapper has dark theme, swap moon→sun icon visibility
+[data-capms-theme="dark"] {
+    .capms-dm-toggle {
+        .capms-dm-moon { display: none; }
+        .capms-dm-sun  { display: block; }
+    }
+}
+
+// ── Dark-mode native form control overrides ───────────────────────────────
+// Force browser-native inputs, selects, and number fields to use dark
+// color-scheme so the browser doesn't paint its own white background.
+// Also removes -webkit-autofill yellow flash in dark mode.
+[data-capms-theme="dark"] {
+    input[type="number"],
+    input[type="text"],
+    input[type="password"],
+    select {
+        color-scheme: dark;
+    }
+
+    .capms-gap-number,
+    .capms-gap-unit,
+    .capms-wiz-input,
+    .capms-wiz-select {
+        color-scheme: dark;
+        &:-webkit-autofill,
+        &:-webkit-autofill:hover,
+        &:-webkit-autofill:focus {
+            -webkit-box-shadow: 0 0 0 100px var(--capms-bg-input) inset;
+            -webkit-text-fill-color: var(--capms-text-primary);
+        }
+    }
+}
+
+// ── Beat WordPress .wp-core-ui specificity in dark mode ───────────────────
+// WordPress core injects `.wp-core-ui select { background: #fff !important }`
+// via forms.css. We need a compound selector that wins: the plugin wrapper
+// (.capms-app) is always inside .wp-core-ui so this beats WP core reliably.
+.wp-core-ui [data-capms-theme="dark"] select {
+    background: var(--capms-bg-input) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23e2e8f0' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center !important;
+    color: var(--capms-text-primary) !important;
+    border-color: var(--capms-border) !important;
+    -webkit-text-fill-color: var(--capms-text-primary) !important;
+    color-scheme: dark;
+}
+.wp-core-ui [data-capms-theme="dark"] input[type="number"],
+.wp-core-ui [data-capms-theme="dark"] input[type="text"],
+.wp-core-ui [data-capms-theme="dark"] input[type="password"] {
+    background: var(--capms-bg-input) !important;
+    color: var(--capms-text-primary) !important;
+    border-color: var(--capms-border) !important;
+    -webkit-text-fill-color: var(--capms-text-primary) !important;
+    color-scheme: dark;
+}
+
+// Extra: gap number + unit selects specifically
+.wp-core-ui [data-capms-theme="dark"] .capms-gap-number {
+    background: var(--capms-bg-input) !important;
+    color: var(--capms-text-primary) !important;
+    -webkit-text-fill-color: var(--capms-text-primary) !important;
+    border-color: var(--capms-border) !important;
+}
+.wp-core-ui [data-capms-theme="dark"] .capms-gap-unit {
+    background: var(--capms-bg-input) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23e2e8f0' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 8px center !important;
+    color: var(--capms-text-primary) !important;
+    -webkit-text-fill-color: var(--capms-text-primary) !important;
+    border-color: var(--capms-border) !important;
+}

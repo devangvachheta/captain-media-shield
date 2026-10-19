@@ -1,0 +1,107 @@
+@use '/src/style/variables.scss' as *;
+@use '/src/style/theme.scss';
+@import url('https: //fonts.googleapis.com/css2?family=Kumbh+Sans:wght,YOPQ@100..900,300&display=swap');
+
+/* ── Accessibility: keyboard focus indicator, sitewide ──────────────────
+   :focus-visible only shows for keyboard/programmatic focus (not mouse
+   clicks), so this never adds an unwanted ring on click while guaranteeing
+   every interactive element stays visibly focusable via keyboard. This is
+   the sitewide fallback; components that explicitly zero out `outline` on
+   `:focus` (for a cleaner click state) pair that with their own explicit
+   `:focus-visible` rule right next to it - never remove one without the
+   other. */
+.capms-app :focus-visible {
+    outline: 2px solid var(--capms-primary);
+    outline-offset: 2px;
+}
+
+.csp-notice .pa-notice-wrap .pa-new-feature-notice .pa-review-notice .gt-admin-notice,
+.is-dismissible,
+.notice,
+.notice .notice-errors,
+.notice-errors,
+.notice-warning,
+#wpfooter {
+    display: none !important
+}
+
+#wpbody-content {
+    padding-bottom: 0 !important;
+}
+
+#wpcontent {
+    padding-left: 0;
+}
+
+.capms-app {
+    display: flex;
+    align-items: flex-start;
+    min-height: calc(100vh - var(--capms-adminbar-h, 32px));
+    background-color: var(--capms-bg-app);
+    transition: background-color 0.3s ease;
+    --capms-sidebar-w: 220px;
+    --capms-sidebar-w-collapsed: 72px;
+    // WP 6.4+ exposes --wp-admin--admin-bar--height (32px desktop / 46px mobile)
+    // automatically; older WP versions don't, so this falls back to the same
+    // values WP core has always used at its own 782px breakpoint.
+    --capms-adminbar-h: var(--wp-admin--admin-bar--height, 32px);
+
+    @media screen and (max-width: 782px) {
+        --capms-adminbar-h: var(--wp-admin--admin-bar--height, 46px);
+    }
+
+    &[data-capms-sidebar="collapsed"] {
+        --capms-sidebar-w: var(--capms-sidebar-w-collapsed);
+    }
+}
+
+.capms-app-main-content {
+    flex: 1;
+    min-width: 0; // classic flexbox fix: without this, a flex item can't
+                  // shrink below its content's intrinsic width, which was
+                  // letting this panel (and its dark background) overflow
+                  // past the viewport at narrower widths - showing as a
+                  // solid block past the visible content.
+    padding: 28px;
+    // Matches --capms-bg-primary (not --capms-bg-app) so this padding
+    // frame blends seamlessly with every page's own wrapper/panel background
+    // (which universally uses --capms-bg-primary). In dark mode the two
+    // tokens differ (#0f1117 vs #1a1d27) - using bg-app here left a visible
+    // two-tone seam/gutter around floating elements like the create-feed
+    // wizard's fixed footer bar, since it sat on a different-colored frame
+    // than the card it visually belongs to.
+    background-color: var(--capms-bg-primary);
+    transition: background-color 0.3s ease, margin-left 0.25s ease;
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: calc(100vh - var(--capms-adminbar-h, 32px));
+    margin-left: var(--capms-sidebar-w, 220px);
+
+    /* Edit page wizard needs full height, no padding.
+     *
+     * IMPORTANT: no `overflow` here (not even `auto`) - `position: sticky`
+     * on `.capms-wiz-progress` needs the *real* window/document scroll
+     * as its reference frame, exactly like the mobile hamburger bar (also
+     * `position: sticky`) already correctly relies on elsewhere in this
+     * same layout. Setting `overflow: auto` on an ancestor - even one
+     * that never actually overflows, which was the bug here since this
+     * box only had a `min-height`, not a bounded `height` - still makes
+     * THAT box the sticky reference frame per spec. Since the real
+     * scrolling was happening on the outer document instead, the sticky
+     * bar's reference frame never moved and it sat static. A bounded
+     * `height` "fixed" that but created a second, nested scrollbar
+     * instead - simplest correct fix is just to not intercept the
+     * scroll here at all. */
+    &:has(.capms-wiz-wrapper) {
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: visible;
+    }
+}
+
+@keyframes capms-skeleton-effect {
+    0%   { background-color: var(--capms-skeleton-from); opacity: 1; }
+    50%  { background-color: var(--capms-skeleton-to);   opacity: 0.7; }
+    100% { background-color: var(--capms-skeleton-from); opacity: 1; }
+}

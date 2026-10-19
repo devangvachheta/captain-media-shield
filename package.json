@@ -1,0 +1,31 @@
+{
+  "name": "captain-media-shield",
+  "version": "1.0.0",
+  "description": "All-in-one free Image & Video Optimizer, WebP/AVIF Converter, Video Compressor (WebM/Fast Start), Metadata Stripper, and Server Storage Saver for WordPress.",
+  "main": "index.js",
+  "scripts": {
+    "build": "wp-scripts build",
+    "start": "wp-scripts start"
+  },
+  "keywords": [
+    "wordpress",
+    "plugin",
+    "image-optimizer",
+    "webp",
+    "avif",
+    "video"
+  ],
+  "author": "dipakdodiya",
+  "license": "GPL-3.0-or-later",
+  "devDependencies": {
+    "@wordpress/scripts": "^32.4.0"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.12.0",
+    "@wordpress/i18n": "^6.21.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-redux": "^9.3.0",
+    "react-router-dom": "^7.18.2"
+  }
+}
