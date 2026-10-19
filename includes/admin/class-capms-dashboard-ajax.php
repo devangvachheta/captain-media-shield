@@ -19,7 +19,7 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 	 * Single AJAX entry point for the React admin app. Every request is
 	 * nonce + capability checked before the `type` switch runs.
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	class Capms_Dashboard_Ajax {
 
@@ -43,7 +43,7 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 		/**
 		 * Define the core functionality of the plugin.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public function __construct() {
 			add_action( 'wp_ajax_capms_dashboard_ajax_call', array( $this, 'capms_dashboard_ajax_call' ) );
@@ -52,7 +52,7 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 		/**
 		 * Router.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public function capms_dashboard_ajax_call() {
 			if ( ! check_ajax_referer( 'capms_nonce', 'nonce', false ) ) {
@@ -101,7 +101,7 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 		/**
 		 * Settings + the capability flags the UI needs to lock options.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array
 		 */
 		private function get_settings() {
@@ -120,11 +120,11 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 		/**
 		 * Save a partial settings object (JSON in `settings`).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array
 		 */
 		private function save_settings() {
-			$raw   = isset( $_POST['settings'] ) ? wp_unslash( $_POST['settings'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON decoded then sanitized per key in Capms_Settings::sanitize().
+			$raw   = isset( $_POST['settings'] ) ? wp_unslash( $_POST['settings'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified in router; JSON decoded then sanitized per key in Capms_Settings::sanitize().
 			$input = json_decode( (string) $raw, true );
 
 			if ( ! is_array( $input ) ) {
@@ -154,7 +154,7 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 		/**
 		 * What this server can do (drives disabled states in the UI).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array
 		 */
 		private function get_support_flags() {
@@ -173,7 +173,7 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 		/**
 		 * Analytics.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array
 		 */
 		private function get_stats() {
@@ -203,7 +203,7 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 		/**
 		 * Server health report.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array
 		 */
 		private function get_environment() {
@@ -218,7 +218,7 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 		/**
 		 * Supported mime types (images + videos).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $which all|image|video.
 		 * @return array
 		 */
@@ -237,7 +237,7 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 		/**
 		 * Library totals for the bulk screen.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array
 		 */
 		private function count_library() {
@@ -268,7 +268,7 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 		/**
 		 * IDs waiting for the bulk optimizer.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array
 		 */
 		private function get_bulk_queue() {
@@ -302,7 +302,7 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 		/**
 		 * Optimize one attachment from the bulk queue.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array
 		 */
 		private function bulk_process_item() {
@@ -355,7 +355,7 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 		/**
 		 * "Purge All Backups Now".
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array
 		 */
 		private function purge_backups() {
@@ -372,7 +372,7 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 		/**
 		 * Run the retention cleanup immediately.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array
 		 */
 		private function run_cleanup() {
@@ -393,7 +393,7 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 		/**
 		 * Standard response shape (same as the other Captain plugins).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param bool   $success     Success.
 		 * @param string $message     Message.
 		 * @param string $description Extra description.

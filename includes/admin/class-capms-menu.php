@@ -2,7 +2,7 @@
 /**
  * Admin menu + React app assets.
  *
- * @since      1.0.0
+ * @since      0.0.1
  *
  * @package    captain-media-shield
  * @subpackage captain-media-shield/includes/admin
@@ -20,7 +20,7 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 	/**
 	 * Capms_Menu
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	class Capms_Menu {
 
@@ -34,7 +34,7 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 		/**
 		 * Initiator
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public static function get_instance() {
 			if ( ! isset( self::$instance ) ) {
@@ -46,19 +46,19 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 		/**
 		 * Define the core functionality of the plugin.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public function __construct() {
 			add_action( 'admin_menu', array( $this, 'capms_admin_menu' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'capms_admin_enqueue_scripts' ), 10, 1 );
-			add_action( 'admin_head', array( $this, 'capms_admin_menu_style' ) );
+			add_action( 'in_admin_header', array( $this, 'capms_hide_foreign_notices' ), 1000 );
 			add_filter( 'plugin_action_links_' . plugin_basename( CAPMS_FILE ), array( $this, 'capms_action_links' ) );
 		}
 
 		/**
 		 * Register the menu.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public function capms_admin_menu() {
 			$capability = 'manage_options';
@@ -67,64 +67,53 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 				return;
 			}
 
-			$setting_name = __( 'Captain Media Shield', 'captain-media-shield' );
-			$menu_label   = __( 'Media Shield', 'captain-media-shield' );
-			$setting_logo = CAPMS_URL . 'assets/svg/logo/captwiki-logo-sw-t.svg';
-
-			add_menu_page( $setting_name, $menu_label, $capability, 'captain-media-shield', array( $this, 'capms_menu_page_template' ), $setting_logo, 70 );
-
-			add_submenu_page( 'captain-media-shield', __( 'Dashboard', 'captain-media-shield' ), __( 'Dashboard', 'captain-media-shield' ), $capability, 'captain-media-shield', array( $this, 'capms_menu_page_template' ) );
-
-			$routes = array(
-				'images' => __( 'Image Optimization', 'captain-media-shield' ),
-				'videos' => __( 'Video Optimization', 'captain-media-shield' ),
-				'backup' => __( 'Backup & Retention', 'captain-media-shield' ),
-				'bulk'   => __( 'Bulk Optimizer', 'captain-media-shield' ),
-				'health' => __( 'Server Health', 'captain-media-shield' ),
+			// Lives under Media (upload.php). The React app has its own sidebar
+			// with every screen, so one entry is enough here.
+			add_submenu_page(
+				'upload.php',
+				__( 'Captain Media Shield', 'captain-media-shield' ),
+				__( 'Captain Media Shield', 'captain-media-shield' ),
+				$capability,
+				'captain-media-shield',
+				array( $this, 'capms_menu_page_template' )
 			);
-
-			foreach ( $routes as $route => $label ) {
-				add_submenu_page( 'captain-media-shield', $label, $label, $capability, 'admin.php?page=captain-media-shield#/' . $route );
-			}
 		}
 
 		/**
-		 * Brand colour for our menu item highlight, whatever admin colour
-		 * scheme the user picked.
+		 * Keep the plugin screen clean.
 		 *
-		 * @since 1.0.0
+		 * Admin notices printed by other plugins and themes would otherwise stack
+		 * on top of the app. This only runs on the Captain Media Shield screen and
+		 * does not affect any other admin page.
+		 *
+		 * @since 0.0.1
+		 * @return void
 		 */
-		public function capms_admin_menu_style() {
-			?>
-			<style>
-				#adminmenu #toplevel_page_captain-media-shield.wp-has-current-submenu > a.wp-has-submenu,
-				#adminmenu #toplevel_page_captain-media-shield.wp-has-current-submenu.opensub > a.wp-has-submenu,
-				#adminmenu #toplevel_page_captain-media-shield:hover > a.menu-top,
-				#adminmenu #toplevel_page_captain-media-shield.current > a.menu-top {
-					background: #2271b1 !important;
-					color: #fff !important;
-				}
-				#adminmenu #toplevel_page_captain-media-shield div.wp-menu-image img {
-					width: 20px;
-					height: 20px;
-					padding-top: 7px;
-				}
-			</style>
-			<?php
+		public function capms_hide_foreign_notices() {
+			$screen = get_current_screen();
+			if ( ! $screen || 'media_page_captain-media-shield' !== $screen->id ) {
+				return;
+			}
+
+			remove_all_actions( 'admin_notices' );
+			remove_all_actions( 'all_admin_notices' );
+			remove_all_actions( 'user_admin_notices' );
+			remove_all_actions( 'network_admin_notices' );
 		}
 
 		/**
 		 * Settings link on the Plugins screen.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param array $links Links.
 		 * @return array
 		 */
 		public function capms_action_links( $links ) {
 			array_unshift(
 				$links,
-				'<a href="' . esc_url( admin_url( 'admin.php?page=captain-media-shield' ) ) . '">' . esc_html__( 'Dashboard', 'captain-media-shield' ) . '</a>',
-				'<a href="' . esc_url( admin_url( 'admin.php?page=captain-media-shield#/bulk' ) ) . '">' . esc_html__( 'Bulk Optimize', 'captain-media-shield' ) . '</a>'
+				'<a href="' . esc_url( admin_url( 'upload.php?page=captain-media-shield' ) ) . '">' . esc_html__( 'Dashboard', 'captain-media-shield' ) . '</a>',
+				'<a href="' . esc_url( admin_url( 'upload.php?page=captain-media-shield#/bulk' ) ) . '">' . esc_html__( 'Bulk Optimize', 'captain-media-shield' ) . '</a>',
+				'<a href="' . esc_url( admin_url( 'upload.php?page=captain-media-shield#/docs/overview' ) ) . '">' . esc_html__( 'Docs', 'captain-media-shield' ) . '</a>'
 			);
 			return $links;
 		}
@@ -132,7 +121,7 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 		/**
 		 * React mount point.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public function capms_menu_page_template() {
 			echo '<div id="captain-media-shield-app"></div>';
@@ -141,12 +130,12 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 		/**
 		 * Enqueue admin assets on the plugin page only.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $hook Current admin page.
 		 * @return void
 		 */
 		public function capms_admin_enqueue_scripts( $hook ) {
-			if ( 'toplevel_page_captain-media-shield' !== $hook ) {
+			if ( 'media_page_captain-media-shield' !== $hook ) {
 				return;
 			}
 
@@ -165,7 +154,7 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 			wp_style_add_data( 'capms-admin-app', 'rtl', 'replace' );
 
 			wp_enqueue_script( 'capms-admin-app', CAPMS_URL . 'build/index.js', $asset['dependencies'], $build_js_ver, true );
-			wp_set_script_translations( 'capms-admin-app', 'captain-media-shield', CAPMS_PATH . 'languages' );
+			wp_set_script_translations( 'capms-admin-app', 'captain-media-shield' );
 
 			wp_localize_script(
 				'capms-admin-app',

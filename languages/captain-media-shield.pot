@@ -1,0 +1,1295 @@
+# Copyright (C) 2026 devangvachheta
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Captain Media Shield 0.0.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/captain-media-shield\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-19T10:25:21+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: captain-media-shield\n"
+
+#. Plugin Name of the plugin
+#: captain-media-shield.php
+#: includes/admin/class-capms-menu.php:74
+#: includes/admin/class-capms-menu.php:75
+#: build/index.js:1
+msgid "Captain Media Shield"
+msgstr ""
+
+#. Description of the plugin
+#: captain-media-shield.php
+msgid "All-in-one free Image & Video Optimizer, WebP/AVIF Converter, Video Compressor (WebM/Fast Start), Metadata Stripper, and Server Storage Saver for WordPress."
+msgstr ""
+
+#. Author of the plugin
+#: captain-media-shield.php
+msgid "devangvachheta"
+msgstr ""
+
+#. Author URI of the plugin
+#: captain-media-shield.php
+msgid "https://profiles.wordpress.org/devangvachheta/"
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:59
+msgid "Invalid nonce."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:59
+msgid "The security check failed. Please refresh the page and try again."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:63
+msgid "Invalid Permission."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:63
+#: includes/admin/class-capms-media-library.php:238
+msgid "You do not have permission to do this."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:94
+msgid "Invalid type."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:94
+msgid "Something went wrong."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:131
+msgid "Invalid settings payload."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:138
+msgid "Your server does not look like Apache/LiteSpeed - .htaccess rewrites may be ignored. Consider the <picture> tag method."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:140
+msgid "Could not write uploads/.htaccess - check file permissions."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:145
+#: build/backup.js:1
+#: build/images.js:1
+#: build/videos.js:1
+msgid "Settings saved."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:311
+msgid "Invalid attachment."
+msgstr ""
+
+#. translators: 1: number of files, 2: size
+#: includes/admin/class-capms-dashboard-ajax.php:366
+#, php-format
+msgid "Purged %1$d backup file(s), freed %2$s."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:380
+msgid "Retention is set to \"Never\" - nothing to clean up automatically."
+msgstr ""
+
+#. translators: %d: number of backups removed
+#: includes/admin/class-capms-dashboard-ajax.php:387
+#, php-format
+msgid "Cleanup finished - %d expired backup(s) removed."
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:71
+#: includes/admin/class-capms-media-library.php:191
+msgid "Media Shield"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:101
+msgid "Not supported"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:111
+#: build/index.js:1
+msgid "Optimized"
+msgstr ""
+
+#. translators: 1: saved size, 2: percent
+#: includes/admin/class-capms-media-library.php:113
+#, php-format
+msgid "Saved %1$s (%2$s%%)"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:129
+msgid "Restore the original file? Optimized and WebP/AVIF/WebM versions will be removed."
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:129
+#: includes/admin/class-capms-media-library.php:168
+msgid "Restore Original"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:131
+msgid "No backup kept"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:134
+#: build/index.js:1
+msgid "Queued"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:135
+msgid "Processing in background…"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:138
+msgid "Failed"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:138
+msgid "Skipped"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:143
+msgid "Original restored"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:145
+msgid "Not optimized"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:147
+msgid "Optimize Now"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:234
+msgid "Invalid request."
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:252
+msgid "Original file restored."
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:252
+msgid "File optimized."
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:283
+msgid "Captain Media Shield:"
+msgstr ""
+
+#: includes/admin/class-capms-menu.php:114
+#: build/index.js:1
+msgid "Dashboard"
+msgstr ""
+
+#: includes/admin/class-capms-menu.php:115
+msgid "Bulk Optimize"
+msgstr ""
+
+#: includes/admin/class-capms-menu.php:116
+msgid "Docs"
+msgstr ""
+
+#: includes/core/class-capms-backup.php:157
+msgid "No backup exists for this file."
+msgstr ""
+
+#: includes/core/class-capms-backup.php:163
+msgid "The backup file is missing from the server."
+msgstr ""
+
+#: includes/core/class-capms-backup.php:168
+msgid "Attachment file path not found."
+msgstr ""
+
+#: includes/core/class-capms-backup.php:182
+msgid "Could not copy the backup back into place. Check folder permissions."
+msgstr ""
+
+#: includes/core/class-capms-backup.php:229
+msgid "Original restored."
+msgstr ""
+
+#: includes/core/class-capms-processor.php:201
+msgid "File not found on disk."
+msgstr ""
+
+#: includes/core/class-capms-processor.php:248
+msgid "Unsupported file type."
+msgstr ""
+
+#: includes/core/class-capms-processor.php:336
+#: includes/core/class-capms-video-optimizer.php:83
+msgid "FFmpeg is not available on this server - video skipped."
+msgstr ""
+
+#: includes/core/class-capms-processor.php:336
+msgid "Video optimization is turned off."
+msgstr ""
+
+#: includes/core/class-capms-processor.php:364
+msgid "Queued for background optimization."
+msgstr ""
+
+#: includes/core/class-capms-video-optimizer.php:86
+msgid "Video file not found."
+msgstr ""
+
+#: includes/core/class-capms-video-optimizer.php:203
+msgid "FFmpeg produced no output."
+msgstr ""
+
+#: includes/core/class-capms-video-optimizer.php:233
+msgid "This FFmpeg build has no VP9 (libvpx-vp9) encoder - WebM skipped."
+msgstr ""
+
+#: includes/core/class-capms-video-optimizer.php:275
+msgid "WebM conversion produced no output."
+msgstr ""
+
+#: includes/core/class-capms-video-optimizer.php:279
+msgid "Could not save the WebM file."
+msgstr ""
+
+#: includes/core/class-capms-video-optimizer.php:295
+msgid "exec() is disabled on this server."
+msgstr ""
+
+#. translators: %s: last lines of the ffmpeg error output
+#: includes/core/class-capms-video-optimizer.php:308
+#, php-format
+msgid "FFmpeg failed: %s"
+msgstr ""
+
+#: build/backup.js:1
+#: build/images.js:1
+#: build/videos.js:1
+msgid "Could not save settings."
+msgstr ""
+
+#: build/backup.js:1
+msgid "Immediate (No Retention)"
+msgstr ""
+
+#: build/backup.js:1
+msgid "After 1 Hour"
+msgstr ""
+
+#: build/backup.js:1
+msgid "After 24 Hours / 1 Day"
+msgstr ""
+
+#: build/backup.js:1
+msgid "After 7 Days"
+msgstr ""
+
+#: build/backup.js:1
+msgid "After 30 Days"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Never (Manual Cleanup Only)"
+msgstr ""
+
+#: build/backup.js:1
+msgid "less than a minute"
+msgstr ""
+
+#. translators: %d: number of minutes.
+#: build/backup.js:1
+#: build/bulk.js:1
+#, js-format
+msgid "%d min"
+msgstr ""
+
+#. translators: %d: number of hours.
+#: build/backup.js:1
+#, js-format
+msgid "%d h"
+msgstr ""
+
+#. translators: %d: number of days.
+#: build/backup.js:1
+#, js-format
+msgid "%d days"
+msgstr ""
+
+#. translators: %s: a time span such as "5 min" or "2 days".
+#: build/backup.js:1
+#, js-format
+msgid "in %s"
+msgstr ""
+
+#. translators: %s: a time span such as "5 min" or "2 days".
+#: build/backup.js:1
+#, js-format
+msgid "%s ago"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Original Backup & Retention Policy"
+msgstr ""
+
+#. translators: %s: backup folder path.
+#: build/backup.js:1
+#, js-format
+msgid "Untouched originals are kept in %s so any file can be restored. Decide how long they stay."
+msgstr ""
+
+#: build/backup.js:1
+msgid "Backup storage used"
+msgstr ""
+
+#. translators: %d: number of backed-up original files.
+#: build/backup.js:1
+#: build/index.js:1
+#, js-format
+msgid "%d original file(s)"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Next scheduled cleanup"
+msgstr ""
+
+#: build/backup.js:1
+#: build/health.js:1
+msgid "Disabled"
+msgstr ""
+
+#: build/backup.js:1
+msgid "WP-Cron · runs hourly"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Last cleanup"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Not yet"
+msgstr ""
+
+#. translators: %d: number of backups that were removed.
+#: build/backup.js:1
+#, js-format
+msgid "%d backup(s) removed"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Original Backups"
+msgstr ""
+
+#: build/backup.js:1
+msgid "The backup folder is protected from direct web access."
+msgstr ""
+
+#. translators: %s: backup folder path.
+#: build/backup.js:1
+#, js-format
+msgid "Save Original Backup in %s"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Required for \"Restore Original\". Without a backup, optimization cannot be undone."
+msgstr ""
+
+#: build/backup.js:1
+msgid "Immediate Auto-Delete Originals after WebP/AVIF/WebM conversion"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Maximum storage saving: the backed-up original is deleted as soon as conversion succeeds, ignoring the schedule below. Restore will not be possible for those files."
+msgstr ""
+
+#: build/backup.js:1
+msgid "Scheduled Backup Auto-Cleanup"
+msgstr ""
+
+#: build/backup.js:1
+msgid "A WP-Cron job checks every hour and deletes backups older than the selected period."
+msgstr ""
+
+#: build/backup.js:1
+msgid "Delete backups"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Backups are deleted right after each file is processed - effectively no backup."
+msgstr ""
+
+#: build/backup.js:1
+msgid "Shortening this period applies to existing backups as soon as you save."
+msgstr ""
+
+#: build/backup.js:1
+msgid "Run cleanup now"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Apply the saved retention period immediately instead of waiting for the next cron run."
+msgstr ""
+
+#: build/backup.js:1
+msgid "Run Cleanup"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Manual Controls"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Purge All Backups Now"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Permanently deletes every original in the backup folder and frees that space. Optimized files and WebP/AVIF/WebM copies are not affected."
+msgstr ""
+
+#: build/backup.js:1
+msgid "Purge All Backups"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Restore Original File"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Open the Media Library in list view - every optimized image or video with a backup gets a \"Restore Original\" link in the Media Shield column, row actions and attachment details."
+msgstr ""
+
+#: build/backup.js:1
+msgid "Open Media Library"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Purge all backups?"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Yes, purge everything"
+msgstr ""
+
+#: build/backup.js:1
+msgid "Backups purged."
+msgstr ""
+
+#: build/backup.js:1
+msgid "Purge failed."
+msgstr ""
+
+#. translators: %1$d: number of original files, %2$s: their total size, for example "12 MB".
+#: build/backup.js:1
+#, js-format
+msgid "This permanently deletes %1$d original file(s) (%2$s). Optimized media keeps working, but these files can no longer be restored."
+msgstr ""
+
+#: build/backup.js:1
+msgid "This permanently deletes every backed-up original. Optimized media keeps working, but files can no longer be restored."
+msgstr ""
+
+#: build/backup.js:1
+msgid "This action cannot be undone."
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Ready"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Building queue…"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Optimizing…"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Paused"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Completed"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Nothing to optimize"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Bulk Media Optimizer"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Optimize everything already in your Media Library. One file per request - no timeouts, pause and resume any time."
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Images optimized"
+msgstr ""
+
+#. translators: %d: number of files still to optimize.
+#: build/bulk.js:1
+#, js-format
+msgid "%d remaining"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Videos optimized"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Saved this run"
+msgstr ""
+
+#. translators: %1$d: files processed so far, %2$d: total files in this run.
+#: build/bulk.js:1
+#, js-format
+msgid "%1$d of %2$d files"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Start a run to see live savings"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Run the Optimizer"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Uses your current Image, Video and Backup settings. Already optimized files are skipped."
+msgstr ""
+
+#: build/bulk.js:1
+msgid "What to optimize"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Images & Videos"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Images only"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Videos only"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Retry failed / skipped files"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Include files that failed or were skipped before (e.g. videos uploaded before FFmpeg was installed)."
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Retry"
+msgstr ""
+
+#. translators: %s: estimated time remaining, for example "2 min" or "45 s".
+#: build/bulk.js:1
+#, js-format
+msgid "~%s left"
+msgstr ""
+
+#. translators: %d: number of seconds.
+#: build/bulk.js:1
+#, js-format
+msgid "%d s"
+msgstr ""
+
+#. translators: %1$d: files processed so far, %2$d: total files in this run.
+#: build/bulk.js:1
+#, js-format
+msgid "Processed: %1$d / %2$d"
+msgstr ""
+
+#. translators: %d: number of files optimized successfully.
+#: build/bulk.js:1
+#, js-format
+msgid "Succeeded: %d"
+msgstr ""
+
+#. translators: %d: number of files that failed.
+#: build/bulk.js:1
+#, js-format
+msgid "Failed: %d"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Run Again"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Start Bulk Optimization"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Preparing…"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Pause"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Resume"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Stop"
+msgstr ""
+
+#: build/bulk.js:1
+msgid "You can switch to other pages of this plugin - the optimizer keeps running. Closing or reloading this browser tab pauses it; just start again to continue where it left off."
+msgstr ""
+
+#: build/bulk.js:1
+msgid "Live Activity"
+msgstr ""
+
+#: build/health.js:1
+msgid "Server Environment Status"
+msgstr ""
+
+#: build/health.js:1
+msgid "Everything Captain Media Shield needs, checked live on this server."
+msgstr ""
+
+#: build/health.js:1
+#: build/videos.js:1
+msgid "Checking…"
+msgstr ""
+
+#: build/health.js:1
+msgid "Re-run Checks"
+msgstr ""
+
+#: build/health.js:1
+msgid "The uploads folder is not writable - optimization and backups cannot run."
+msgstr ""
+
+#: build/health.js:1
+msgid "Image Engines"
+msgstr ""
+
+#: build/health.js:1
+#: build/index.js:1
+msgid "GD Library"
+msgstr ""
+
+#: build/health.js:1
+#: build/index.js:1
+msgid "Installed"
+msgstr ""
+
+#: build/health.js:1
+#: build/index.js:1
+msgid "Missing"
+msgstr ""
+
+#: build/health.js:1
+msgid "GD WebP / AVIF"
+msgstr ""
+
+#: build/health.js:1
+#: build/index.js:1
+msgid "Imagick"
+msgstr ""
+
+#: build/health.js:1
+msgid "Imagick WebP / AVIF"
+msgstr ""
+
+#: build/health.js:1
+msgid "WebP output (WordPress)"
+msgstr ""
+
+#: build/health.js:1
+msgid "AVIF output (WordPress)"
+msgstr ""
+
+#: build/health.js:1
+msgid "Video Engine"
+msgstr ""
+
+#: build/health.js:1
+msgid "exec() function"
+msgstr ""
+
+#: build/health.js:1
+msgid "Enabled"
+msgstr ""
+
+#: build/health.js:1
+#: build/index.js:1
+msgid "FFmpeg Binary"
+msgstr ""
+
+#: build/health.js:1
+#: build/index.js:1
+msgid "Detected"
+msgstr ""
+
+#: build/health.js:1
+#: build/index.js:1
+msgid "Not found"
+msgstr ""
+
+#: build/health.js:1
+msgid "H.264 encoder (libx264)"
+msgstr ""
+
+#: build/health.js:1
+msgid "VP9 encoder (libvpx-vp9)"
+msgstr ""
+
+#: build/health.js:1
+msgid "Server & Limits"
+msgstr ""
+
+#: build/health.js:1
+#: build/index.js:1
+msgid "Server Memory Limit"
+msgstr ""
+
+#: build/health.js:1
+#: build/index.js:1
+msgid "Max Upload Limit"
+msgstr ""
+
+#: build/health.js:1
+msgid "Max Execution Time"
+msgstr ""
+
+#: build/health.js:1
+msgid "Unlimited"
+msgstr ""
+
+#: build/health.js:1
+msgid "PHP Version"
+msgstr ""
+
+#: build/health.js:1
+msgid "WordPress Version"
+msgstr ""
+
+#: build/health.js:1
+msgid "Web Server"
+msgstr ""
+
+#: build/health.js:1
+msgid ".htaccess supported"
+msgstr ""
+
+#: build/health.js:1
+msgid "No .htaccess"
+msgstr ""
+
+#: build/health.js:1
+msgid "Uploads folder writable"
+msgstr ""
+
+#: build/health.js:1
+msgid "Writable"
+msgstr ""
+
+#: build/health.js:1
+msgid "Not writable"
+msgstr ""
+
+#: build/images.js:1
+msgid "Image Optimization & Formats"
+msgstr ""
+
+#: build/images.js:1
+msgid "Compress, resize and convert every image to next-gen formats - right on your own server."
+msgstr ""
+
+#: build/images.js:1
+msgid "Next-Gen Formats"
+msgstr ""
+
+#: build/images.js:1
+msgid "A WebP / AVIF copy is created for the original and every thumbnail size. A copy is only kept when it is smaller than the source."
+msgstr ""
+
+#: build/images.js:1
+msgid "Optimize images on upload"
+msgstr ""
+
+#: build/images.js:1
+msgid "Run the full pipeline automatically for every new upload. Turn off to optimize only through the Bulk Optimizer."
+msgstr ""
+
+#: build/images.js:1
+msgid "Enable WebP Conversion"
+msgstr ""
+
+#: build/images.js:1
+msgid "25-35% smaller than JPEG/PNG at the same visual quality. Supported by every modern browser."
+msgstr ""
+
+#: build/images.js:1
+msgid "Not supported by server"
+msgstr ""
+
+#: build/images.js:1
+msgid "Enable AVIF Conversion"
+msgstr ""
+
+#: build/images.js:1
+msgid "Up to 50% smaller than JPEG. Needs Imagick or GD built with AVIF support."
+msgstr ""
+
+#: build/images.js:1
+msgid "Compression Quality"
+msgstr ""
+
+#: build/images.js:1
+msgid "Applies to recompressed JPEGs, generated thumbnails and WebP/AVIF output."
+msgstr ""
+
+#: build/images.js:1
+msgid "Image Quality Setting"
+msgstr ""
+
+#: build/images.js:1
+msgid "80 is the sweet spot - visually identical for most photos with a big size drop."
+msgstr ""
+
+#: build/images.js:1
+msgid "Image quality"
+msgstr ""
+
+#: build/images.js:1
+msgid "Near-lossless"
+msgstr ""
+
+#: build/images.js:1
+msgid "Balanced (Recommended)"
+msgstr ""
+
+#: build/images.js:1
+msgid "Aggressive"
+msgstr ""
+
+#: build/images.js:1
+msgid "Maximum compression"
+msgstr ""
+
+#: build/images.js:1
+msgid "Privacy & Metadata"
+msgstr ""
+
+#: build/images.js:1
+msgid "Camera details, GPS location and editing history are removed losslessly - pixels are not touched, the colour profile is kept."
+msgstr ""
+
+#: build/images.js:1
+msgid "Strip EXIF & GPS Metadata"
+msgstr ""
+
+#: build/images.js:1
+msgid "Photos are auto-rotated first, so removing the orientation tag never leaves them sideways."
+msgstr ""
+
+#: build/images.js:1
+msgid "Auto-Resize Large Uploads"
+msgstr ""
+
+#: build/images.js:1
+msgid "Huge camera photos (4000px+) are scaled down before thumbnails are generated. Aspect ratio is always kept."
+msgstr ""
+
+#: build/images.js:1
+msgid "Auto-Resize Large Image Uploads"
+msgstr ""
+
+#: build/images.js:1
+msgid "Maximum dimensions"
+msgstr ""
+
+#: build/images.js:1
+msgid "Images larger than this (in either direction) are scaled down to fit."
+msgstr ""
+
+#: build/images.js:1
+msgid "Max Width"
+msgstr ""
+
+#: build/images.js:1
+msgid "Max Height"
+msgstr ""
+
+#: build/images.js:1
+msgid "WebP / AVIF Delivery"
+msgstr ""
+
+#: build/images.js:1
+msgid "How visitors receive the next-gen files. Browsers without support always get the original JPEG/PNG."
+msgstr ""
+
+#: build/images.js:1
+msgid "WebP/AVIF Delivery Method"
+msgstr ""
+
+#: build/images.js:1
+msgid "Rules are written to uploads/.htaccess - the same image URL serves AVIF/WebP to browsers that accept it. Fastest, works with page caches. Apache / LiteSpeed only."
+msgstr ""
+
+#: build/images.js:1
+msgid "Each <img> in post content and featured images is wrapped in a <picture> tag with AVIF/WebP sources. Works on any server (Nginx included)."
+msgstr ""
+
+#: build/images.js:1
+msgid ".htaccess Rewrites"
+msgstr ""
+
+#: build/images.js:1
+msgid "HTML <picture> tag replacement"
+msgstr ""
+
+#: build/images.js:1
+msgid "Your server does not appear to be Apache or LiteSpeed, so .htaccess rules may be ignored. The <picture> tag method works everywhere."
+msgstr ""
+
+#: build/index.js:1
+msgid "Available"
+msgstr ""
+
+#: build/index.js:1
+msgid "Not available"
+msgstr ""
+
+#: build/index.js:1
+msgid "Reset to Defaults"
+msgstr ""
+
+#: build/index.js:1
+msgid "Discard"
+msgstr ""
+
+#: build/index.js:1
+msgid "Saving..."
+msgstr ""
+
+#: build/index.js:1
+msgid "Save Changes"
+msgstr ""
+
+#: build/index.js:1
+msgid "Cancel"
+msgstr ""
+
+#: build/index.js:1
+msgid "Working..."
+msgstr ""
+
+#: build/index.js:1
+msgid "Analytics & Server Health"
+msgstr ""
+
+#: build/index.js:1
+msgid "What Captain Media Shield has saved on your server so far."
+msgstr ""
+
+#: build/index.js:1
+msgid "Refreshing…"
+msgstr ""
+
+#: build/index.js:1
+msgid "Refresh"
+msgstr ""
+
+#: build/index.js:1
+msgid "Total Storage Saved"
+msgstr ""
+
+#. translators: %1$s: size before optimization, %2$s: size after optimization.
+#: build/index.js:1
+#, js-format
+msgid "%1$s → %2$s"
+msgstr ""
+
+#: build/index.js:1
+msgid "Total Media Processed"
+msgstr ""
+
+#. translators: %1$d: number of images, %2$d: number of videos.
+#: build/index.js:1
+#, js-format
+msgid "%1$d images · %2$d videos"
+msgstr ""
+
+#: build/index.js:1
+msgid "Compression Ratio"
+msgstr ""
+
+#: build/index.js:1
+msgid "Average size reduction"
+msgstr ""
+
+#: build/index.js:1
+msgid "Backups on Disk"
+msgstr ""
+
+#. translators: %d: number of files not optimized yet.
+#: build/index.js:1
+#, js-format
+msgid "%d file(s) in your Media Library are not optimized yet."
+msgstr ""
+
+#: build/index.js:1
+msgid "Run the Bulk Optimizer to compress them and create WebP/AVIF/WebM versions."
+msgstr ""
+
+#: build/index.js:1
+msgid "Open Bulk Optimizer"
+msgstr ""
+
+#: build/index.js:1
+msgid "Images"
+msgstr ""
+
+#: build/index.js:1
+msgid "Saved"
+msgstr ""
+
+#: build/index.js:1
+msgid "Reduction"
+msgstr ""
+
+#: build/index.js:1
+msgid "WebP versions"
+msgstr ""
+
+#: build/index.js:1
+msgid "AVIF versions"
+msgstr ""
+
+#: build/index.js:1
+msgid "Next-gen size"
+msgstr ""
+
+#: build/index.js:1
+msgid "Videos"
+msgstr ""
+
+#: build/index.js:1
+msgid "WebM versions"
+msgstr ""
+
+#: build/index.js:1
+msgid "Skipped / Failed"
+msgstr ""
+
+#: build/index.js:1
+msgid "Recent Activity"
+msgstr ""
+
+#: build/index.js:1
+msgid "Nothing processed yet. Upload a file or run the Bulk Optimizer."
+msgstr ""
+
+#: build/index.js:1
+msgid "Server Environment"
+msgstr ""
+
+#: build/index.js:1
+msgid "Full report →"
+msgstr ""
+
+#: build/index.js:1
+msgid "WebP Support"
+msgstr ""
+
+#: build/index.js:1
+msgid "AVIF Support"
+msgstr ""
+
+#: build/index.js:1
+msgid "Switch to Light Mode"
+msgstr ""
+
+#: build/index.js:1
+msgid "Switch to Dark Mode"
+msgstr ""
+
+#: build/index.js:1
+msgid "Toggle navigation menu"
+msgstr ""
+
+#: build/index.js:1
+msgid "Expand sidebar"
+msgstr ""
+
+#: build/index.js:1
+msgid "Collapse sidebar"
+msgstr ""
+
+#: build/index.js:1
+msgid "Bulk Optimizer"
+msgstr ""
+
+#: build/index.js:1
+msgid "Optimization"
+msgstr ""
+
+#: build/index.js:1
+msgid "Images & Formats"
+msgstr ""
+
+#: build/index.js:1
+msgid "Video & Streaming"
+msgstr ""
+
+#: build/index.js:1
+msgid "Storage & System"
+msgstr ""
+
+#: build/index.js:1
+msgid "Backup & Retention"
+msgstr ""
+
+#: build/index.js:1
+msgid "Server Health"
+msgstr ""
+
+#: build/index.js:1
+msgid "Documentation"
+msgstr ""
+
+#: build/index.js:1
+msgid "VERSION"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Video Optimization & Streaming"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Compress uploads, generate WebM and enable instant playback with FFmpeg. Videos are processed in the background via WP-Cron."
+msgstr ""
+
+#: build/videos.js:1
+msgid "FFmpeg Engine"
+msgstr ""
+
+#: build/videos.js:1
+msgid "All video features run through a local FFmpeg binary. Without it, videos are uploaded untouched - nothing breaks."
+msgstr ""
+
+#: build/videos.js:1
+msgid "FFmpeg detected"
+msgstr ""
+
+#: build/videos.js:1
+msgid "FFmpeg not found"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Custom FFmpeg binary path"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Optional. Leave empty to auto-detect from the system PATH. Example: /usr/bin/ffmpeg or C:\\ffmpeg\\bin\\ffmpeg.exe"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Re-check"
+msgstr ""
+
+#: build/videos.js:1
+msgid "exec() is disabled on this server, so FFmpeg cannot be used. Ask your host to enable it - video settings below are saved but will not run until then."
+msgstr ""
+
+#: build/videos.js:1
+msgid "FFmpeg was not found. Install it on the server (or set its path above and save) to enable video compression, Fast Start and WebM. Image optimization works without it."
+msgstr ""
+
+#: build/videos.js:1
+msgid "Compression & Formats"
+msgstr ""
+
+#: build/videos.js:1
+msgid "MP4 / MOV files are re-encoded to H.264 in place and only kept when smaller. WebM (VP9) is added as an extra, lighter source."
+msgstr ""
+
+#: build/videos.js:1
+msgid "Enable Video Compression & Optimization"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Needs FFmpeg"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Enable WebM Format Generation"
+msgstr ""
+
+#: build/videos.js:1
+msgid "The WebM copy is offered first in [video] players and video blocks; browsers fall back to the MP4."
+msgstr ""
+
+#: build/videos.js:1
+msgid "Streaming"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Settings that decide how fast a video starts and how heavy it is to stream."
+msgstr ""
+
+#: build/videos.js:1
+msgid "Moov Atom \"Fast Start\" Optimization"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Moves the index to the start of the file so playback begins instantly instead of after the whole file downloads. Lossless."
+msgstr ""
+
+#: build/videos.js:1
+msgid "Max Video Resolution"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Videos are never upscaled. Portrait videos are capped on their width."
+msgstr ""
+
+#: build/videos.js:1
+msgid "1080p (Full HD)"
+msgstr ""
+
+#: build/videos.js:1
+msgid "720p (HD)"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Keep Original"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Audio & Metadata"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Audio Bitrate Compression"
+msgstr ""
+
+#: build/videos.js:1
+msgid "128 kbps (Stereo - Recommended)"
+msgstr ""
+
+#: build/videos.js:1
+msgid "96 kbps"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Strip Video Metadata & Tags"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Removes recording device, GPS location, creation tool and chapter data."
+msgstr ""

@@ -2,7 +2,7 @@
 /**
  * Server capability detection (GD, Imagick, WebP/AVIF, FFmpeg, limits).
  *
- * @since      1.0.0
+ * @since      0.0.1
  *
  * @package    captain-media-shield
  * @subpackage captain-media-shield/includes/core
@@ -20,7 +20,7 @@ if ( ! class_exists( 'Capms_Environment' ) ) {
 	/**
 	 * Capms_Environment
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	class Capms_Environment {
 
@@ -34,7 +34,7 @@ if ( ! class_exists( 'Capms_Environment' ) ) {
 		/**
 		 * Can the WordPress image editor write this mime type?
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $mime e.g. image/webp.
 		 * @return bool
 		 */
@@ -49,7 +49,7 @@ if ( ! class_exists( 'Capms_Environment' ) ) {
 		/**
 		 * WebP output possible?
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return bool
 		 */
 		public static function webp_supported() {
@@ -59,7 +59,7 @@ if ( ! class_exists( 'Capms_Environment' ) ) {
 		/**
 		 * AVIF output possible?
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return bool
 		 */
 		public static function avif_supported() {
@@ -69,7 +69,7 @@ if ( ! class_exists( 'Capms_Environment' ) ) {
 		/**
 		 * Is a shell function usable (exists and not disabled)?
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $func Function name.
 		 * @return bool
 		 */
@@ -89,7 +89,7 @@ if ( ! class_exists( 'Capms_Environment' ) ) {
 		 * actually running `-version`, so a path that exists but can't run
 		 * never counts as available.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param bool $refresh Ignore the cached result.
 		 * @return string|false
 		 */
@@ -140,7 +140,7 @@ if ( ! class_exists( 'Capms_Environment' ) ) {
 		/**
 		 * Run `<binary> -version` and check it answers like ffmpeg.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $binary Path or command name.
 		 * @return bool
 		 */
@@ -165,7 +165,7 @@ if ( ! class_exists( 'Capms_Environment' ) ) {
 		/**
 		 * ffmpeg version line (for the health screen).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return string
 		 */
 		public static function get_ffmpeg_version() {
@@ -182,7 +182,7 @@ if ( ! class_exists( 'Capms_Environment' ) ) {
 		/**
 		 * Does the ffmpeg build include a given encoder?
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $encoder e.g. libvpx-vp9.
 		 * @return bool
 		 */
@@ -204,7 +204,7 @@ if ( ! class_exists( 'Capms_Environment' ) ) {
 		/**
 		 * Full report for the Server Health screen.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array
 		 */
 		public static function get_report() {
@@ -256,7 +256,7 @@ if ( ! class_exists( 'Capms_Environment' ) ) {
 		/**
 		 * Apache / LiteSpeed (understands .htaccess)?
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return bool
 		 */
 		public static function is_apache() {

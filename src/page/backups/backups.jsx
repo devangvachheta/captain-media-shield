@@ -24,10 +24,10 @@ const formatWhen = ( ts, now ) => {
     const abs  = Math.abs( diff );
     let text;
     if ( abs < 60 ) text = __( 'less than a minute', 'captain-media-shield' );
-    else if ( abs < 3600 ) text = sprintf( __( '%d min', 'captain-media-shield' ), Math.round( abs / 60 ) );
-    else if ( abs < 86400 ) text = sprintf( __( '%d h', 'captain-media-shield' ), Math.round( abs / 3600 ) );
-    else text = sprintf( __( '%d days', 'captain-media-shield' ), Math.round( abs / 86400 ) );
-    return diff >= 0 ? sprintf( __( 'in %s', 'captain-media-shield' ), text ) : sprintf( __( '%s ago', 'captain-media-shield' ), text );
+    else if ( abs < 3600 ) text = sprintf( /* translators: %d: number of minutes. */ __( '%d min', 'captain-media-shield' ), Math.round( abs / 60 ) );
+    else if ( abs < 86400 ) text = sprintf( /* translators: %d: number of hours. */ __( '%d h', 'captain-media-shield' ), Math.round( abs / 3600 ) );
+    else text = sprintf( /* translators: %d: number of days. */ __( '%d days', 'captain-media-shield' ), Math.round( abs / 86400 ) );
+    return diff >= 0 ? sprintf( /* translators: %s: a time span such as "5 min" or "2 days". */ __( 'in %s', 'captain-media-shield' ), text ) : sprintf( /* translators: %s: a time span such as "5 min" or "2 days". */ __( '%s ago', 'captain-media-shield' ), text );
 };
 
 const Backups = () => {
@@ -93,13 +93,13 @@ const Backups = () => {
         <div className="capms-settings-wrapper">
             <PageHeader
                 title={ __( 'Original Backup & Retention Policy', 'captain-media-shield' ) }
-                subtitle={ sprintf( __( 'Untouched originals are kept in %s so any file can be restored. Decide how long they stay.', 'captain-media-shield' ), capms_data?.backup_dir || 'wp-content/uploads/captain-backups/' ) }
+                subtitle={ sprintf( /* translators: %s: backup folder path. */ __( 'Untouched originals are kept in %s so any file can be restored. Decide how long they stay.', 'captain-media-shield' ), capms_data?.backup_dir || 'wp-content/uploads/captain-ms-backups/' ) }
             />
 
             <div className="capms-stat-grid capms-stat-grid--3">
-                <StatCard icon={ <IconDatabase /> } label={ __( 'Backup storage used', 'captain-media-shield' ) } value={ disk ? disk.human : '…' } sub={ disk ? sprintf( __( '%d original file(s)', 'captain-media-shield' ), disk.files ) : '' } />
+                <StatCard icon={ <IconDatabase /> } label={ __( 'Backup storage used', 'captain-media-shield' ) } value={ disk ? disk.human : '…' } sub={ disk ? sprintf( /* translators: %d: number of backed-up original files. */ __( '%d original file(s)', 'captain-media-shield' ), disk.files ) : '' } />
                 <StatCard icon={ <IconClock /> } tone="purple" label={ __( 'Next scheduled cleanup', 'captain-media-shield' ) } value={ saved?.backup_retention === 'never' ? __( 'Disabled', 'captain-media-shield' ) : formatWhen( stats?.cleanup_next, now ) } sub={ __( 'WP-Cron · runs hourly', 'captain-media-shield' ) } />
-                <StatCard icon={ <IconTrash /> } tone="orange" label={ __( 'Last cleanup', 'captain-media-shield' ) } value={ stats?.cleanup_last?.time ? formatWhen( stats.cleanup_last.time, now ) : __( 'Not yet', 'captain-media-shield' ) } sub={ stats?.cleanup_last?.time ? sprintf( __( '%d backup(s) removed', 'captain-media-shield' ), stats.cleanup_last.removed || 0 ) : '' } />
+                <StatCard icon={ <IconTrash /> } tone="orange" label={ __( 'Last cleanup', 'captain-media-shield' ) } value={ stats?.cleanup_last?.time ? formatWhen( stats.cleanup_last.time, now ) : __( 'Not yet', 'captain-media-shield' ) } sub={ stats?.cleanup_last?.time ? sprintf( /* translators: %d: number of backups that were removed. */ __( '%d backup(s) removed', 'captain-media-shield' ), stats.cleanup_last.removed || 0 ) : '' } />
             </div>
 
             <div className="capms-settings-sections">
@@ -109,7 +109,7 @@ const Backups = () => {
                     description={ __( 'The backup folder is protected from direct web access.', 'captain-media-shield' ) }
                 >
                     <ToggleRow
-                        label={ sprintf( __( 'Save Original Backup in %s', 'captain-media-shield' ), capms_data?.backup_dir || 'wp-content/uploads/captain-backups/' ) }
+                        label={ sprintf( /* translators: %s: backup folder path. */ __( 'Save Original Backup in %s', 'captain-media-shield' ), capms_data?.backup_dir || 'wp-content/uploads/captain-ms-backups/' ) }
                         hint={ __( 'Required for "Restore Original". Without a backup, optimization cannot be undone.', 'captain-media-shield' ) }
                         checked={ !! draft.backup_enabled }
                         onChange={ ( v ) => set( 'backup_enabled', v ) }
@@ -182,7 +182,7 @@ const Backups = () => {
                 >
                     <p>
                         { disk
-                            ? sprintf( __( 'This permanently deletes %1$d original file(s) (%2$s). Optimized media keeps working, but these files can no longer be restored.', 'captain-media-shield' ), disk.files, disk.human )
+                            ? sprintf( /* translators: %1$d: number of original files, %2$s: their total size, for example "12 MB". */ __( 'This permanently deletes %1$d original file(s) (%2$s). Optimized media keeps working, but these files can no longer be restored.', 'captain-media-shield' ), disk.files, disk.human )
                             : __( 'This permanently deletes every backed-up original. Optimized media keeps working, but files can no longer be restored.', 'captain-media-shield' ) }
                     </p>
                     <strong className="capms-settings-warning-text">{ __( 'This action cannot be undone.', 'captain-media-shield' ) }</strong>

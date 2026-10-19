@@ -2,7 +2,7 @@
 /**
  * The file that defines the load plugin.
  *
- * @since   1.0.0
+ * @since   0.0.1
  *
  * @package captain-media-shield
  * @subpackage captain-media-shield/includes
@@ -18,7 +18,7 @@ if ( ! class_exists( 'Capms_Plugin_Load' ) ) {
 	/**
 	 * Captain Media Shield Main Class
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	class Capms_Plugin_Load {
 
@@ -32,7 +32,7 @@ if ( ! class_exists( 'Capms_Plugin_Load' ) ) {
 		/**
 		 * Initiator
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public static function get_instance() {
 			if ( ! isset( self::$instance ) ) {
@@ -44,7 +44,7 @@ if ( ! class_exists( 'Capms_Plugin_Load' ) ) {
 		/**
 		 * Define the core functionality of the plugin.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public function __construct() {
 			register_activation_hook( CAPMS_FILE, array( __CLASS__, 'capms_activation' ) );
@@ -61,7 +61,7 @@ if ( ! class_exists( 'Capms_Plugin_Load' ) ) {
 		/**
 		 * Plugin Activation.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return void
 		 */
 		public static function capms_activation() {
@@ -82,7 +82,7 @@ if ( ! class_exists( 'Capms_Plugin_Load' ) ) {
 		 * our rewrite block out of uploads/.htaccess so no stale WebP/AVIF
 		 * rewrites keep running while the plugin is off.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return void
 		 */
 		public static function capms_deactivation() {
@@ -96,7 +96,7 @@ if ( ! class_exists( 'Capms_Plugin_Load' ) ) {
 		/**
 		 * Files load plugin loaded.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return void
 		 */
 		public function capms_init_plugin() {
@@ -111,7 +111,7 @@ if ( ! class_exists( 'Capms_Plugin_Load' ) ) {
 		 * running one, so plugin updates on already-active sites get any
 		 * new table columns (the activation hook only fires once).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return void
 		 */
 		private function capms_maybe_upgrade() {
@@ -129,7 +129,7 @@ if ( ! class_exists( 'Capms_Plugin_Load' ) ) {
 		/**
 		 * Load the required dependencies for this plugin.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public function capms_load_dependencies() {
 			require_once CAPMS_PATH . 'includes/core/class-capms-environment.php';

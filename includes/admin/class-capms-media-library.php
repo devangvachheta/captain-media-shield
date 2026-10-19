@@ -2,7 +2,7 @@
 /**
  * Media Library integration - status column, Optimize / Restore actions.
  *
- * @since      1.0.0
+ * @since      0.0.1
  *
  * @package    captain-media-shield
  * @subpackage captain-media-shield/includes/admin
@@ -20,7 +20,7 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 	/**
 	 * Capms_Media_Library
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	class Capms_Media_Library {
 
@@ -34,7 +34,7 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 		/**
 		 * Initiator
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public static function get_instance() {
 			if ( ! isset( self::$instance ) ) {
@@ -46,7 +46,7 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 		/**
 		 * Hooks.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public function __construct() {
 			add_filter( 'manage_media_columns', array( $this, 'capms_add_column' ) );
@@ -56,13 +56,13 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 			add_action( 'admin_post_capms_media_action', array( $this, 'capms_handle_action' ) );
 			add_action( 'admin_notices', array( $this, 'capms_action_notice' ) );
 			// Status markup also appears in the media modal (post editor etc.).
-			add_action( 'admin_head', array( $this, 'capms_column_style' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'capms_column_style' ) );
 		}
 
 		/**
 		 * Add the "Media Shield" column.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param array $columns Columns.
 		 * @return array
 		 */
@@ -76,7 +76,7 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 		/**
 		 * Column content.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $column        Column key.
 		 * @param int    $attachment_id Attachment ID.
 		 * @return void
@@ -91,7 +91,7 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 		/**
 		 * Status summary + action links for one attachment.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int $attachment_id Attachment ID.
 		 * @return string
 		 */
@@ -154,7 +154,7 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 		/**
 		 * Row actions in list mode.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param array   $actions Actions.
 		 * @param WP_Post $post    Attachment.
 		 * @return array
@@ -173,7 +173,7 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 		/**
 		 * Field shown in the attachment details modal / edit screen.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param array   $fields Fields.
 		 * @param WP_Post $post   Attachment.
 		 * @return array
@@ -198,7 +198,7 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 		/**
 		 * Nonce'd admin-post URL for an action.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $action        optimize|restore.
 		 * @param int    $attachment_id Attachment ID.
 		 * @return string
@@ -221,12 +221,14 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 		/**
 		 * Handle Optimize / Restore clicks.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return void
 		 */
 		public function capms_handle_action() {
+			// phpcs:disable WordPress.Security.NonceVerification.Recommended -- check_admin_referer() below needs these two values to build its action name.
 			$id = isset( $_GET['id'] ) ? absint( $_GET['id'] ) : 0;
 			$do = isset( $_GET['do'] ) ? sanitize_key( wp_unslash( $_GET['do'] ) ) : '';
+			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 			if ( ! $id || ! in_array( $do, array( 'optimize', 'restore' ), true ) ) {
 				wp_die( esc_html__( 'Invalid request.', 'captain-media-shield' ) );
@@ -265,7 +267,7 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 		/**
 		 * One-shot notice after an action.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return void
 		 */
 		public function capms_action_notice() {
@@ -284,22 +286,22 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 		}
 
 		/**
-		 * Small styles for the column.
+		 * Small styles for the column, added through the styles API.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return void
 		 */
 		public function capms_column_style() {
-			?>
-			<style>
-				.column-capms_status { width: 170px; }
-				.capms-ml-status { display: flex; flex-direction: column; gap: 2px; font-size: 12px; line-height: 1.5; }
-				.capms-ml-ok { color: #166534; }
-				.capms-ml-warn { color: #92400e; }
-				.capms-ml-muted { color: #6b7280; }
-				.capms-ml-badges { color: #2271b1; font-weight: 600; }
-			</style>
-			<?php
+			$css = '.column-capms_status{width:170px}'
+				. '.capms-ml-status{display:flex;flex-direction:column;gap:2px;font-size:12px;line-height:1.5}'
+				. '.capms-ml-ok{color:#166534}'
+				. '.capms-ml-warn{color:#92400e}'
+				. '.capms-ml-muted{color:#6b7280}'
+				. '.capms-ml-badges{color:#2271b1;font-weight:600}';
+
+			wp_register_style( 'capms-media-library', false, array(), CAPMS_VERSION );
+			wp_enqueue_style( 'capms-media-library' );
+			wp_add_inline_style( 'capms-media-library', $css );
 		}
 	}
 

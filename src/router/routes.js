@@ -9,6 +9,7 @@ const Videos  = React.lazy( () => import( /* webpackChunkName: "videos" */ '../p
 const Backups = React.lazy( () => import( /* webpackChunkName: "backup" */ '../page/backups/backups.jsx' ) );
 const Bulk    = React.lazy( () => import( /* webpackChunkName: "bulk" */ '../page/bulk/bulk.jsx' ) );
 const Health  = React.lazy( () => import( /* webpackChunkName: "health" */ '../page/health/health.jsx' ) );
+const Docs    = React.lazy( () => import( /* webpackChunkName: "docs" */ '../page/docs/docs.jsx' ) );
 
 const routes = [
     { path: '/',       element: <Dashboard /> },
@@ -17,6 +18,7 @@ const routes = [
     { path: '/backup', element: <Backups /> },
     { path: '/bulk',   element: <Bulk /> },
     { path: '/health', element: <Health /> },
+    { path: '/docs/*', element: <Docs /> },
     { path: '*',       element: <Dashboard /> },
 ];
 

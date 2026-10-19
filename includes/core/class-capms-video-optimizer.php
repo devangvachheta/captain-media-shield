@@ -2,7 +2,7 @@
 /**
  * Video optimization through a local FFmpeg binary.
  *
- * @since      1.0.0
+ * @since      0.0.1
  *
  * @package    captain-media-shield
  * @subpackage captain-media-shield/includes/core
@@ -25,7 +25,7 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 	 * (video.mp4 -> video.mp4.webm). Every step degrades gracefully: no
 	 * FFmpeg, no exec(), or a missing encoder just skips that step.
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	class Capms_Video_Optimizer {
 
@@ -46,7 +46,7 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 		/**
 		 * Is this a video we handle?
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $mime Mime type.
 		 * @return bool
 		 */
@@ -62,7 +62,7 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 		/**
 		 * Is the video pipeline usable on this server?
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return bool
 		 */
 		public static function available() {
@@ -72,7 +72,7 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 		/**
 		 * Optimize one video file.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $file Absolute path.
 		 * @param string $mime Mime type.
 		 * @return array|WP_Error { replaced: bool, size: int, webm_size: int, notes: string[] }
@@ -127,7 +127,7 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 		 * Scale filter for the configured max resolution (never upscales,
 		 * keeps aspect ratio, even dimensions for yuv420p).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param array $settings Settings.
 		 * @return string Empty when keeping the original resolution.
 		 */
@@ -146,7 +146,7 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 		 * When compression is off but fast start is on, the streams are
 		 * copied untouched and only the moov atom is moved (lossless).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $ffmpeg   Binary.
 		 * @param string $file     Path.
 		 * @param array  $settings Settings.
@@ -222,7 +222,7 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 		/**
 		 * Write a VP9/Opus WebM copy next to the source.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $ffmpeg   Binary.
 		 * @param string $file     Path.
 		 * @param array  $settings Settings.
@@ -285,7 +285,7 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 		/**
 		 * Run ffmpeg with every argument shell-escaped.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $ffmpeg Binary.
 		 * @param array  $args   Arguments.
 		 * @return true|WP_Error

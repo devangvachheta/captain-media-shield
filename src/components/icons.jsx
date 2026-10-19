@@ -87,3 +87,6 @@ export const IconZap = () => (
 export const IconTerminal = () => (
     <Svg><polyline points="4 17 10 11 4 5" /><line x1="12" y1="19" x2="20" y2="19" /></Svg>
 );
+export const IconDocs = () => (
+    <Svg><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></Svg>
+);

@@ -2,7 +2,7 @@
 /**
  * Original-file backup, restore and retention cleanup.
  *
- * @since      1.0.0
+ * @since      0.0.1
  *
  * @package    captain-media-shield
  * @subpackage captain-media-shield/includes/core
@@ -19,30 +19,45 @@ if ( ! class_exists( 'Capms_Backup' ) ) {
 
 	/**
 	 * Backups mirror the uploads structure inside
-	 * wp-content/uploads/captain-backups/ - e.g. 2026/10/photo.jpg is kept
-	 * as captain-backups/2026/10/photo.jpg - so a restore is just a copy
+	 * wp-content/uploads/captain-ms-backups/ - e.g. 2026/10/photo.jpg is kept
+	 * as captain-ms-backups/2026/10/photo.jpg - so a restore is just a copy
 	 * back. Paths stored in the DB are relative to the backup root, never
 	 * absolute, so moving the site doesn't break restores.
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	class Capms_Backup {
 
 		/**
 		 * Absolute backup root (no trailing slash).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return string
 		 */
 		public static function get_root() {
 			$uploads = wp_get_upload_dir();
-			return untrailingslashit( $uploads['basedir'] ) . '/' . CAPMS_BACKUP_DIR_NAME;
+			$base    = untrailingslashit( $uploads['basedir'] );
+			$root    = $base . '/' . CAPMS_BACKUP_DIR_NAME;
+
+			// One-time move of backups made before the folder was renamed.
+			// DB paths are relative to the backup root, so a plain rename keeps
+			// every existing restore working.
+			static $migrated = false;
+			if ( ! $migrated ) {
+				$migrated = true;
+				$legacy   = $base . '/' . CAPMS_LEGACY_BACKUP_DIR_NAME;
+				if ( is_dir( $legacy ) && ! file_exists( $root ) ) {
+					@rename( $legacy, $root ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename
+				}
+			}
+
+			return $root;
 		}
 
 		/**
 		 * Create the backup root and lock it down from direct web access.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return bool
 		 */
 		public static function ensure_root() {
@@ -64,7 +79,7 @@ if ( ! class_exists( 'Capms_Backup' ) ) {
 		/**
 		 * Path of a file relative to the uploads basedir.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $file Absolute path.
 		 * @return string|false
 		 */
@@ -83,7 +98,7 @@ if ( ! class_exists( 'Capms_Backup' ) ) {
 		 * Absolute path of a stored (relative) backup path, validated to
 		 * stay inside the backup root.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $relative Relative backup path.
 		 * @return string|false
 		 */
@@ -98,7 +113,7 @@ if ( ! class_exists( 'Capms_Backup' ) ) {
 		/**
 		 * Copy a file into the backup folder (no-op if already backed up).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $file Absolute path of the original.
 		 * @return string|false Relative backup path, or false.
 		 */
@@ -132,7 +147,7 @@ if ( ! class_exists( 'Capms_Backup' ) ) {
 		 * untouched original (without re-optimizing it) and marks the row
 		 * as restored.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int $attachment_id Attachment ID.
 		 * @return true|WP_Error
 		 */
@@ -222,7 +237,7 @@ if ( ! class_exists( 'Capms_Backup' ) ) {
 		/**
 		 * Delete the backup of one attachment.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int    $attachment_id Attachment ID.
 		 * @param string $relative      Stored relative path (optional).
 		 * @return void
@@ -245,7 +260,7 @@ if ( ! class_exists( 'Capms_Backup' ) ) {
 		 * Delete backups older than the configured retention. Called by
 		 * WP-Cron every hour.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return int Number of backups removed.
 		 */
 		public static function cleanup_expired() {
@@ -276,7 +291,7 @@ if ( ! class_exists( 'Capms_Backup' ) ) {
 		 * Also sweeps orphan files in the backup folder that no DB row
 		 * points to (e.g. left over from an interrupted upload).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array { files: int, bytes: int }
 		 */
 		public static function purge_all() {
@@ -320,7 +335,7 @@ if ( ! class_exists( 'Capms_Backup' ) ) {
 		/**
 		 * Real on-disk size of the backup folder.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array { files: int, bytes: int }
 		 */
 		public static function get_disk_usage() {

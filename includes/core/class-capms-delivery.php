@@ -2,7 +2,7 @@
 /**
  * Front-end delivery of WebP/AVIF (.htaccess or <picture>) and WebM.
  *
- * @since      1.0.0
+ * @since      0.0.1
  *
  * @package    captain-media-shield
  * @subpackage captain-media-shield/includes/core
@@ -20,7 +20,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 	/**
 	 * Capms_Delivery
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	class Capms_Delivery {
 
@@ -48,7 +48,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		/**
 		 * Initiator
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public static function get_instance() {
 			if ( ! isset( self::$instance ) ) {
@@ -60,7 +60,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		/**
 		 * Hooks.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public function __construct() {
 			add_action( 'capms_settings_updated', array( __CLASS__, 'sync_htaccess' ), 10, 0 );
@@ -81,7 +81,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		/**
 		 * Write or remove our block in uploads/.htaccess to match settings.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return bool
 		 */
 		public static function sync_htaccess() {
@@ -92,7 +92,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		/**
 		 * uploads/.htaccess path.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return string
 		 */
 		private static function htaccess_path() {
@@ -106,7 +106,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		 * when both exist. Vary: Accept keeps CDNs/proxies from caching
 		 * the wrong variant for other browsers.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return bool
 		 */
 		public static function write_htaccess_rules() {
@@ -162,7 +162,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		/**
 		 * Remove our block from uploads/.htaccess.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return bool
 		 */
 		public static function remove_htaccess_rules() {
@@ -177,7 +177,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		/**
 		 * Are our rules currently present in uploads/.htaccess?
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return bool
 		 */
 		public static function htaccess_active() {
@@ -193,7 +193,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		 * Wrap every <img> pointing into uploads in a <picture> with
 		 * AVIF/WebP <source>s for whichever variants exist on disk.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $html HTML.
 		 * @return string
 		 */
@@ -217,7 +217,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		/**
 		 * Build the <picture> for one <img>.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param array $match Regex match.
 		 * @return string
 		 */
@@ -269,7 +269,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		 * Map each URL in a srcset to its next-gen sibling. Candidates
 		 * without a sibling on disk are dropped; if none have one, ''.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $srcset srcset (or single URL).
 		 * @param string $ext    webp|avif.
 		 * @return string
@@ -296,7 +296,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		/**
 		 * Convert an uploads URL to an absolute path (false otherwise).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $url URL.
 		 * @return string|false
 		 */
@@ -327,7 +327,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		/**
 		 * Read one attribute value from a tag.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $tag  Tag HTML.
 		 * @param string $attr Attribute.
 		 * @return string
@@ -342,7 +342,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		/**
 		 * [video] shortcode: offer the WebM copy first when it exists.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $output Shortcode HTML.
 		 * @param array  $atts   Attributes.
 		 * @return string
@@ -355,7 +355,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		/**
 		 * core/video block: same as the shortcode.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $content Block HTML.
 		 * @return string
 		 */
@@ -367,7 +367,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		 * Turn <video src="x.mp4"> / <source src="x.mp4"> into an extra
 		 * <source type="video/webm" src="x.mp4.webm"> placed first.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $html HTML.
 		 * @return string
 		 */

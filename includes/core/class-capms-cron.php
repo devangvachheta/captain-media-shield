@@ -2,7 +2,7 @@
 /**
  * WP-Cron jobs: scheduled backup retention cleanup.
  *
- * @since      1.0.0
+ * @since      0.0.1
  *
  * @package    captain-media-shield
  * @subpackage captain-media-shield/includes/core
@@ -22,7 +22,7 @@ if ( ! class_exists( 'Capms_Cron' ) ) {
 	 * shortest non-immediate option is one hour, and the job itself is a
 	 * single indexed query when there is nothing to delete.
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	class Capms_Cron {
 
@@ -36,7 +36,7 @@ if ( ! class_exists( 'Capms_Cron' ) ) {
 		/**
 		 * Initiator
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public static function get_instance() {
 			if ( ! isset( self::$instance ) ) {
@@ -48,7 +48,7 @@ if ( ! class_exists( 'Capms_Cron' ) ) {
 		/**
 		 * Hooks.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public function __construct() {
 			add_action( 'capms_backup_cleanup_event', array( $this, 'capms_run_cleanup' ) );
@@ -58,7 +58,7 @@ if ( ! class_exists( 'Capms_Cron' ) ) {
 		/**
 		 * Cron callback.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return void
 		 */
 		public function capms_run_cleanup() {
@@ -77,7 +77,7 @@ if ( ! class_exists( 'Capms_Cron' ) ) {
 		 * Make sure the event exists, and when the retention gets shorter
 		 * apply it right away instead of waiting up to an hour.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param array $new Settings after save.
 		 * @param array $old Settings before save.
 		 * @return void
@@ -100,7 +100,7 @@ if ( ! class_exists( 'Capms_Cron' ) ) {
 		/**
 		 * Next scheduled run (unix time) or 0.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return int
 		 */
 		public static function next_run() {

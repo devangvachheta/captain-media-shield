@@ -2,7 +2,7 @@
 /**
  * Orchestrates optimization for uploads, bulk runs and deletes.
  *
- * @since      1.0.0
+ * @since      0.0.1
  *
  * @package    captain-media-shield
  * @subpackage captain-media-shield/includes/core
@@ -28,7 +28,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 	 *
 	 * The bulk optimizer calls process_attachment() for existing media.
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	class Capms_Processor {
 
@@ -56,7 +56,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		/**
 		 * Initiator
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public static function get_instance() {
 			if ( ! isset( self::$instance ) ) {
@@ -68,7 +68,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		/**
 		 * Hooks.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 */
 		public function __construct() {
 			add_filter( 'wp_handle_upload', array( $this, 'capms_handle_upload' ), 20, 2 );
@@ -81,7 +81,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		/**
 		 * Upload hook: back up and prepare the original.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param array  $upload  { file, url, type }.
 		 * @param string $context 'upload' | 'sideload'.
 		 * @return array
@@ -131,7 +131,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		/**
 		 * Metadata hook: optimize sizes / queue videos.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param array  $metadata      Attachment metadata.
 		 * @param int    $attachment_id Attachment ID.
 		 * @param string $context       'create' | 'update'.
@@ -173,7 +173,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		/**
 		 * Apply our quality to every size WordPress generates.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int    $quality Default quality.
 		 * @param string $mime    Mime type.
 		 * @return int
@@ -188,7 +188,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		/**
 		 * Optimize any attachment (bulk optimizer / "Optimize now").
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int $attachment_id Attachment ID.
 		 * @return array|WP_Error Saved row.
 		 */
@@ -254,7 +254,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		/**
 		 * Image pipeline for every file of an attachment.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int   $attachment_id Attachment ID.
 		 * @param array $metadata      Attachment metadata.
 		 * @param array $entry         Pending entry (original size, backup...).
@@ -323,7 +323,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		/**
 		 * Queue a freshly uploaded video for background processing.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int   $attachment_id Attachment ID.
 		 * @param array $entry         Pending entry.
 		 * @return void
@@ -371,7 +371,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		/**
 		 * WP-Cron callback for queued videos.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int $attachment_id Attachment ID.
 		 * @return void
 		 */
@@ -398,7 +398,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		/**
 		 * Video pipeline.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int   $attachment_id Attachment ID.
 		 * @param array $entry         Pending entry.
 		 * @return void
@@ -446,7 +446,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		/**
 		 * Persist stats and apply the backup policy.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int    $attachment_id Attachment ID.
 		 * @param string $type          image|video.
 		 * @param array  $entry         Pending entry.
@@ -503,7 +503,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		/**
 		 * Main file + every intermediate size (absolute paths, main first).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $file     Main file.
 		 * @param array  $metadata Metadata.
 		 * @return array
@@ -530,7 +530,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		/**
 		 * Remove every WebP/AVIF/WebM file we generated for an attachment.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int    $attachment_id Attachment ID.
 		 * @param string $file          Main file.
 		 * @param array  $metadata      Metadata.
@@ -565,7 +565,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		/**
 		 * Clean up after an attachment is deleted from the Media Library.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int $attachment_id Attachment ID.
 		 * @return void
 		 */
@@ -579,7 +579,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		/**
 		 * Keep metadata filesize values accurate after optimization.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int   $attachment_id Attachment ID.
 		 * @param array $metadata      Metadata.
 		 * @return array
@@ -609,7 +609,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		 * silently remapping the output format (e.g. JPEG -> WebP), which
 		 * would rename the file out from under the attachment.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return void
 		 */
 		private function start_editor_guard() {
@@ -619,7 +619,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		/**
 		 * Undo start_editor_guard().
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return void
 		 */
 		private function stop_editor_guard() {

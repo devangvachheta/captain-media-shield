@@ -51,17 +51,17 @@ const Dashboard = () => {
                 </div>
             ) : (
                 <div className="capms-stat-grid">
-                    <StatCard icon={ <IconDatabase /> } tone="green" label={ __( 'Total Storage Saved', 'captain-media-shield' ) } value={ formatBytes( summary.saved_bytes ) } sub={ sprintf( __( '%1$s → %2$s', 'captain-media-shield' ), formatBytes( summary.original_size ), formatBytes( summary.optimized_size ) ) } />
-                    <StatCard icon={ <IconZap /> } label={ __( 'Total Media Processed', 'captain-media-shield' ) } value={ summary.processed } sub={ sprintf( __( '%1$d images · %2$d videos', 'captain-media-shield' ), images.processed || 0, videos.processed || 0 ) } />
+                    <StatCard icon={ <IconDatabase /> } tone="green" label={ __( 'Total Storage Saved', 'captain-media-shield' ) } value={ formatBytes( summary.saved_bytes ) } sub={ sprintf( /* translators: %1$s: size before optimization, %2$s: size after optimization. */ __( '%1$s → %2$s', 'captain-media-shield' ), formatBytes( summary.original_size ), formatBytes( summary.optimized_size ) ) } />
+                    <StatCard icon={ <IconZap /> } label={ __( 'Total Media Processed', 'captain-media-shield' ) } value={ summary.processed } sub={ sprintf( /* translators: %1$d: number of images, %2$d: number of videos. */ __( '%1$d images · %2$d videos', 'captain-media-shield' ), images.processed || 0, videos.processed || 0 ) } />
                     <StatCard icon={ <IconPercent /> } tone="purple" label={ __( 'Compression Ratio', 'captain-media-shield' ) } value={ `${ summary.ratio }%` } sub={ __( 'Average size reduction', 'captain-media-shield' ) } />
-                    <StatCard icon={ <IconBackup /> } tone="orange" label={ __( 'Backups on Disk', 'captain-media-shield' ) } value={ stats.backup_disk?.human || '0 B' } sub={ sprintf( __( '%d original file(s)', 'captain-media-shield' ), stats.backup_disk?.files || 0 ) } />
+                    <StatCard icon={ <IconBackup /> } tone="orange" label={ __( 'Backups on Disk', 'captain-media-shield' ) } value={ stats.backup_disk?.human || '0 B' } sub={ sprintf( /* translators: %d: number of backed-up original files. */ __( '%d original file(s)', 'captain-media-shield' ), stats.backup_disk?.files || 0 ) } />
                 </div>
             ) }
 
             { remaining > 0 && (
                 <div className="capms-cta">
                     <div>
-                        <strong>{ sprintf( __( '%d file(s) in your Media Library are not optimized yet.', 'captain-media-shield' ), remaining ) }</strong>
+                        <strong>{ sprintf( /* translators: %d: number of files not optimized yet. */ __( '%d file(s) in your Media Library are not optimized yet.', 'captain-media-shield' ), remaining ) }</strong>
                         <span>{ __( 'Run the Bulk Optimizer to compress them and create WebP/AVIF/WebM versions.', 'captain-media-shield' ) }</span>
                     </div>
                     <Link to="/bulk" className="capms-btn capms-btn--primary"><IconBulk />{ __( 'Open Bulk Optimizer', 'captain-media-shield' ) }</Link>

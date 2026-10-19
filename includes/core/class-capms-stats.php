@@ -2,7 +2,7 @@
 /**
  * Optimization log table + analytics queries.
  *
- * @since      1.0.0
+ * @since      0.0.1
  *
  * @package    captain-media-shield
  * @subpackage captain-media-shield/includes/core
@@ -15,6 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared -- this class is the only data layer for the plugin's own custom table; the table name is built from $wpdb->prefix and never from user input, and the figures are read live for the dashboard.
+
 if ( ! class_exists( 'Capms_Stats' ) ) {
 
 	/**
@@ -22,14 +24,14 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 	 * it, sizes before/after, and where its backup lives. Analytics,
 	 * bulk queue, restore and backup retention all read from here.
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	class Capms_Stats {
 
 		/**
 		 * Full table name.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return string
 		 */
 		public static function table() {
@@ -40,7 +42,7 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 		/**
 		 * Create / update the table.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return void
 		 */
 		public static function create_table() {
@@ -77,7 +79,7 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 		/**
 		 * Insert or update the row for an attachment.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int   $attachment_id Attachment ID.
 		 * @param array $data          Column => value.
 		 * @return void
@@ -106,7 +108,7 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 		/**
 		 * Get the row for an attachment.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int $attachment_id Attachment ID.
 		 * @return array|null
 		 */
@@ -120,7 +122,7 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 		/**
 		 * Delete the row for an attachment.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int $attachment_id Attachment ID.
 		 * @return void
 		 */
@@ -134,7 +136,7 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 		/**
 		 * Clear backup columns for an attachment once its backup is gone.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int $attachment_id Attachment ID.
 		 * @return void
 		 */
@@ -155,7 +157,7 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 		/**
 		 * Rows whose backup is older than $seconds.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int $seconds Age in seconds.
 		 * @param int $limit   Max rows.
 		 * @return array
@@ -171,7 +173,7 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 		/**
 		 * Every row that still has a backup.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array
 		 */
 		public static function get_all_backups() {
@@ -184,7 +186,7 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 		/**
 		 * Aggregated analytics.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array
 		 */
 		public static function get_summary() {
@@ -268,7 +270,7 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 		/**
 		 * Most recently processed rows (for the dashboard activity list).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param int $limit Rows.
 		 * @return array
 		 */
@@ -288,3 +290,5 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 		}
 	}
 }
+
+// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared

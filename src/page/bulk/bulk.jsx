@@ -56,21 +56,21 @@ const Bulk = () => {
                     icon={ <IconImage /> }
                     label={ __( 'Images optimized', 'captain-media-shield' ) }
                     value={ library ? `${ library.image.optimized } / ${ library.image.total }` : '…' }
-                    sub={ library ? sprintf( __( '%d remaining', 'captain-media-shield' ), library.image.remaining ) : '' }
+                    sub={ library ? sprintf( /* translators: %d: number of files still to optimize. */ __( '%d remaining', 'captain-media-shield' ), library.image.remaining ) : '' }
                 />
                 <StatCard
                     icon={ <IconVideo /> }
                     tone="purple"
                     label={ __( 'Videos optimized', 'captain-media-shield' ) }
                     value={ library ? `${ library.video.optimized } / ${ library.video.total }` : '…' }
-                    sub={ library ? sprintf( __( '%d remaining', 'captain-media-shield' ), library.video.remaining ) : '' }
+                    sub={ library ? sprintf( /* translators: %d: number of files still to optimize. */ __( '%d remaining', 'captain-media-shield' ), library.video.remaining ) : '' }
                 />
                 <StatCard
                     icon={ <IconDatabase /> }
                     tone="green"
                     label={ __( 'Saved this run', 'captain-media-shield' ) }
                     value={ formatBytes( run.savedBytes ) }
-                    sub={ run.total ? sprintf( __( '%1$d of %2$d files', 'captain-media-shield' ), run.processed, run.total ) : __( 'Start a run to see live savings', 'captain-media-shield' ) }
+                    sub={ run.total ? sprintf( /* translators: %1$d: files processed so far, %2$d: total files in this run. */ __( '%1$d of %2$d files', 'captain-media-shield' ), run.processed, run.total ) : __( 'Start a run to see live savings', 'captain-media-shield' ) }
                 />
             </div>
 
@@ -111,7 +111,7 @@ const Bulk = () => {
                             <div>
                                 <span className={ `capms-bulk-status capms-bulk-status--${ run.status }` }>{ statusLabel }</span>
                                 { run.status === 'running' && eta > 0 && (
-                                    <span className="capms-bulk-eta">{ sprintf( __( '~%s left', 'captain-media-shield' ), eta > 90 ? `${ Math.round( eta / 60 ) } min` : `${ eta } s` ) }</span>
+                                    <span className="capms-bulk-eta">{ sprintf( /* translators: %s: estimated time remaining, for example "2 min" or "45 s". */ __( '~%s left', 'captain-media-shield' ), eta > 90 ? sprintf( /* translators: %d: number of minutes. */ __( '%d min', 'captain-media-shield' ), Math.round( eta / 60 ) ) : sprintf( /* translators: %d: number of seconds. */ __( '%d s', 'captain-media-shield' ), eta ) ) }</span>
                                 ) }
                             </div>
                             <span className="capms-bulk-pct">{ pct }%</span>
@@ -122,9 +122,9 @@ const Bulk = () => {
                         </div>
 
                         <div className="capms-bulk-counts">
-                            <span>{ sprintf( __( 'Processed: %1$d / %2$d', 'captain-media-shield' ), run.processed, run.total ) }</span>
-                            <span className="capms-text-success">{ sprintf( __( 'Succeeded: %d', 'captain-media-shield' ), run.succeeded ) }</span>
-                            <span className="capms-text-error">{ sprintf( __( 'Failed: %d', 'captain-media-shield' ), run.failed ) }</span>
+                            <span>{ sprintf( /* translators: %1$d: files processed so far, %2$d: total files in this run. */ __( 'Processed: %1$d / %2$d', 'captain-media-shield' ), run.processed, run.total ) }</span>
+                            <span className="capms-text-success">{ sprintf( /* translators: %d: number of files optimized successfully. */ __( 'Succeeded: %d', 'captain-media-shield' ), run.succeeded ) }</span>
+                            <span className="capms-text-error">{ sprintf( /* translators: %d: number of files that failed. */ __( 'Failed: %d', 'captain-media-shield' ), run.failed ) }</span>
                         </div>
 
                         <div className="capms-bulk-actions">

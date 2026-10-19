@@ -2,7 +2,7 @@
 /**
  * Image optimization - resize, recompress, strip metadata, WebP/AVIF.
  *
- * @since      1.0.0
+ * @since      0.0.1
  *
  * @package    captain-media-shield
  * @subpackage captain-media-shield/includes/core
@@ -27,7 +27,7 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 	 * plain string append, and two sources with the same base name but
 	 * different extensions never collide.
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	class Capms_Image_Optimizer {
 
@@ -41,7 +41,7 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		/**
 		 * Is this mime type something we optimize?
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $mime Mime type.
 		 * @return bool
 		 */
@@ -59,7 +59,7 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		 * orientation (before that tag is stripped) and downscale anything
 		 * over the configured max dimensions.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $file Absolute path.
 		 * @param string $mime Mime type.
 		 * @return bool True when the file was re-encoded.
@@ -108,7 +108,7 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		/**
 		 * Downscale an existing file over the max dimensions (bulk path).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $file Absolute path.
 		 * @param string $mime Mime type.
 		 * @return bool True when resized.
@@ -124,7 +124,7 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		 * Re-encode at the configured quality; keep the result only if it
 		 * is actually smaller.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $file Absolute path.
 		 * @param string $mime Mime type.
 		 * @return bool True when the file was replaced.
@@ -166,7 +166,7 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		 * comments) losslessly - no re-encode, so zero quality loss. The
 		 * ICC colour profile is kept so colours don't shift.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $file Absolute path.
 		 * @param string $mime Mime type.
 		 * @return bool True when the file changed.
@@ -200,7 +200,7 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		 * Drop APP1 (EXIF/GPS/XMP), APP13 (IPTC) and COM segments from a
 		 * JPEG byte stream. Everything from SOS onwards is copied as-is.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $data JPEG bytes.
 		 * @return string|false
 		 */
@@ -262,7 +262,7 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		/**
 		 * Drop eXIf / tEXt / zTXt / iTXt / tIME chunks from a PNG.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $data PNG bytes.
 		 * @return string|false
 		 */
@@ -303,7 +303,7 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		 * when it is smaller than the source - serving a bigger "optimized"
 		 * file would defeat the point.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $file   Absolute source path.
 		 * @param string $format 'webp' | 'avif'.
 		 * @return int Bytes of the kept copy (0 when none).
@@ -351,7 +351,7 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		/**
 		 * Move $from over $to (rename, with a copy fallback across devices).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $from Source.
 		 * @param string $to   Destination.
 		 * @return bool

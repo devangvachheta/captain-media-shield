@@ -5,9 +5,9 @@
  * Removes the plugin's options, log table, transients and cron events.
  * Media files are never touched here: optimized files and the
  * WebP/AVIF/WebM copies stay valid, and any originals still in
- * uploads/captain-backups/ are left for the site owner to keep or delete.
+ * uploads/captain-ms-backups/ are left for the site owner to keep or delete.
  *
- * @since      1.0.0
+ * @since      0.0.1
  * @package captain-media-shield
  */
 

@@ -2,7 +2,7 @@
 /**
  * Plugin settings - single option, defaults and sanitization.
  *
- * @since      1.0.0
+ * @since      0.0.1
  *
  * @package    captain-media-shield
  * @subpackage captain-media-shield/includes/core
@@ -23,7 +23,7 @@ if ( ! class_exists( 'Capms_Settings' ) ) {
 	 * and all writes go through sanitize() so nothing unexpected is ever
 	 * stored.
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	class Capms_Settings {
 
@@ -54,7 +54,7 @@ if ( ! class_exists( 'Capms_Settings' ) ) {
 		 * AVIF and WebM defaults depend on what the server can actually do,
 		 * so they are only ON out of the box when supported.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array
 		 */
 		public static function get_defaults() {
@@ -98,7 +98,7 @@ if ( ! class_exists( 'Capms_Settings' ) ) {
 		/**
 		 * Get all settings merged over the defaults.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return array
 		 */
 		public static function get_all() {
@@ -112,7 +112,7 @@ if ( ! class_exists( 'Capms_Settings' ) ) {
 		/**
 		 * Get a single setting.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param string $key     Setting key.
 		 * @param mixed  $default Fallback.
 		 * @return mixed
@@ -125,7 +125,7 @@ if ( ! class_exists( 'Capms_Settings' ) ) {
 		/**
 		 * Merge, sanitize and save a partial settings array.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param array $input Raw values (only known keys are kept).
 		 * @return array The saved settings.
 		 */
@@ -151,7 +151,7 @@ if ( ! class_exists( 'Capms_Settings' ) ) {
 		/**
 		 * Sanitize known keys, drop unknown ones.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @param array $input   Raw values.
 		 * @param array $current Current values (fallback for invalid input).
 		 * @return array
@@ -210,7 +210,7 @@ if ( ! class_exists( 'Capms_Settings' ) ) {
 		/**
 		 * Retention period in seconds. 0 = immediate, -1 = never.
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return int
 		 */
 		public static function get_retention_seconds() {
@@ -227,7 +227,7 @@ if ( ! class_exists( 'Capms_Settings' ) ) {
 		/**
 		 * Clear the request cache (used after direct option writes).
 		 *
-		 * @since 1.0.0
+		 * @since 0.0.1
 		 * @return void
 		 */
 		public static function flush_cache() {
