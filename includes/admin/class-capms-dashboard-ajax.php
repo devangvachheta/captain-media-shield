@@ -247,7 +247,7 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 			foreach ( array( 'image', 'video' ) as $type ) {
 				$mimes        = $this->get_mimes( $type );
 				$placeholders = implode( ',', array_fill( 0, count( $mimes ), '%s' ) );
-				$table        = Capms_Stats::table();
+				$table        = esc_sql( Capms_Stats::table() );
 
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 				$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_mime_type IN ($placeholders)", $mimes ) );
@@ -282,11 +282,12 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 			$scope        = in_array( $scope, array( 'all', 'image', 'video' ), true ) ? $scope : 'all';
 			$mimes        = $this->get_mimes( $scope );
 			$placeholders = implode( ',', array_fill( 0, count( $mimes ), '%s' ) );
-			$table        = Capms_Stats::table();
-			$statuses     = $retry_failed ? "'optimized'" : "'optimized','failed','skipped'";
+			$table        = esc_sql( Capms_Stats::table() );
+			$statuses     = $retry_failed ? array( 'optimized' ) : array( 'optimized', 'failed', 'skipped' );
+			$status_holds = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
-			$ids = $wpdb->get_col( $wpdb->prepare( "SELECT p.ID FROM {$wpdb->posts} p LEFT JOIN {$table} m ON m.attachment_id = p.ID WHERE p.post_type = 'attachment' AND p.post_mime_type IN ($placeholders) AND ( m.status IS NULL OR m.status NOT IN ($statuses) ) ORDER BY p.ID DESC", $mimes ) );
+			$ids = $wpdb->get_col( $wpdb->prepare( "SELECT p.ID FROM {$wpdb->posts} p LEFT JOIN {$table} m ON m.attachment_id = p.ID WHERE p.post_type = 'attachment' AND p.post_mime_type IN ($placeholders) AND ( m.status IS NULL OR m.status NOT IN ($status_holds) ) ORDER BY p.ID DESC", array_merge( $mimes, $statuses ) ) );
 
 			return $this->capms_set_response(
 				true,

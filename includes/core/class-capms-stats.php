@@ -114,7 +114,7 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 		 */
 		public static function get( $attachment_id ) {
 			global $wpdb;
-			$table = self::table();
+			$table = esc_sql( self::table() );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE attachment_id = %d", absint( $attachment_id ) ), ARRAY_A );
 		}
@@ -164,7 +164,7 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 		 */
 		public static function get_expired_backups( $seconds, $limit = 200 ) {
 			global $wpdb;
-			$table  = self::table();
+			$table  = esc_sql( self::table() );
 			$cutoff = gmdate( 'Y-m-d H:i:s', time() - absint( $seconds ) );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			return $wpdb->get_results( $wpdb->prepare( "SELECT attachment_id, backup_path FROM {$table} WHERE backup_path IS NOT NULL AND backup_path <> '' AND backup_created <= %s LIMIT %d", $cutoff, absint( $limit ) ), ARRAY_A );
@@ -178,7 +178,7 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 		 */
 		public static function get_all_backups() {
 			global $wpdb;
-			$table = self::table();
+			$table = esc_sql( self::table() );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			return $wpdb->get_results( "SELECT attachment_id, backup_path FROM {$table} WHERE backup_path IS NOT NULL AND backup_path <> ''", ARRAY_A );
 		}
@@ -197,7 +197,7 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 				return $cached;
 			}
 
-			$table = self::table();
+			$table = esc_sql( self::table() );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$rows = $wpdb->get_results(
 				"SELECT media_type,
@@ -276,7 +276,7 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 		 */
 		public static function get_recent( $limit = 8 ) {
 			global $wpdb;
-			$table = self::table();
+			$table = esc_sql( self::table() );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$rows = $wpdb->get_results( $wpdb->prepare( "SELECT attachment_id, media_type, status, original_size, optimized_size, webp_size, avif_size, webm_size, message, processed_at FROM {$table} ORDER BY processed_at DESC LIMIT %d", absint( $limit ) ), ARRAY_A );
 
