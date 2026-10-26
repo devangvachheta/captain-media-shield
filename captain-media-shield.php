@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Captain Media Shield
  * Description: All-in-one free Image & Video Optimizer, WebP/AVIF Converter, Video Compressor (WebM/Fast Start), Metadata Stripper, and Server Storage Saver for WordPress.
- * Version: 0.0.1
+ * Version: 0.1.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: devangvachheta
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CAPMS_VERSION', '0.0.1' );
+define( 'CAPMS_VERSION', '0.1.0' );
 define( 'CAPMS_FILE', __FILE__ );
 define( 'CAPMS_URL', plugins_url( '/', __FILE__ ) );
 define( 'CAPMS_PATH', plugin_dir_path( __FILE__ ) );

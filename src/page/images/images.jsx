@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import useSettings from '../../hooks/useSettings.js';
+import { ajax } from '../../services/api.js';
 import { PageHeader, Section, ToggleRow, SelectRow, Row, SaveBar, Notice, Pill, Skeleton } from '../../components/ui.jsx';
-import { IconLayers, IconSliders, IconShield, IconResize, IconGlobe } from '../../components/icons.jsx';
+import { IconLayers, IconSliders, IconShield, IconResize, IconGlobe, IconTerminal, IconX } from '../../components/icons.jsx';
 
-const KEYS = [ 'optimize_on_upload', 'webp_enabled', 'avif_enabled', 'image_quality', 'strip_metadata', 'resize_enabled', 'max_width', 'max_height', 'delivery_method' ];
+const KEYS = [ 'optimize_on_upload', 'webp_enabled', 'avif_enabled', 'image_quality', 'strip_metadata', 'resize_enabled', 'max_width', 'max_height', 'delivery_method', 'exclude_paths', 'exclude_ids' ];
 
 const qualityLabel = ( q ) => {
     if ( q >= 90 ) return __( 'Near-lossless', 'captain-media-shield' );
@@ -15,6 +16,30 @@ const qualityLabel = ( q ) => {
 
 const Images = () => {
     const { draft, support, set, save, reset, discard, dirty, saving, message, tone } = useSettings( KEYS );
+    const [ nginx, setNginx ]     = useState( null );
+    const [ copied, setCopied ]   = useState( false );
+    const [ loadingNginx, setLoadingNginx ] = useState( false );
+
+    const showNginx = async () => {
+        if ( nginx ) {
+            setNginx( null );
+            return;
+        }
+        setLoadingNginx( true );
+        const result = await ajax( 'get_nginx_snippet' );
+        setLoadingNginx( false );
+        if ( result.success && result.data ) setNginx( result.data.snippet );
+    };
+
+    const copyNginx = async () => {
+        try {
+            await navigator.clipboard.writeText( nginx );
+            setCopied( true );
+            setTimeout( () => setCopied( false ), 2000 );
+        } catch ( e ) {
+            // Clipboard blocked - the text is selectable in the box anyway.
+        }
+    };
 
     if ( ! draft ) {
         return (
@@ -159,6 +184,68 @@ const Images = () => {
                             { value: 'picture', label: __( 'HTML <picture> tag replacement', 'captain-media-shield' ) },
                         ] }
                     />
+                </Section>
+
+                <Section
+                    icon={ <IconTerminal /> }
+                    title={ __( 'Nginx Rules', 'captain-media-shield' ) }
+                    description={ __( 'Running Nginx? Nginx ignores .htaccess, but these rules give you the same result: AVIF/WebP served from the original image URL, no HTML changes. Generated from your current format settings.', 'captain-media-shield' ) }
+                >
+                    <Row
+                        last
+                        stacked
+                        label={ __( 'Nginx configuration snippet', 'captain-media-shield' ) }
+                        hint={ __( 'Copy it into your Nginx config and reload. The plugin cannot edit Nginx for you, so nothing changes until you do.', 'captain-media-shield' ) }
+                    >
+                        <div className="capms-snippet">
+                            <div className="capms-snippet-actions">
+                                <button type="button" className="capms-btn capms-btn--ghost" onClick={ showNginx } disabled={ loadingNginx }>
+                                    { nginx ? <IconX /> : <IconTerminal /> }
+                                    { nginx ? __( 'Hide rules', 'captain-media-shield' ) : __( 'Show Nginx rules', 'captain-media-shield' ) }
+                                </button>
+                                { nginx && (
+                                    <button type="button" className="capms-btn capms-btn--primary" onClick={ copyNginx }>
+                                        { copied ? __( 'Copied!', 'captain-media-shield' ) : __( 'Copy', 'captain-media-shield' ) }
+                                    </button>
+                                ) }
+                            </div>
+                            { nginx && <textarea className="capms-snippet-box" readOnly rows={ 16 } value={ nginx } onFocus={ ( e ) => e.target.select() } aria-label={ __( 'Nginx rules', 'captain-media-shield' ) } /> }
+                        </div>
+                    </Row>
+                </Section>
+
+                <Section
+                    icon={ <IconShield /> }
+                    title={ __( 'Exclude Rules', 'captain-media-shield' ) }
+                    description={ __( 'Files that match these rules are never resized, compressed or converted, and are skipped by the Bulk Optimizer. Handy for logos, print files or anything you want kept exactly as uploaded.', 'captain-media-shield' ) }
+                >
+                    <Row
+                        stacked
+                        label={ __( 'Folders and file patterns', 'captain-media-shield' ) }
+                        hint={ __( 'One per line, matched against the path inside your uploads folder (for example 2025/03/photo.jpg). Plain text matches anywhere in the path, so "private/" skips a whole folder. Use * as a wildcard, for example *-original.png.', 'captain-media-shield' ) }
+                    >
+                        <textarea
+                            className="capms-snippet-box capms-snippet-box--edit"
+                            rows={ 5 }
+                            placeholder={ 'private/\nlogos/*\n*-original.png' }
+                            value={ draft.exclude_paths || '' }
+                            onChange={ ( e ) => set( 'exclude_paths', e.target.value ) }
+                            aria-label={ __( 'Excluded folders and file patterns', 'captain-media-shield' ) }
+                        />
+                    </Row>
+                    <Row
+                        last
+                        label={ __( 'Attachment IDs', 'captain-media-shield' ) }
+                        hint={ __( 'Comma separated. Found in the Media Library URL (post=123). ID rules apply to the Bulk Optimizer and to WebP/AVIF creation; use a folder or file pattern to also keep a brand-new upload untouched.', 'captain-media-shield' ) }
+                    >
+                        <input
+                            type="text"
+                            className="capms-input capms-input--wide"
+                            placeholder="12, 48, 301"
+                            value={ draft.exclude_ids || '' }
+                            onChange={ ( e ) => set( 'exclude_ids', e.target.value ) }
+                        />
+                    </Row>
                 </Section>
 
                 { draft.delivery_method === 'htaccess' && support.apache === false && (

@@ -72,9 +72,16 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 				add_filter( 'widget_block_content', array( $this, 'capms_filter_html' ), 999 );
 			}
 
-			if ( ! is_admin() && Capms_Settings::get( 'webm_enabled' ) ) {
+			if ( ! is_admin() && ( Capms_Settings::get( 'webm_enabled' ) || Capms_Settings::get( 'video_poster' ) ) ) {
 				add_filter( 'wp_video_shortcode', array( $this, 'capms_video_add_webm' ), 10, 2 );
 				add_filter( 'render_block_core/video', array( $this, 'capms_video_block_add_webm' ), 10, 1 );
+			}
+
+			if ( ! is_admin() && Capms_Settings::get( 'gif_to_video' ) ) {
+				add_filter( 'the_content', array( $this, 'capms_filter_gifs' ), 998 );
+				add_filter( 'post_thumbnail_html', array( $this, 'capms_filter_gifs' ), 998 );
+				add_filter( 'widget_text', array( $this, 'capms_filter_gifs' ), 998 );
+				add_filter( 'widget_block_content', array( $this, 'capms_filter_gifs' ), 998 );
 			}
 		}
 
@@ -340,6 +347,167 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		}
 
 		/**
+		 * Add the generated poster image to <video> tags that have none.
+		 *
+		 * @since 0.1.0
+		 * @param string $html HTML.
+		 * @return string
+		 */
+		private function inject_poster( $html ) {
+			if ( ! Capms_Settings::get( 'video_poster' ) || ! is_string( $html ) || false === stripos( $html, '<video' ) ) {
+				return $html;
+			}
+
+			return preg_replace_callback(
+				'#<video\b[^>]*>#i',
+				function ( $m ) use ( $html ) {
+					$tag = $m[0];
+					if ( preg_match( '#\sposter\s*=#i', $tag ) ) {
+						return $tag;
+					}
+
+					$src = $this->get_attr( $tag, 'src' );
+					if ( ! $src && preg_match( '#<source\b[^>]*src=(["\'])(.*?)\1#i', $html, $sm ) ) {
+						$src = $sm[2];
+					}
+					if ( ! $src ) {
+						return $tag;
+					}
+
+					$path = $this->url_to_path( $src );
+					if ( ! $path || ! is_file( $path . '.poster.jpg' ) ) {
+						return $tag;
+					}
+
+					return preg_replace( '#<video\b#i', '<video poster="' . esc_url( strtok( $src, '?' ) . '.poster.jpg' ) . '"', $tag, 1 );
+				},
+				$html
+			);
+		}
+
+		/**
+		 * Swap animated GIFs that have an MP4 / WebM companion for a muted,
+		 * looping <video>. The original <img> stays inside as a fallback.
+		 *
+		 * @since 0.1.0
+		 * @param string $html HTML.
+		 * @return string
+		 */
+		public function capms_filter_gifs( $html ) {
+			if ( ! is_string( $html ) || false === stripos( $html, '.gif' ) || false === stripos( $html, '<img' ) || is_feed() ) {
+				return $html;
+			}
+
+			// Leave <img> already inside a <video> / <picture> alone.
+			$parts = preg_split( '#(<video\b.*?</video>|<picture\b.*?</picture>)#is', $html, -1, PREG_SPLIT_DELIM_CAPTURE );
+			foreach ( $parts as $i => $part ) {
+				if ( 0 === stripos( $part, '<video' ) || 0 === stripos( $part, '<picture' ) ) {
+					continue;
+				}
+				$parts[ $i ] = preg_replace_callback( '#<img\b[^>]*>#i', array( $this, 'build_gif_video' ), $part );
+			}
+
+			return implode( '', $parts );
+		}
+
+		/**
+		 * Build the <video> for one GIF <img>.
+		 *
+		 * @since 0.1.0
+		 * @param array $match Regex match.
+		 * @return string
+		 */
+		private function build_gif_video( $match ) {
+			$img = $match[0];
+
+			if ( false !== strpos( $img, 'data-capms-skip' ) ) {
+				return $img;
+			}
+
+			$src = $this->get_attr( $img, 'src' );
+			if ( ! $src || ! preg_match( '#\.gif(\?.*)?$#i', $src ) ) {
+				return $img;
+			}
+
+			$path = $this->url_to_path( $src );
+			if ( ! $path || ! is_file( $path . '.mp4' ) ) {
+				return $img;
+			}
+
+			$base    = strtok( $src, '?' );
+			$sources = '';
+			if ( is_file( $path . '.webm' ) ) {
+				$sources .= '<source src="' . esc_url( $base . '.webm' ) . '" type="video/webm" />';
+			}
+			$sources .= '<source src="' . esc_url( $base . '.mp4' ) . '" type="video/mp4" />';
+
+			$class = trim( 'capms-gif ' . $this->get_attr( $img, 'class' ) );
+			$attrs = ' class="' . esc_attr( $class ) . '"';
+			foreach ( array( 'width', 'height' ) as $dim ) {
+				$value = $this->get_attr( $img, $dim );
+				if ( '' !== $value ) {
+					$attrs .= ' ' . $dim . '="' . esc_attr( $value ) . '"';
+				}
+			}
+			$alt = $this->get_attr( $img, 'alt' );
+			if ( '' !== $alt ) {
+				$attrs .= ' role="img" aria-label="' . esc_attr( $alt ) . '"';
+			}
+
+			return '<video' . $attrs . ' autoplay loop muted playsinline preload="metadata">' . $sources . $img . '</video>';
+		}
+
+		/**
+		 * Nginx rules for AVIF / WebP delivery (shown in the admin so
+		 * people on Nginx get the same "same URL" delivery as .htaccess).
+		 *
+		 * @since 0.1.0
+		 * @return string
+		 */
+		public static function get_nginx_snippet() {
+			$avif = (bool) Capms_Settings::get( 'avif_enabled' );
+			$webp = (bool) Capms_Settings::get( 'webp_enabled' );
+
+			if ( ! $avif && ! $webp ) {
+				return '# Turn on WebP and / or AVIF in Images & Formats to get Nginx rules.';
+			}
+
+			$uploads = wp_get_upload_dir();
+			$path    = '/' . trim( (string) wp_parse_url( $uploads['baseurl'], PHP_URL_PATH ), '/' );
+			$regex   = preg_quote( $path, '#' );
+
+			$lines   = array();
+			$lines[] = '# Captain Media Shield - serve AVIF / WebP from the same image URL.';
+			$lines[] = '';
+			$lines[] = '# 1) Add the map block(s) inside the http { } context';
+			$lines[] = '#    (for example in /etc/nginx/conf.d/captain-media-shield.conf).';
+			$try     = array();
+			if ( $avif ) {
+				$lines[] = 'map $http_accept $capms_avif {';
+				$lines[] = '    default          ".capms-none";';
+				$lines[] = '    "~*image/avif"   ".avif";';
+				$lines[] = '}';
+				$try[]   = '$uri$capms_avif';
+			}
+			if ( $webp ) {
+				$lines[] = 'map $http_accept $capms_webp {';
+				$lines[] = '    default          ".capms-none";';
+				$lines[] = '    "~*image/webp"   ".webp";';
+				$lines[] = '}';
+				$try[]   = '$uri$capms_webp';
+			}
+			$lines[] = '';
+			$lines[] = '# 2) Add this location block inside your server { } block, then reload Nginx.';
+			$lines[] = '#    Make sure your mime.types file contains image/avif (avif) and image/webp (webp).';
+			$lines[] = 'location ~* ^' . $regex . '/.+\.(jpe?g|png)$ {';
+			$lines[] = '    add_header Vary Accept;';
+			$lines[] = '    try_files ' . implode( ' ', $try ) . ' $uri =404;';
+			$lines[] = '}';
+
+			return implode( "\n", $lines );
+		}
+
+		/**
 		 * [video] shortcode: offer the WebM copy first when it exists.
 		 *
 		 * @since 0.0.1
@@ -349,7 +517,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		 */
 		public function capms_video_add_webm( $output, $atts ) {
 			unset( $atts );
-			return $this->inject_webm_sources( $output );
+			return $this->inject_webm_sources( $this->inject_poster( $output ) );
 		}
 
 		/**
@@ -360,7 +528,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		 * @return string
 		 */
 		public function capms_video_block_add_webm( $content ) {
-			return $this->inject_webm_sources( $content );
+			return $this->inject_webm_sources( $this->inject_poster( $content ) );
 		}
 
 		/**
@@ -372,7 +540,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		 * @return string
 		 */
 		private function inject_webm_sources( $html ) {
-			if ( ! is_string( $html ) || false === stripos( $html, '<video' ) || false !== stripos( $html, 'video/webm' ) ) {
+			if ( ! Capms_Settings::get( 'webm_enabled' ) || ! is_string( $html ) || false === stripos( $html, '<video' ) || false !== stripos( $html, 'video/webm' ) ) {
 				return $html;
 			}
 

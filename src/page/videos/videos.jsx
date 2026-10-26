@@ -7,7 +7,7 @@ import { setSettingsData } from '../../redux/slice.jsx';
 import { PageHeader, Section, ToggleRow, SelectRow, Row, SaveBar, Notice, Pill, StatusPill, Skeleton } from '../../components/ui.jsx';
 import { IconVideo, IconZap, IconMusic, IconShield, IconTerminal, IconRefresh } from '../../components/icons.jsx';
 
-const KEYS = [ 'video_enabled', 'webm_enabled', 'faststart_enabled', 'video_resolution', 'audio_bitrate', 'video_strip_meta', 'ffmpeg_path' ];
+const KEYS = [ 'video_enabled', 'webm_enabled', 'faststart_enabled', 'video_resolution', 'audio_bitrate', 'video_strip_meta', 'ffmpeg_path', 'video_poster', 'gif_to_video' ];
 
 const Videos = () => {
     const dispatch = useDispatch();
@@ -94,11 +94,33 @@ const Videos = () => {
                         extra={ ! hasFfmpeg && <Pill tone="orange">{ __( 'Needs FFmpeg', 'captain-media-shield' ) }</Pill> }
                     />
                     <ToggleRow
-                        last
                         label={ __( 'Enable WebM Format Generation', 'captain-media-shield' ) }
                         hint={ __( 'The WebM copy is offered first in [video] players and video blocks; browsers fall back to the MP4.', 'captain-media-shield' ) }
                         checked={ !! draft.webm_enabled }
                         onChange={ ( v ) => set( 'webm_enabled', v ) }
+                        extra={ ! hasFfmpeg && <Pill tone="orange">{ __( 'Needs FFmpeg', 'captain-media-shield' ) }</Pill> }
+                    />
+                    <ToggleRow
+                        last
+                        label={ __( 'Generate a Poster Image', 'captain-media-shield' ) }
+                        hint={ __( 'Saves a lightweight JPEG frame next to each video and uses it as the poster, so the player shows a picture instantly instead of a black box. Players that already have a poster are left alone.', 'captain-media-shield' ) }
+                        checked={ !! draft.video_poster }
+                        onChange={ ( v ) => set( 'video_poster', v ) }
+                        extra={ ! hasFfmpeg && <Pill tone="orange">{ __( 'Needs FFmpeg', 'captain-media-shield' ) }</Pill> }
+                    />
+                </Section>
+
+                <Section
+                    icon={ <IconZap /> }
+                    title={ __( 'Animated GIF to Video', 'captain-media-shield' ) }
+                    description={ __( 'Animated GIFs are huge. With this on, each one gets an MP4 (and WebM) copy and visitors see a muted, looping video that is usually 80-95% lighter. The GIF file stays as the fallback.', 'captain-media-shield' ) }
+                >
+                    <ToggleRow
+                        last
+                        label={ __( 'Convert Animated GIFs to Video', 'captain-media-shield' ) }
+                        hint={ __( 'Applies to GIFs inserted at full size in post content, widgets and featured images. Existing GIFs are converted by the Bulk Optimizer.', 'captain-media-shield' ) }
+                        checked={ !! draft.gif_to_video }
+                        onChange={ ( v ) => set( 'gif_to_video', v ) }
                         extra={ ! hasFfmpeg && <Pill tone="orange">{ __( 'Needs FFmpeg', 'captain-media-shield' ) }</Pill> }
                     />
                 </Section>

@@ -76,6 +76,8 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			add_filter( 'wp_editor_set_quality', array( $this, 'capms_editor_quality' ), 20, 2 );
 			add_action( 'delete_attachment', array( $this, 'capms_delete_attachment' ), 10, 1 );
 			add_action( 'capms_process_video_event', array( $this, 'capms_process_video_event' ), 10, 1 );
+			add_filter( 'wp_generate_attachment_metadata', array( $this, 'capms_gif_metadata' ), 30, 3 );
+			add_action( 'capms_process_gif_event', array( $this, 'capms_process_gif_event' ), 10, 1 );
 		}
 
 		/**
@@ -95,6 +97,12 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 
 			$file  = $upload['file'];
 			$mime  = isset( $upload['type'] ) ? $upload['type'] : '';
+
+			// Folder / file rules from the Exclude Rules setting.
+			if ( Capms_Settings::is_excluded( 0, $file ) ) {
+				return $upload;
+			}
+
 			$image = Capms_Image_Optimizer::is_supported( $mime );
 			$video = Capms_Video_Optimizer::is_supported( $mime );
 
@@ -160,6 +168,28 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 
 			$mime = get_post_mime_type( $attachment_id );
 
+			// Excluded by attachment ID: leave the file alone (the upload
+			// step already ran, so drop the backup it made).
+			if ( Capms_Settings::is_excluded( $attachment_id, $file ) ) {
+				if ( ! empty( $entry['backup'] ) ) {
+					$abs = Capms_Backup::absolute( $entry['backup'] );
+					if ( $abs ) {
+						wp_delete_file( $abs );
+					}
+				}
+				Capms_Stats::save(
+					$attachment_id,
+					array(
+						'media_type'     => 0 === strpos( (string) $mime, 'video/' ) ? 'video' : 'image',
+						'status'         => 'skipped',
+						'original_size'  => (int) $entry['original_size'],
+						'optimized_size' => (int) $entry['original_size'],
+						'message'        => __( 'Excluded by your exclude rules.', 'captain-media-shield' ),
+					)
+				);
+				return $metadata;
+			}
+
 			if ( Capms_Image_Optimizer::is_supported( $mime ) ) {
 				$this->process_image( $attachment_id, $metadata, $entry );
 				$metadata = $this->refresh_filesizes( $attachment_id, $metadata );
@@ -206,6 +236,24 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 				return $existing;
 			}
 
+			if ( Capms_Settings::is_excluded( $attachment_id, $file ) ) {
+				Capms_Stats::save(
+					$attachment_id,
+					array(
+						'media_type'     => 0 === strpos( (string) $mime, 'video/' ) ? 'video' : 'image',
+						'status'         => 'skipped',
+						'original_size'  => (int) filesize( $file ),
+						'optimized_size' => (int) filesize( $file ),
+						'message'        => __( 'Excluded by your exclude rules.', 'captain-media-shield' ),
+					)
+				);
+				return Capms_Stats::get( $attachment_id );
+			}
+
+			if ( 'image/gif' === $mime ) {
+				return $this->process_gif( $attachment_id, $file );
+			}
+
 			$entry = array(
 				'original_size' => (int) filesize( $file ),
 				'backup'        => '',
@@ -249,6 +297,157 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			}
 
 			return Capms_Stats::get( $attachment_id );
+		}
+
+		/**
+		 * Upload hook: queue animated GIFs for conversion.
+		 *
+		 * @since 0.1.0
+		 * @param array  $metadata      Attachment metadata.
+		 * @param int    $attachment_id Attachment ID.
+		 * @param string $context       'create' | 'update'.
+		 * @return array
+		 */
+		public function capms_gif_metadata( $metadata, $attachment_id, $context = 'create' ) {
+			if ( self::$skip_processing || 'create' !== $context || 'image/gif' !== get_post_mime_type( $attachment_id ) ) {
+				return $metadata;
+			}
+
+			if ( ! Capms_Settings::get( 'optimize_on_upload', true ) || Capms_Settings::is_excluded( $attachment_id ) || ! Capms_Video_Optimizer::gif_available() ) {
+				return $metadata;
+			}
+
+			wp_schedule_single_event( time() + 5, 'capms_process_gif_event', array( (int) $attachment_id ) );
+
+			return $metadata;
+		}
+
+		/**
+		 * WP-Cron callback for queued GIFs.
+		 *
+		 * @since 0.1.0
+		 * @param int $attachment_id Attachment ID.
+		 * @return void
+		 */
+		public function capms_process_gif_event( $attachment_id ) {
+			$file = get_attached_file( $attachment_id );
+			if ( ! $file || ! is_file( $file ) ) {
+				return;
+			}
+
+			$result = $this->process_gif( $attachment_id, $file );
+			if ( is_wp_error( $result ) ) {
+				Capms_Stats::save(
+					$attachment_id,
+					array(
+						'media_type' => 'image',
+						'status'     => 'failed',
+						'message'    => $result->get_error_message(),
+					)
+				);
+			}
+		}
+
+		/**
+		 * Animated GIF -> MP4 / WebM companion files. The GIF is kept as
+		 * the fallback, so nothing is lost and "Restore" has nothing to do.
+		 *
+		 * @since 0.1.0
+		 * @param int    $attachment_id Attachment ID.
+		 * @param string $file          GIF path.
+		 * @return array|WP_Error Saved row.
+		 */
+		private function process_gif( $attachment_id, $file ) {
+			$size = (int) filesize( $file );
+			$base = array(
+				'media_type'     => 'image',
+				'original_size'  => $size,
+				'optimized_size' => $size,
+			);
+
+			$skip = '';
+			if ( ! Capms_Settings::get( 'gif_to_video' ) ) {
+				$skip = __( 'GIF to video is turned off.', 'captain-media-shield' );
+			} elseif ( ! Capms_Video_Optimizer::gif_available() ) {
+				$skip = __( 'FFmpeg with H.264 is not available on this server - GIF skipped.', 'captain-media-shield' );
+			} elseif ( ! Capms_Image_Optimizer::is_animated_gif( $file ) ) {
+				$skip = __( 'Not an animated GIF.', 'captain-media-shield' );
+			}
+
+			if ( $skip ) {
+				Capms_Stats::save( $attachment_id, array_merge( $base, array( 'status' => 'skipped', 'message' => $skip ) ) );
+				return Capms_Stats::get( $attachment_id );
+			}
+
+			$result = Capms_Video_Optimizer::convert_gif( $file );
+			if ( is_wp_error( $result ) ) {
+				return $result;
+			}
+
+			Capms_Stats::save(
+				$attachment_id,
+				array_merge(
+					$base,
+					array(
+						'status'    => 'optimized',
+						'webm_size' => (int) $result['webm_size'],
+						/* translators: 1: MP4 size, 2: original GIF size */
+						'message'   => sprintf( __( 'Visitors now get an MP4 (%1$s) instead of the %2$s GIF.', 'captain-media-shield' ), size_format( $result['mp4_size'], 1 ), size_format( $size, 1 ) ),
+					)
+				)
+			);
+			update_post_meta( $attachment_id, '_capms_optimized', 1 );
+
+			return Capms_Stats::get( $attachment_id );
+		}
+
+		/**
+		 * Mime types for a scope (all|image|video). GIFs are only part of
+		 * the image list while GIF to video is switched on and usable.
+		 *
+		 * @since 0.1.0
+		 * @param string $which all|image|video.
+		 * @return array
+		 */
+		public static function get_mimes( $which = 'all' ) {
+			$images = (array) apply_filters( 'capms_supported_image_mimes', Capms_Image_Optimizer::SUPPORTED_MIMES );
+			$videos = (array) apply_filters( 'capms_supported_video_mimes', Capms_Video_Optimizer::SUPPORTED_MIMES );
+
+			if ( Capms_Video_Optimizer::gif_available() && ! in_array( 'image/gif', $images, true ) ) {
+				$images[] = 'image/gif';
+			}
+
+			if ( 'image' === $which ) {
+				return $images;
+			}
+			if ( 'video' === $which ) {
+				return $videos;
+			}
+			return array_merge( $images, $videos );
+		}
+
+		/**
+		 * Attachment IDs waiting for the bulk optimizer.
+		 *
+		 * @since 0.1.0
+		 * @param string $scope        all|image|video.
+		 * @param bool   $retry_failed Also queue files that failed / were skipped.
+		 * @return int[]
+		 */
+		public static function get_queue_ids( $scope = 'all', $retry_failed = false ) {
+			global $wpdb;
+
+			$scope        = in_array( $scope, array( 'all', 'image', 'video' ), true ) ? $scope : 'all';
+			$mimes        = self::get_mimes( $scope );
+			$placeholders = implode( ',', array_fill( 0, count( $mimes ), '%s' ) );
+			$table        = esc_sql( Capms_Stats::table() );
+			$statuses     = $retry_failed ? array( 'optimized' ) : array( 'optimized', 'failed', 'skipped' );
+			$status_holds = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+			$ids = $wpdb->get_col( $wpdb->prepare( "SELECT p.ID FROM {$wpdb->posts} p LEFT JOIN {$table} m ON m.attachment_id = p.ID WHERE p.post_type = 'attachment' AND p.post_mime_type IN ($placeholders) AND ( m.status IS NULL OR m.status NOT IN ($status_holds) ) ORDER BY p.ID DESC", array_merge( $mimes, $statuses ) ) );
+
+			return array_map( 'intval', (array) $ids );
 		}
 
 		/**
@@ -330,7 +529,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		 */
 		private function queue_video( $attachment_id, $entry ) {
 			$settings = Capms_Settings::get_all();
-			$wanted   = ! empty( $settings['video_enabled'] ) || ! empty( $settings['webm_enabled'] ) || ! empty( $settings['faststart_enabled'] );
+			$wanted   = ! empty( $settings['video_enabled'] ) || ! empty( $settings['webm_enabled'] ) || ! empty( $settings['faststart_enabled'] ) || ! empty( $settings['video_poster'] );
 
 			if ( ! $wanted || ! Capms_Video_Optimizer::available() ) {
 				$message = $wanted ? __( 'FFmpeg is not available on this server - video skipped.', 'captain-media-shield' ) : __( 'Video optimization is turned off.', 'captain-media-shield' );
@@ -554,7 +753,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			}
 
 			foreach ( array_unique( $candidates ) as $path ) {
-				foreach ( array( 'webp', 'avif', 'webm' ) as $ext ) {
+				foreach ( array( 'webp', 'avif', 'webm', 'mp4', 'poster.jpg' ) as $ext ) {
 					if ( is_file( $path . '.' . $ext ) ) {
 						wp_delete_file( $path . '.' . $ext );
 					}
@@ -574,6 +773,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			Capms_Backup::delete_backup( $attachment_id );
 			Capms_Stats::delete( $attachment_id );
 			wp_clear_scheduled_hook( 'capms_process_video_event', array( (int) $attachment_id ) );
+			wp_clear_scheduled_hook( 'capms_process_gif_event', array( (int) $attachment_id ) );
 		}
 
 		/**

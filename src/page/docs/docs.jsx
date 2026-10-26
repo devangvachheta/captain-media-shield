@@ -3,6 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { Link, useLocation, Routes, Route, Navigate } from 'react-router-dom';
 import './docs.scss';
 import { Overview, Dashboard, Images, WebpAvif, Videos, Bulk, Delivery } from './articles.jsx';
+import { Cleanup, Extras } from './articles3.jsx';
 import { Backups, MediaLibrary, Settings, Health, HowItWorks, Privacy, Developer, Troubleshooting } from './articles2.jsx';
 
 const T = 'captain-media-shield';
@@ -16,6 +17,8 @@ const DOC_LINKS = [
     { path: '/docs/bulk',            label: __( 'Bulk Optimizer', T ) },
     { path: '/docs/delivery',        label: __( 'Serving WebP and AVIF', T ) },
     { path: '/docs/backups',         label: __( 'Backup & Retention', T ) },
+    { path: '/docs/cleanup',        label: __( 'Media Cleanup & Storage Report', T ) },
+    { path: '/docs/extras',         label: __( 'GIF to Video, Exclude Rules, Nginx & WP-CLI', T ) },
     { path: '/docs/media-library',   label: __( 'Media Library Integration', T ) },
     { path: '/docs/settings',        label: __( 'All Settings at a Glance', T ) },
     { path: '/docs/health',          label: __( 'Server Health', T ) },
@@ -64,6 +67,8 @@ const Docs = () => (
                     <Route path="bulk"            element={ <Bulk /> } />
                     <Route path="delivery"        element={ <Delivery /> } />
                     <Route path="backups"         element={ <Backups /> } />
+                    <Route path="cleanup"         element={ <Cleanup /> } />
+                    <Route path="extras"          element={ <Extras /> } />
                     <Route path="media-library"   element={ <MediaLibrary /> } />
                     <Route path="settings"        element={ <Settings /> } />
                     <Route path="health"          element={ <Health /> } />

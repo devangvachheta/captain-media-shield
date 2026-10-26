@@ -90,6 +90,16 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 				case 'run_cleanup':
 					$response = $this->run_cleanup();
 					break;
+				case 'get_nginx_snippet':
+					$response = $this->get_nginx_snippet();
+					break;
+				case 'cleanup_ids':
+				case 'cleanup_scan':
+				case 'cleanup_delete':
+				case 'cleanup_clean_thumbs':
+				case 'cleanup_duplicate_groups':
+					$response = $this->cleanup_request( $type );
+					break;
 				default:
 					$response = $this->capms_set_response( false, esc_html__( 'Invalid type.', 'captain-media-shield' ), esc_html__( 'Something went wrong.', 'captain-media-shield' ) );
 					break;
@@ -223,15 +233,7 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 		 * @return array
 		 */
 		private function get_mimes( $which = 'all' ) {
-			$images = apply_filters( 'capms_supported_image_mimes', Capms_Image_Optimizer::SUPPORTED_MIMES );
-			$videos = apply_filters( 'capms_supported_video_mimes', Capms_Video_Optimizer::SUPPORTED_MIMES );
-			if ( 'image' === $which ) {
-				return $images;
-			}
-			if ( 'video' === $which ) {
-				return $videos;
-			}
-			return array_merge( $images, $videos );
+			return Capms_Processor::get_mimes( $which );
 		}
 
 		/**
@@ -272,29 +274,17 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 		 * @return array
 		 */
 		private function get_bulk_queue() {
-			global $wpdb;
-
 			// phpcs:disable WordPress.Security.NonceVerification.Missing -- verified in router.
 			$scope        = isset( $_POST['scope'] ) ? sanitize_key( wp_unslash( $_POST['scope'] ) ) : 'all';
 			$retry_failed = ! empty( $_POST['retry_failed'] );
 			// phpcs:enable
-
-			$scope        = in_array( $scope, array( 'all', 'image', 'video' ), true ) ? $scope : 'all';
-			$mimes        = $this->get_mimes( $scope );
-			$placeholders = implode( ',', array_fill( 0, count( $mimes ), '%s' ) );
-			$table        = esc_sql( Capms_Stats::table() );
-			$statuses     = $retry_failed ? array( 'optimized' ) : array( 'optimized', 'failed', 'skipped' );
-			$status_holds = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
-
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
-			$ids = $wpdb->get_col( $wpdb->prepare( "SELECT p.ID FROM {$wpdb->posts} p LEFT JOIN {$table} m ON m.attachment_id = p.ID WHERE p.post_type = 'attachment' AND p.post_mime_type IN ($placeholders) AND ( m.status IS NULL OR m.status NOT IN ($status_holds) ) ORDER BY p.ID DESC", array_merge( $mimes, $statuses ) ) );
 
 			return $this->capms_set_response(
 				true,
 				'',
 				'',
 				array(
-					'ids'     => array_map( 'intval', (array) $ids ),
+					'ids'     => Capms_Processor::get_queue_ids( $scope, $retry_failed ),
 					'library' => $this->count_library(),
 				)
 			);
@@ -351,6 +341,111 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 					'row'   => $result,
 				)
 			);
+		}
+
+		/**
+		 * Nginx rules for AVIF / WebP delivery.
+		 *
+		 * @since 0.1.0
+		 * @return array
+		 */
+		private function get_nginx_snippet() {
+			return $this->capms_set_response(
+				true,
+				'',
+				'',
+				array(
+					'snippet' => Capms_Delivery::get_nginx_snippet(),
+					'nginx'   => ! empty( $_SERVER['SERVER_SOFTWARE'] ) && false !== stripos( sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ), 'nginx' ),
+				)
+			);
+		}
+
+		/**
+		 * Read a list of attachment IDs from the request (JSON array).
+		 *
+		 * @since 0.1.0
+		 * @param string $key   POST key.
+		 * @param int    $limit Maximum IDs.
+		 * @return int[]
+		 */
+		private function read_ids( $key = 'ids', $limit = 60 ) {
+			$raw = isset( $_POST[ $key ] ) ? json_decode( (string) wp_unslash( $_POST[ $key ] ), true ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified in router; IDs are cast to int below.
+			return array_slice( array_values( array_filter( array_map( 'absint', is_array( $raw ) ? $raw : array() ) ) ), 0, $limit );
+		}
+
+		/**
+		 * Storage cleanup + report requests (batched by the browser).
+		 *
+		 * @since 0.1.0
+		 * @param string $type Request type.
+		 * @return array
+		 */
+		private function cleanup_request( $type ) {
+			if ( function_exists( 'set_time_limit' ) ) {
+				@set_time_limit( 120 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			}
+
+			// phpcs:disable WordPress.Security.NonceVerification.Missing -- verified in router.
+			$mode   = isset( $_POST['mode'] ) ? sanitize_key( wp_unslash( $_POST['mode'] ) ) : '';
+			$strict = ! empty( $_POST['strict'] );
+			$keep   = ! isset( $_POST['keep'] ) || ! empty( $_POST['keep'] );
+			// phpcs:enable
+
+			switch ( $type ) {
+				case 'cleanup_ids':
+					$registered = function_exists( 'wp_get_registered_image_subsizes' ) ? array_keys( wp_get_registered_image_subsizes() ) : get_intermediate_image_sizes();
+					return $this->capms_set_response(
+						true,
+						'',
+						'',
+						array(
+							'ids'              => Capms_Cleanup::get_attachment_ids(),
+							'estimate_ratio'   => Capms_Cleanup::estimate_ratio(),
+							'registered_sizes' => $registered,
+						)
+					);
+
+				case 'cleanup_scan':
+					$ids = $this->read_ids( 'ids', 'hash' === $mode || 'sizes' === $mode ? 100 : 25 );
+					switch ( $mode ) {
+						case 'unused':
+							return $this->capms_set_response( true, '', '', Capms_Cleanup::scan_unused( $ids, $strict ) );
+						case 'sizes':
+							return $this->capms_set_response( true, '', '', array( 'sizes' => (object) Capms_Cleanup::scan_sizes( $ids ) ) );
+						case 'hash':
+							return $this->capms_set_response( true, '', '', array( 'hashes' => (object) Capms_Cleanup::hash_files( array_slice( $ids, 0, 15 ) ) ) );
+						case 'thumbs':
+							return $this->capms_set_response( true, '', '', Capms_Cleanup::scan_thumbnails( $ids ) );
+						case 'storage':
+							return $this->capms_set_response( true, '', '', array( 'items' => Capms_Cleanup::scan_storage( $ids ) ) );
+					}
+					return $this->capms_set_response( false, esc_html__( 'Invalid scan.', 'captain-media-shield' ) );
+
+				case 'cleanup_duplicate_groups':
+					$raw    = isset( $_POST['groups'] ) ? json_decode( (string) wp_unslash( $_POST['groups'] ), true ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified in router; IDs are cast to int.
+					$groups = array();
+					foreach ( is_array( $raw ) ? array_slice( $raw, 0, 25 ) : array() as $group ) {
+						$groups[] = is_array( $group ) ? array_map( 'absint', $group ) : array();
+					}
+					return $this->capms_set_response( true, '', '', array( 'groups' => Capms_Cleanup::describe_duplicate_groups( $groups ) ) );
+
+				case 'cleanup_delete':
+					$result = Capms_Cleanup::delete_unused( $this->read_ids( 'ids', 40 ), $strict, $keep );
+					return $this->capms_set_response(
+						true,
+						/* translators: 1: number of files, 2: size */
+						sprintf( __( 'Deleted %1$d file(s), freed %2$s.', 'captain-media-shield' ), count( $result['deleted'] ), size_format( $result['bytes'], 2 ) ? size_format( $result['bytes'], 2 ) : '0 B' ),
+						'',
+						$result
+					);
+
+				case 'cleanup_clean_thumbs':
+					$result = Capms_Cleanup::clean_thumbnails( $this->read_ids( 'ids', 25 ) );
+					return $this->capms_set_response( true, '', '', $result );
+			}
+
+			return $this->capms_set_response( false, esc_html__( 'Invalid type.', 'captain-media-shield' ) );
 		}
 
 		/**

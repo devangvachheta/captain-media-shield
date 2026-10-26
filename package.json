@@ -1,6 +1,6 @@
 {
   "name": "captain-media-shield",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "All-in-one free Image & Video Optimizer, WebP/AVIF Converter, Video Compressor (WebM/Fast Start), Metadata Stripper, and Server Storage Saver for WordPress.",
   "main": "index.js",
   "scripts": {

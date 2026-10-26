@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { __ } from '@wordpress/i18n';
 import { toggleTheme, toggleSidebar } from '../../redux/slice.jsx';
-import { IconDashboard, IconImage, IconVideo, IconBackup, IconBulk, IconHealth, IconDocs } from '../../components/icons.jsx';
+import { IconDashboard, IconImage, IconVideo, IconBackup, IconBulk, IconHealth, IconDocs, IconDatabase, IconTrash } from '../../components/icons.jsx';
 
 const PLUGIN_VERSION = ( typeof capms_data !== 'undefined' && capms_data?.capms_version ) ? capms_data.capms_version : '0.0.1';
 
@@ -166,6 +166,14 @@ const Navigation = () => {
                                 <Link to="/backup" className={ subLinkClass( '/backup' ) } onClick={ closeMobile }>
                                     <span className="capms-nav-icon"><IconBackup /></span>
                                     <span>{ __( 'Backup & Retention', 'captain-media-shield' ) }</span>
+                                </Link>
+                                <Link to="/storage" className={ subLinkClass( '/storage' ) } onClick={ closeMobile }>
+                                    <span className="capms-nav-icon"><IconDatabase /></span>
+                                    <span>{ __( 'Storage Report', 'captain-media-shield' ) }</span>
+                                </Link>
+                                <Link to="/cleanup" className={ subLinkClass( '/cleanup' ) } onClick={ closeMobile }>
+                                    <span className="capms-nav-icon"><IconTrash /></span>
+                                    <span>{ __( 'Media Cleanup', 'captain-media-shield' ) }</span>
                                 </Link>
                                 <Link to="/health" className={ subLinkClass( '/health' ) } onClick={ closeMobile }>
                                     <span className="capms-nav-icon"><IconHealth /></span>

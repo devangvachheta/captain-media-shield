@@ -120,7 +120,119 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 				}
 			}
 
+			// 3) Poster image (first second of the video).
+			if ( ! empty( $settings['video_poster'] ) ) {
+				$poster = self::generate_poster( $ffmpeg, $file );
+				if ( is_wp_error( $poster ) ) {
+					$result['notes'][] = $poster->get_error_message();
+				}
+			}
+
 			return $result;
+		}
+
+		/**
+		 * Is the GIF to video pipeline switched on and usable?
+		 *
+		 * @since 0.1.0
+		 * @return bool
+		 */
+		public static function gif_available() {
+			return ! empty( Capms_Settings::get( 'gif_to_video' ) ) && self::available() && Capms_Environment::ffmpeg_has_encoder( 'libx264' );
+		}
+
+		/**
+		 * Write a JPEG poster frame next to the video (video.mp4 ->
+		 * video.mp4.poster.jpg). Used as the poster of the front-end
+		 * <video> tag so the first paint is instant.
+		 *
+		 * @since 0.1.0
+		 * @param string $ffmpeg Binary.
+		 * @param string $file   Video path.
+		 * @return int|WP_Error Poster size in bytes.
+		 */
+		public static function generate_poster( $ffmpeg, $file ) {
+			$dest = $file . '.poster.jpg';
+			$tmp  = $file . '.poster-part.jpg';
+
+			// Try one second in (skips black first frames), then frame 0.
+			foreach ( array( '1', '0' ) as $seek ) {
+				$run = self::run(
+					$ffmpeg,
+					array( '-y', '-hide_banner', '-loglevel', 'error', '-ss', $seek, '-i', $file, '-frames:v', '1', '-vf', "scale='min(1280,iw)':-2", '-q:v', '4', $tmp )
+				);
+				clearstatcache();
+				if ( ! is_wp_error( $run ) && is_file( $tmp ) && filesize( $tmp ) > 0 ) {
+					break;
+				}
+				wp_delete_file( $tmp );
+			}
+
+			if ( ! is_file( $tmp ) || filesize( $tmp ) <= 0 ) {
+				wp_delete_file( $tmp );
+				return new WP_Error( 'capms_poster_failed', __( 'Could not create a poster image.', 'captain-media-shield' ) );
+			}
+
+			if ( ! Capms_Image_Optimizer::replace_file( $tmp, $dest ) ) {
+				return new WP_Error( 'capms_poster_move', __( 'Could not save the poster image.', 'captain-media-shield' ) );
+			}
+
+			return (int) filesize( $dest );
+		}
+
+		/**
+		 * Convert an animated GIF to MP4 (and WebM when VP9 is available).
+		 * The GIF itself is never touched: animation.gif gets the
+		 * companions animation.gif.mp4 / animation.gif.webm.
+		 *
+		 * @since 0.1.0
+		 * @param string $file GIF path.
+		 * @return array|WP_Error { mp4_size, webm_size }
+		 */
+		public static function convert_gif( $file ) {
+			$ffmpeg = Capms_Environment::get_ffmpeg();
+			if ( ! $ffmpeg ) {
+				return new WP_Error( 'capms_no_ffmpeg', __( 'FFmpeg is not available on this server - GIF skipped.', 'captain-media-shield' ) );
+			}
+			if ( ! Capms_Environment::ffmpeg_has_encoder( 'libx264' ) ) {
+				return new WP_Error( 'capms_no_x264', __( 'This FFmpeg build has no H.264 (libx264) encoder - GIF skipped.', 'captain-media-shield' ) );
+			}
+			if ( function_exists( 'set_time_limit' ) ) {
+				@set_time_limit( 0 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			}
+
+			$even = 'scale=trunc(iw/2)*2:trunc(ih/2)*2';
+			$out  = array(
+				'mp4_size'  => 0,
+				'webm_size' => 0,
+			);
+
+			// MP4 (H.264).
+			$mp4_tmp = $file . '.part.mp4';
+			$run     = self::run( $ffmpeg, array( '-y', '-hide_banner', '-loglevel', 'error', '-i', $file, '-an', '-c:v', 'libx264', '-preset', 'medium', '-crf', '26', '-pix_fmt', 'yuv420p', '-vf', $even, '-movflags', '+faststart', $mp4_tmp ) );
+			clearstatcache();
+			if ( is_wp_error( $run ) || ! is_file( $mp4_tmp ) || filesize( $mp4_tmp ) <= 0 ) {
+				wp_delete_file( $mp4_tmp );
+				return is_wp_error( $run ) ? $run : new WP_Error( 'capms_gif_empty', __( 'GIF conversion produced no output.', 'captain-media-shield' ) );
+			}
+			if ( ! Capms_Image_Optimizer::replace_file( $mp4_tmp, $file . '.mp4' ) ) {
+				return new WP_Error( 'capms_gif_move', __( 'Could not save the converted GIF.', 'captain-media-shield' ) );
+			}
+			$out['mp4_size'] = (int) filesize( $file . '.mp4' );
+
+			// WebM (VP9) - optional.
+			if ( Capms_Environment::ffmpeg_has_encoder( 'libvpx-vp9' ) ) {
+				$webm_tmp = $file . '.part.webm';
+				$run      = self::run( $ffmpeg, array( '-y', '-hide_banner', '-loglevel', 'error', '-i', $file, '-an', '-c:v', 'libvpx-vp9', '-crf', '33', '-b:v', '0', '-row-mt', '1', '-deadline', 'good', '-cpu-used', '4', '-pix_fmt', 'yuv420p', '-vf', $even, $webm_tmp ) );
+				clearstatcache();
+				if ( ! is_wp_error( $run ) && is_file( $webm_tmp ) && filesize( $webm_tmp ) > 0 && Capms_Image_Optimizer::replace_file( $webm_tmp, $file . '.webm' ) ) {
+					$out['webm_size'] = (int) filesize( $file . '.webm' );
+				} else {
+					wp_delete_file( $webm_tmp );
+				}
+			}
+
+			return $out;
 		}
 
 		/**

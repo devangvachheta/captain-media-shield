@@ -55,6 +55,35 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		}
 
 		/**
+		 * Does this GIF contain more than one frame?
+		 *
+		 * @since 0.1.0
+		 * @param string $file Absolute path.
+		 * @return bool
+		 */
+		public static function is_animated_gif( $file ) {
+			$handle = is_file( $file ) ? fopen( $file, 'rb' ) : false; // phpcs:ignore WordPress.WP.AlternativeFunctions
+			if ( ! $handle ) {
+				return false;
+			}
+
+			$frames = 0;
+			$tail   = '';
+			while ( ! feof( $handle ) && $frames < 2 ) {
+				$chunk = fread( $handle, 102400 ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+				if ( false === $chunk || '' === $chunk ) {
+					break;
+				}
+				$data    = $tail . $chunk;
+				$frames += (int) preg_match_all( '#\x00\x21\xF9\x04.{4}\x00[\x2C\x21]#s', $data );
+				$tail    = substr( $data, -9 );
+			}
+			fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+
+			return $frames > 1;
+		}
+
+		/**
 		 * First pass on a freshly uploaded original: auto-rotate from EXIF
 		 * orientation (before that tag is stripped) and downscale anything
 		 * over the configured max dimensions.

@@ -112,18 +112,25 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 				/* translators: 1: saved size, 2: percent */
 				$html .= '<span>' . esc_html( sprintf( __( 'Saved %1$s (%2$s%%)', 'captain-media-shield' ), size_format( $saved, 1 ) ? size_format( $saved, 1 ) : '0 B', $pct ) ) . '</span>';
 
-				$badges = array();
-				if ( (int) $row['webp_size'] > 0 ) {
-					$badges[] = 'WebP';
-				}
-				if ( (int) $row['avif_size'] > 0 ) {
-					$badges[] = 'AVIF';
-				}
-				if ( (int) $row['webm_size'] > 0 ) {
-					$badges[] = 'WebM';
+				// Direct links to the converted copies. They sit next to the original
+				// with the format added to the end of its URL (photo.jpg.webp).
+				$original_url = wp_get_attachment_url( $attachment_id );
+				$formats      = array(
+					'WebP' => array( 'webp_size', 'webp' ),
+					'AVIF' => array( 'avif_size', 'avif' ),
+					'WebM' => array( 'webm_size', 'webm' ),
+				);
+				$badges       = array();
+				foreach ( $formats as $label => $format ) {
+					if ( (int) $row[ $format[0] ] <= 0 ) {
+						continue;
+					}
+					$badges[] = $original_url
+						? '<a href="' . esc_url( $original_url . '.' . $format[1] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $label ) . '</a>'
+						: esc_html( $label );
 				}
 				if ( $badges ) {
-					$html .= '<span class="capms-ml-badges">' . esc_html( implode( ' · ', $badges ) ) . '</span>';
+					$html .= '<span class="capms-ml-badges">' . implode( ' · ', $badges ) . '</span>'; // Each badge is escaped above.
 				}
 				if ( ! empty( $row['backup_path'] ) ) {
 					$html .= '<a href="' . esc_url( $this->action_url( 'restore', $attachment_id ) ) . '" onclick="return confirm(\'' . esc_js( __( 'Restore the original file? Optimized and WebP/AVIF/WebM versions will be removed.', 'captain-media-shield' ) ) . '\');">' . esc_html__( 'Restore Original', 'captain-media-shield' ) . '</a>';

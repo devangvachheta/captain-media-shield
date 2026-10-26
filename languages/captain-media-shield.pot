@@ -2,22 +2,22 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Captain Media Shield 0.0.1\n"
+"Project-Id-Version: Captain Media Shield 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/captain-media-shield\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-19T10:25:21+00:00\n"
+"POT-Creation-Date: 2026-10-26T13:21:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: captain-media-shield\n"
 
 #. Plugin Name of the plugin
 #: captain-media-shield.php
+#: includes/admin/class-capms-menu.php:73
 #: includes/admin/class-capms-menu.php:74
-#: includes/admin/class-capms-menu.php:75
 #: build/index.js:1
 msgid "Captain Media Shield"
 msgstr ""
@@ -50,59 +50,70 @@ msgid "Invalid Permission."
 msgstr ""
 
 #: includes/admin/class-capms-dashboard-ajax.php:63
-#: includes/admin/class-capms-media-library.php:238
+#: includes/admin/class-capms-media-library.php:245
 msgid "You do not have permission to do this."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:94
+#: includes/admin/class-capms-dashboard-ajax.php:104
+#: includes/admin/class-capms-dashboard-ajax.php:448
 msgid "Invalid type."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:94
+#: includes/admin/class-capms-dashboard-ajax.php:104
 msgid "Something went wrong."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:131
+#: includes/admin/class-capms-dashboard-ajax.php:141
 msgid "Invalid settings payload."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:138
+#: includes/admin/class-capms-dashboard-ajax.php:148
 msgid "Your server does not look like Apache/LiteSpeed - .htaccess rewrites may be ignored. Consider the <picture> tag method."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:140
+#: includes/admin/class-capms-dashboard-ajax.php:150
 msgid "Could not write uploads/.htaccess - check file permissions."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:145
+#: includes/admin/class-capms-dashboard-ajax.php:155
 #: build/backup.js:1
 #: build/images.js:1
 #: build/videos.js:1
 msgid "Settings saved."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:311
+#: includes/admin/class-capms-dashboard-ajax.php:302
 msgid "Invalid attachment."
 msgstr ""
 
+#: includes/admin/class-capms-dashboard-ajax.php:423
+msgid "Invalid scan."
+msgstr ""
+
 #. translators: 1: number of files, 2: size
-#: includes/admin/class-capms-dashboard-ajax.php:366
+#: includes/admin/class-capms-dashboard-ajax.php:438
+#, php-format
+msgid "Deleted %1$d file(s), freed %2$s."
+msgstr ""
+
+#. translators: 1: number of files, 2: size
+#: includes/admin/class-capms-dashboard-ajax.php:462
 #, php-format
 msgid "Purged %1$d backup file(s), freed %2$s."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:380
+#: includes/admin/class-capms-dashboard-ajax.php:476
 msgid "Retention is set to \"Never\" - nothing to clean up automatically."
 msgstr ""
 
 #. translators: %d: number of backups removed
-#: includes/admin/class-capms-dashboard-ajax.php:387
+#: includes/admin/class-capms-dashboard-ajax.php:483
 #, php-format
 msgid "Cleanup finished - %d expired backup(s) removed."
 msgstr ""
 
 #: includes/admin/class-capms-media-library.php:71
-#: includes/admin/class-capms-media-library.php:191
+#: includes/admin/class-capms-media-library.php:198
 msgid "Media Shield"
 msgstr ""
 
@@ -121,74 +132,74 @@ msgstr ""
 msgid "Saved %1$s (%2$s%%)"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:129
+#: includes/admin/class-capms-media-library.php:136
 msgid "Restore the original file? Optimized and WebP/AVIF/WebM versions will be removed."
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:129
-#: includes/admin/class-capms-media-library.php:168
+#: includes/admin/class-capms-media-library.php:136
+#: includes/admin/class-capms-media-library.php:175
 msgid "Restore Original"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:131
+#: includes/admin/class-capms-media-library.php:138
 msgid "No backup kept"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:134
+#: includes/admin/class-capms-media-library.php:141
 #: build/index.js:1
 msgid "Queued"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:135
+#: includes/admin/class-capms-media-library.php:142
 msgid "Processing in background…"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:138
+#: includes/admin/class-capms-media-library.php:145
 msgid "Failed"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:138
+#: includes/admin/class-capms-media-library.php:145
 msgid "Skipped"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:143
+#: includes/admin/class-capms-media-library.php:150
 msgid "Original restored"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:145
+#: includes/admin/class-capms-media-library.php:152
 msgid "Not optimized"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:147
+#: includes/admin/class-capms-media-library.php:154
 msgid "Optimize Now"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:234
+#: includes/admin/class-capms-media-library.php:241
 msgid "Invalid request."
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:252
+#: includes/admin/class-capms-media-library.php:259
 msgid "Original file restored."
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:252
+#: includes/admin/class-capms-media-library.php:259
 msgid "File optimized."
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:283
+#: includes/admin/class-capms-media-library.php:290
 msgid "Captain Media Shield:"
 msgstr ""
 
-#: includes/admin/class-capms-menu.php:114
+#: includes/admin/class-capms-menu.php:91
 #: build/index.js:1
 msgid "Dashboard"
 msgstr ""
 
-#: includes/admin/class-capms-menu.php:115
+#: includes/admin/class-capms-menu.php:92
 msgid "Bulk Optimize"
 msgstr ""
 
-#: includes/admin/class-capms-menu.php:116
+#: includes/admin/class-capms-menu.php:93
 msgid "Docs"
 msgstr ""
 
@@ -212,24 +223,47 @@ msgstr ""
 msgid "Original restored."
 msgstr ""
 
-#: includes/core/class-capms-processor.php:201
+#: includes/core/class-capms-processor.php:187
+#: includes/core/class-capms-processor.php:247
+msgid "Excluded by your exclude rules."
+msgstr ""
+
+#: includes/core/class-capms-processor.php:231
 msgid "File not found on disk."
 msgstr ""
 
-#: includes/core/class-capms-processor.php:248
+#: includes/core/class-capms-processor.php:296
 msgid "Unsupported file type."
 msgstr ""
 
-#: includes/core/class-capms-processor.php:336
+#: includes/core/class-capms-processor.php:370
+msgid "GIF to video is turned off."
+msgstr ""
+
+#: includes/core/class-capms-processor.php:372
+msgid "FFmpeg with H.264 is not available on this server - GIF skipped."
+msgstr ""
+
+#: includes/core/class-capms-processor.php:374
+msgid "Not an animated GIF."
+msgstr ""
+
+#. translators: 1: MP4 size, 2: original GIF size
+#: includes/core/class-capms-processor.php:395
+#, php-format
+msgid "Visitors now get an MP4 (%1$s) instead of the %2$s GIF."
+msgstr ""
+
+#: includes/core/class-capms-processor.php:535
 #: includes/core/class-capms-video-optimizer.php:83
 msgid "FFmpeg is not available on this server - video skipped."
 msgstr ""
 
-#: includes/core/class-capms-processor.php:336
+#: includes/core/class-capms-processor.php:535
 msgid "Video optimization is turned off."
 msgstr ""
 
-#: includes/core/class-capms-processor.php:364
+#: includes/core/class-capms-processor.php:563
 msgid "Queued for background optimization."
 msgstr ""
 
@@ -237,28 +271,52 @@ msgstr ""
 msgid "Video file not found."
 msgstr ""
 
-#: includes/core/class-capms-video-optimizer.php:203
+#: includes/core/class-capms-video-optimizer.php:173
+msgid "Could not create a poster image."
+msgstr ""
+
+#: includes/core/class-capms-video-optimizer.php:177
+msgid "Could not save the poster image."
+msgstr ""
+
+#: includes/core/class-capms-video-optimizer.php:195
+msgid "FFmpeg is not available on this server - GIF skipped."
+msgstr ""
+
+#: includes/core/class-capms-video-optimizer.php:198
+msgid "This FFmpeg build has no H.264 (libx264) encoder - GIF skipped."
+msgstr ""
+
+#: includes/core/class-capms-video-optimizer.php:216
+msgid "GIF conversion produced no output."
+msgstr ""
+
+#: includes/core/class-capms-video-optimizer.php:219
+msgid "Could not save the converted GIF."
+msgstr ""
+
+#: includes/core/class-capms-video-optimizer.php:315
 msgid "FFmpeg produced no output."
 msgstr ""
 
-#: includes/core/class-capms-video-optimizer.php:233
+#: includes/core/class-capms-video-optimizer.php:345
 msgid "This FFmpeg build has no VP9 (libvpx-vp9) encoder - WebM skipped."
 msgstr ""
 
-#: includes/core/class-capms-video-optimizer.php:275
+#: includes/core/class-capms-video-optimizer.php:387
 msgid "WebM conversion produced no output."
 msgstr ""
 
-#: includes/core/class-capms-video-optimizer.php:279
+#: includes/core/class-capms-video-optimizer.php:391
 msgid "Could not save the WebM file."
 msgstr ""
 
-#: includes/core/class-capms-video-optimizer.php:295
+#: includes/core/class-capms-video-optimizer.php:407
 msgid "exec() is disabled on this server."
 msgstr ""
 
 #. translators: %s: last lines of the ffmpeg error output
-#: includes/core/class-capms-video-optimizer.php:308
+#: includes/core/class-capms-video-optimizer.php:420
 #, php-format
 msgid "FFmpeg failed: %s"
 msgstr ""
@@ -639,6 +697,8 @@ msgid "Resume"
 msgstr ""
 
 #: build/bulk.js:1
+#: build/cleanup.js:1
+#: build/storage.js:1
 msgid "Stop"
 msgstr ""
 
@@ -648,6 +708,245 @@ msgstr ""
 
 #: build/bulk.js:1
 msgid "Live Activity"
+msgstr ""
+
+#: build/cleanup.js:1
+#: build/storage.js:1
+msgid "Scan again"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Deselect all"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Select all"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Find media that is not used anywhere"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Every file is checked against post content, featured images, galleries, widgets, theme settings, page-builder data and custom fields. Anything that looks even possibly in use is left out of the list."
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Stricter scan: also list files that are only \"attached\" to a post (uploaded there) but not actually used in it"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Checking where every file is used"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Scan for unused media"
+msgstr ""
+
+#. translators: 1: deleted count, 2: size freed, 3: skipped count
+#: build/cleanup.js:1
+#, js-format
+msgid "Deleted %1$d file(s) and freed %2$s. %3$d file(s) were skipped because they are in use now."
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "No unused media found. Your library looks tidy."
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Unused files"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Could be freed"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Originals, thumbnails and our copies"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Selected"
+msgstr ""
+
+#. translators: %d: number of selected files
+#. translators: %d: number of selected copies
+#: build/cleanup.js:1
+#, js-format
+msgid "Delete %d selected"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Delete unused media?"
+msgstr ""
+
+#. translators: %d: number of files
+#: build/cleanup.js:1
+#, js-format
+msgid "Delete %d file(s)"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "These files are removed from the Media Library and from the disk, together with their thumbnails and WebP/AVIF copies. Each file is checked once more right before it is deleted."
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Keep a copy of every original in the backup folder (deleted/)"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Find identical files"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Files are compared by size first and then by a content fingerprint, so only byte-for-byte identical copies are reported - never \"similar\" images."
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Comparing file sizes"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Fingerprinting possible duplicates"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Reading details"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Scan for duplicates"
+msgstr ""
+
+#. translators: 1: deleted count, 2: size freed, 3: skipped count
+#: build/cleanup.js:1
+#, js-format
+msgid "Deleted %1$d copy/copies and freed %2$s. %3$d were skipped because they are in use."
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "No duplicate files found."
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "A copy that is still used somewhere is marked \"In use\" and cannot be deleted from here. Replace it in your content with the copy you keep, then scan again."
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Duplicate groups"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Wasted space"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Unused extra copies are pre-selected. The copy that is in use (or the oldest one) is kept."
+msgstr ""
+
+#. translators: 1: group number, 2: copies
+#: build/cleanup.js:1
+#, js-format
+msgid "Group %1$d · %2$d identical files"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Keep"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "In use"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Delete duplicate copies?"
+msgstr ""
+
+#. translators: %d: number of files
+#: build/cleanup.js:1
+#, js-format
+msgid "Delete %d copy/copies"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "The selected copies are removed from the Media Library and the disk. Usage is checked again for every file right before it is deleted."
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Find thumbnail sizes that are no longer registered"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Changing themes or removing plugins leaves old thumbnail files behind. This finds files for sizes your site does not register any more and that no content refers to."
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Looking for thumbnail sizes nothing uses"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Scan thumbnails"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Some themes and plugins only register image sizes on certain pages. If your front end uses a size that is not registered while you are in the admin, a missing size can be regenerated later with any \"regenerate thumbnails\" tool. Review the list before deleting."
+msgstr ""
+
+#. translators: %s: comma separated size names
+#: build/cleanup.js:1
+#, js-format
+msgid "Sizes your site registers right now (always kept): %s"
+msgstr ""
+
+#. translators: 1: files, 2: size freed
+#: build/cleanup.js:1
+#, js-format
+msgid "Deleted %1$d thumbnail file(s) and freed %2$s."
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "No unused thumbnail sizes found."
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Images with leftovers"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Delete unused thumbnails"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Delete unused thumbnails?"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Delete thumbnails"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Only the leftover thumbnail files (and their WebP/AVIF copies) are removed. The original images are never touched."
+msgstr ""
+
+#: build/cleanup.js:1
+#: build/index.js:1
+msgid "Media Cleanup"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Take back disk space: remove files nothing uses, identical copies and leftover thumbnails. Nothing is deleted until you confirm."
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Unused Media"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Duplicate Files"
+msgstr ""
+
+#: build/cleanup.js:1
+msgid "Unused Thumbnails"
 msgstr ""
 
 #: build/health.js:1
@@ -953,6 +1252,70 @@ msgid "HTML <picture> tag replacement"
 msgstr ""
 
 #: build/images.js:1
+msgid "Nginx Rules"
+msgstr ""
+
+#: build/images.js:1
+msgid "Running Nginx? Nginx ignores .htaccess, but these rules give you the same result: AVIF/WebP served from the original image URL, no HTML changes. Generated from your current format settings."
+msgstr ""
+
+#: build/images.js:1
+msgid "Nginx configuration snippet"
+msgstr ""
+
+#: build/images.js:1
+msgid "Copy it into your Nginx config and reload. The plugin cannot edit Nginx for you, so nothing changes until you do."
+msgstr ""
+
+#: build/images.js:1
+msgid "Hide rules"
+msgstr ""
+
+#: build/images.js:1
+msgid "Show Nginx rules"
+msgstr ""
+
+#: build/images.js:1
+msgid "Copied!"
+msgstr ""
+
+#: build/images.js:1
+msgid "Copy"
+msgstr ""
+
+#: build/images.js:1
+msgid "Nginx rules"
+msgstr ""
+
+#: build/images.js:1
+msgid "Exclude Rules"
+msgstr ""
+
+#: build/images.js:1
+msgid "Files that match these rules are never resized, compressed or converted, and are skipped by the Bulk Optimizer. Handy for logos, print files or anything you want kept exactly as uploaded."
+msgstr ""
+
+#: build/images.js:1
+msgid "Folders and file patterns"
+msgstr ""
+
+#: build/images.js:1
+msgid "One per line, matched against the path inside your uploads folder (for example 2025/03/photo.jpg). Plain text matches anywhere in the path, so \"private/\" skips a whole folder. Use * as a wildcard, for example *-original.png."
+msgstr ""
+
+#: build/images.js:1
+msgid "Excluded folders and file patterns"
+msgstr ""
+
+#: build/images.js:1
+msgid "Attachment IDs"
+msgstr ""
+
+#: build/images.js:1
+msgid "Comma separated. Found in the Media Library URL (post=123). ID rules apply to the Bulk Optimizer and to WebP/AVIF creation; use a folder or file pattern to also keep a brand-new upload untouched."
+msgstr ""
+
+#: build/images.js:1
 msgid "Your server does not appear to be Apache or LiteSpeed, so .htaccess rules may be ignored. The <picture> tag method works everywhere."
 msgstr ""
 
@@ -1155,6 +1518,11 @@ msgid "Backup & Retention"
 msgstr ""
 
 #: build/index.js:1
+#: build/storage.js:1
+msgid "Storage Report"
+msgstr ""
+
+#: build/index.js:1
 msgid "Server Health"
 msgstr ""
 
@@ -1164,6 +1532,86 @@ msgstr ""
 
 #: build/index.js:1
 msgid "VERSION"
+msgstr ""
+
+#: build/storage.js:1
+msgid "See exactly where your uploads space goes and how much you could still save."
+msgstr ""
+
+#: build/storage.js:1
+msgid "Scan the Media Library"
+msgstr ""
+
+#: build/storage.js:1
+msgid "Reads file sizes only - nothing is changed. Large libraries are scanned in small steps."
+msgstr ""
+
+#. translators: %d: percent
+#: build/storage.js:1
+#, js-format
+msgid "Measuring files · %d%%"
+msgstr ""
+
+#: build/storage.js:1
+msgid "Scan storage"
+msgstr ""
+
+#: build/storage.js:1
+msgid "Library size"
+msgstr ""
+
+#. translators: %d: files
+#: build/storage.js:1
+#, js-format
+msgid "%d files"
+msgstr ""
+
+#: build/storage.js:1
+msgid "Originals"
+msgstr ""
+
+#. translators: %s: size
+#: build/storage.js:1
+#, js-format
+msgid "Thumbnails: %s"
+msgstr ""
+
+#: build/storage.js:1
+msgid "Next-gen copies"
+msgstr ""
+
+#: build/storage.js:1
+msgid "WebP, AVIF, WebM, posters"
+msgstr ""
+
+#: build/storage.js:1
+msgid "Original backups"
+msgstr ""
+
+#: build/storage.js:1
+msgid "Stored outside the library"
+msgstr ""
+
+#. translators: 1: number of images, 2: estimated saving
+#: build/storage.js:2
+#, js-format
+msgid "%1$d JPEG/PNG image(s) are not optimized yet. Based on your results so far, optimizing them could save roughly %2$s (an estimate). Use the Bulk Optimizer to do it."
+msgstr ""
+
+#: build/storage.js:2
+msgid "By file type"
+msgstr ""
+
+#: build/storage.js:2
+msgid "By upload year (largest)"
+msgstr ""
+
+#: build/storage.js:2
+msgid "Largest files"
+msgstr ""
+
+#: build/storage.js:2
+msgid "Including their thumbnails and generated copies."
 msgstr ""
 
 #: build/videos.js:1
@@ -1232,6 +1680,30 @@ msgstr ""
 
 #: build/videos.js:1
 msgid "The WebM copy is offered first in [video] players and video blocks; browsers fall back to the MP4."
+msgstr ""
+
+#: build/videos.js:1
+msgid "Generate a Poster Image"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Saves a lightweight JPEG frame next to each video and uses it as the poster, so the player shows a picture instantly instead of a black box. Players that already have a poster are left alone."
+msgstr ""
+
+#: build/videos.js:1
+msgid "Animated GIF to Video"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Animated GIFs are huge. With this on, each one gets an MP4 (and WebM) copy and visitors see a muted, looping video that is usually 80-95% lighter. The GIF file stays as the fallback."
+msgstr ""
+
+#: build/videos.js:1
+msgid "Convert Animated GIFs to Video"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Applies to GIFs inserted at full size in post content, widgets and featured images. Existing GIFs are converted by the Bulk Optimizer."
 msgstr ""
 
 #: build/videos.js:1

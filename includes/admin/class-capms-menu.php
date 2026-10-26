@@ -51,7 +51,6 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 		public function __construct() {
 			add_action( 'admin_menu', array( $this, 'capms_admin_menu' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'capms_admin_enqueue_scripts' ), 10, 1 );
-			add_action( 'in_admin_header', array( $this, 'capms_hide_foreign_notices' ), 1000 );
 			add_filter( 'plugin_action_links_' . plugin_basename( CAPMS_FILE ), array( $this, 'capms_action_links' ) );
 		}
 
@@ -77,28 +76,6 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 				'captain-media-shield',
 				array( $this, 'capms_menu_page_template' )
 			);
-		}
-
-		/**
-		 * Keep the plugin screen clean.
-		 *
-		 * Admin notices printed by other plugins and themes would otherwise stack
-		 * on top of the app. This only runs on the Captain Media Shield screen and
-		 * does not affect any other admin page.
-		 *
-		 * @since 0.0.1
-		 * @return void
-		 */
-		public function capms_hide_foreign_notices() {
-			$screen = get_current_screen();
-			if ( ! $screen || 'media_page_captain-media-shield' !== $screen->id ) {
-				return;
-			}
-
-			remove_all_actions( 'admin_notices' );
-			remove_all_actions( 'all_admin_notices' );
-			remove_all_actions( 'user_admin_notices' );
-			remove_all_actions( 'network_admin_notices' );
 		}
 
 		/**

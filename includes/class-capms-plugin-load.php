@@ -56,15 +56,37 @@ if ( ! class_exists( 'Capms_Plugin_Load' ) ) {
 			require_once CAPMS_PATH . 'includes/core/class-capms-stats.php';
 
 			add_action( 'plugins_loaded', array( $this, 'capms_init_plugin' ) );
+			add_action( 'wp_initialize_site', array( $this, 'capms_new_site' ), 900 );
 		}
 
 		/**
-		 * Plugin Activation.
+		 * Plugin Activation (also runs for every site on a network activation).
 		 *
 		 * @since 0.0.1
+		 * @param bool $network_wide Network activation.
 		 * @return void
 		 */
-		public static function capms_activation() {
+		public static function capms_activation( $network_wide = false ) {
+			if ( is_multisite() && $network_wide ) {
+				foreach ( get_sites( array( 'fields' => 'ids', 'number' => 0 ) ) as $blog_id ) {
+					switch_to_blog( $blog_id );
+					self::capms_activate_site();
+					restore_current_blog();
+				}
+				return;
+			}
+
+			self::capms_activate_site();
+		}
+
+		/**
+		 * Table, options and cron for the current site.
+		 *
+		 * @since 0.1.0
+		 * @return void
+		 */
+		private static function capms_activate_site() {
+			Capms_Settings::flush_cache();
 			Capms_Stats::create_table();
 			update_option( 'capms_db_version', CAPMS_VERSION );
 
@@ -78,17 +100,60 @@ if ( ! class_exists( 'Capms_Plugin_Load' ) ) {
 		}
 
 		/**
-		 * Plugin deactivation - unschedule every cron job we own and pull
-		 * our rewrite block out of uploads/.htaccess so no stale WebP/AVIF
-		 * rewrites keep running while the plugin is off.
+		 * A new site was added to a network where the plugin is network-active:
+		 * set it up like the others.
 		 *
-		 * @since 0.0.1
+		 * @since 0.1.0
+		 * @param WP_Site $new_site New site.
 		 * @return void
 		 */
-		public static function capms_deactivation() {
-			wp_clear_scheduled_hook( 'capms_backup_cleanup_event' );
-			wp_clear_scheduled_hook( 'capms_process_video_event' );
+		public function capms_new_site( $new_site ) {
+			if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/plugin.php';
+			}
+			if ( ! is_plugin_active_for_network( plugin_basename( CAPMS_FILE ) ) ) {
+				return;
+			}
 
+			switch_to_blog( (int) $new_site->blog_id );
+			self::capms_activate_site();
+			restore_current_blog();
+		}
+
+		/**
+		 * Plugin deactivation - unschedule every cron job we own and pull our
+		 * rewrite block out of uploads/.htaccess so no stale WebP/AVIF rewrites
+		 * keep running while the plugin is off.
+		 *
+		 * @since 0.0.1
+		 * @param bool $network_wide Network deactivation.
+		 * @return void
+		 */
+		public static function capms_deactivation( $network_wide = false ) {
+			if ( is_multisite() && $network_wide ) {
+				foreach ( get_sites( array( 'fields' => 'ids', 'number' => 0 ) ) as $blog_id ) {
+					switch_to_blog( $blog_id );
+					self::capms_deactivate_site();
+					restore_current_blog();
+				}
+				return;
+			}
+
+			self::capms_deactivate_site();
+		}
+
+		/**
+		 * Cron + .htaccess clean-up for the current site.
+		 *
+		 * @since 0.1.0
+		 * @return void
+		 */
+		private static function capms_deactivate_site() {
+			wp_clear_scheduled_hook( 'capms_backup_cleanup_event' );
+			wp_unschedule_hook( 'capms_process_video_event' );
+			wp_unschedule_hook( 'capms_process_gif_event' );
+
+			Capms_Settings::flush_cache();
 			require_once CAPMS_PATH . 'includes/core/class-capms-delivery.php';
 			Capms_Delivery::remove_htaccess_rules();
 		}
@@ -100,8 +165,6 @@ if ( ! class_exists( 'Capms_Plugin_Load' ) ) {
 		 * @return void
 		 */
 		public function capms_init_plugin() {
-			load_plugin_textdomain( 'captain-media-shield', false, dirname( plugin_basename( CAPMS_FILE ) ) . '/languages' );
-
 			$this->capms_load_dependencies();
 			$this->capms_maybe_upgrade();
 		}
@@ -139,6 +202,11 @@ if ( ! class_exists( 'Capms_Plugin_Load' ) ) {
 			require_once CAPMS_PATH . 'includes/core/class-capms-processor.php';
 			require_once CAPMS_PATH . 'includes/core/class-capms-delivery.php';
 			require_once CAPMS_PATH . 'includes/core/class-capms-cron.php';
+			require_once CAPMS_PATH . 'includes/core/class-capms-cleanup.php';
+
+			if ( defined( 'WP_CLI' ) && WP_CLI ) {
+				require_once CAPMS_PATH . 'includes/cli/class-capms-cli.php';
+			}
 
 			if ( is_admin() ) {
 				require_once CAPMS_PATH . 'includes/admin/class-capms-menu.php';

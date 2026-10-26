@@ -18,12 +18,17 @@
     display: none !important;
 }
 
-/* Other plugins' notices (including ones added by JavaScript) - this screen only. */
-.media_page_captain-media-shield #wpbody-content .notice:not(.capms-app *),
+/* Notices from WordPress and other plugins stay visible - they just need
+   some breathing room because #wpcontent has no left padding here. */
+.media_page_captain-media-shield #wpbody-content .notice,
 .media_page_captain-media-shield #wpbody-content .update-nag,
 .media_page_captain-media-shield #wpbody-content div.error,
 .media_page_captain-media-shield #wpbody-content div.updated {
-    display: none !important;
+    margin: 10px 20px;
+}
+
+.media_page_captain-media-shield #wpbody-content .capms-app .notice {
+    margin: 0;
 }
 
 #wpbody-content {
