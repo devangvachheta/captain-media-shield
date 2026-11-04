@@ -21,7 +21,7 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 	 * Works on files only (no attachment knowledge) - Capms_Processor
 	 * decides which files of an attachment go through which step.
 	 *
-	 * Next-gen copies are written next to the source with the format
+	 * Next Generation copies are written next to the source with the format
 	 * appended (photo.jpg -> photo.jpg.webp / photo.jpg.avif) so the
 	 * .htaccess rewrite and the <picture> filter can find them with a
 	 * plain string append, and two sources with the same base name but
@@ -37,6 +37,26 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		 * @var array
 		 */
 		const SUPPORTED_MIMES = array( 'image/jpeg', 'image/png' );
+
+		/**
+		 * Get effective image quality for an attachment (custom per-image override or global default).
+		 *
+		 * @since 0.1.0
+		 * @param int $attachment_id Attachment ID.
+		 * @return int Quality between 1 and 100.
+		 */
+		public static function get_quality( $attachment_id = 0 ) {
+			if ( $attachment_id ) {
+				$custom = get_post_meta( $attachment_id, '_capms_custom_quality', true );
+				if ( '' !== $custom && false !== $custom && is_numeric( $custom ) ) {
+					$val = absint( $custom );
+					if ( $val >= 1 && $val <= 100 ) {
+						return $val;
+					}
+				}
+			}
+			return absint( Capms_Settings::get( 'image_quality', 80 ) );
+		}
 
 		/**
 		 * Is this mime type something we optimize?
@@ -89,11 +109,12 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		 * over the configured max dimensions.
 		 *
 		 * @since 0.0.1
-		 * @param string $file Absolute path.
-		 * @param string $mime Mime type.
+		 * @param string   $file    Absolute path.
+		 * @param string   $mime    Mime type.
+		 * @param int|null $quality Optional custom quality override.
 		 * @return bool True when the file was re-encoded.
 		 */
-		public static function prepare_original( $file, $mime ) {
+		public static function prepare_original( $file, $mime, $quality = null ) {
 			$settings = Capms_Settings::get_all();
 			$editor   = wp_get_image_editor( $file );
 			if ( is_wp_error( $editor ) ) {
@@ -128,7 +149,8 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 				return false;
 			}
 
-			$editor->set_quality( absint( $settings['image_quality'] ) );
+			$q = ( null !== $quality && $quality > 0 ) ? absint( $quality ) : absint( $settings['image_quality'] );
+			$editor->set_quality( $q );
 			$saved = $editor->save( $file, $mime );
 
 			return ! is_wp_error( $saved );
@@ -138,15 +160,16 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		 * Downscale an existing file over the max dimensions (bulk path).
 		 *
 		 * @since 0.0.1
-		 * @param string $file Absolute path.
-		 * @param string $mime Mime type.
+		 * @param string   $file    Absolute path.
+		 * @param string   $mime    Mime type.
+		 * @param int|null $quality Optional custom quality override.
 		 * @return bool True when resized.
 		 */
-		public static function maybe_resize( $file, $mime ) {
+		public static function maybe_resize( $file, $mime, $quality = null ) {
 			if ( ! Capms_Settings::get( 'resize_enabled' ) ) {
 				return false;
 			}
-			return self::prepare_original( $file, $mime );
+			return self::prepare_original( $file, $mime, $quality );
 		}
 
 		/**
@@ -154,11 +177,12 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		 * is actually smaller.
 		 *
 		 * @since 0.0.1
-		 * @param string $file Absolute path.
-		 * @param string $mime Mime type.
+		 * @param string   $file    Absolute path.
+		 * @param string   $mime    Mime type.
+		 * @param int|null $quality Optional custom quality override.
 		 * @return bool True when the file was replaced.
 		 */
-		public static function recompress( $file, $mime ) {
+		public static function recompress( $file, $mime, $quality = null ) {
 			if ( ! is_file( $file ) ) {
 				return false;
 			}
@@ -171,7 +195,8 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 			$ext = pathinfo( $file, PATHINFO_EXTENSION );
 			$tmp = trailingslashit( dirname( $file ) ) . 'capms-tmp-' . wp_generate_password( 8, false ) . '.' . $ext;
 
-			$editor->set_quality( absint( Capms_Settings::get( 'image_quality', 80 ) ) );
+			$q = ( null !== $quality && $quality > 0 ) ? absint( $quality ) : absint( Capms_Settings::get( 'image_quality', 80 ) );
+			$editor->set_quality( $q );
 			$saved = $editor->save( $tmp, $mime );
 
 			if ( is_wp_error( $saved ) || empty( $saved['path'] ) || ! is_file( $saved['path'] ) ) {
@@ -333,11 +358,12 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		 * file would defeat the point.
 		 *
 		 * @since 0.0.1
-		 * @param string $file   Absolute source path.
-		 * @param string $format 'webp' | 'avif'.
+		 * @param string   $file    Absolute source path.
+		 * @param string   $format  'webp' | 'avif'.
+		 * @param int|null $quality Optional custom quality override.
 		 * @return int Bytes of the kept copy (0 when none).
 		 */
-		public static function convert( $file, $format ) {
+		public static function convert( $file, $format, $quality = null ) {
 			$mime = 'avif' === $format ? 'image/avif' : 'image/webp';
 			if ( ! is_file( $file ) || ! Capms_Environment::supports_mime( $mime ) ) {
 				return 0;
@@ -350,7 +376,8 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 				return 0;
 			}
 
-			$editor->set_quality( absint( Capms_Settings::get( 'image_quality', 80 ) ) );
+			$q = ( null !== $quality && $quality > 0 ) ? absint( $quality ) : absint( Capms_Settings::get( 'image_quality', 80 ) );
+			$editor->set_quality( $q );
 			$saved = $editor->save( $dest, $mime );
 
 			if ( is_wp_error( $saved ) || empty( $saved['path'] ) || ! is_file( $saved['path'] ) ) {

@@ -273,7 +273,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		}
 
 		/**
-		 * Map each URL in a srcset to its next-gen sibling. Candidates
+		 * Map each URL in a srcset to its Next Generation sibling. Candidates
 		 * without a sibling on disk are dropped; if none have one, ''.
 		 *
 		 * @since 0.0.1

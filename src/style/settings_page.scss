@@ -7,6 +7,17 @@
 
     // ── Page Header ──────────────────────────────────────────────────────────
     .capms-settings-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+
+        .capms-page-header-text {
+            flex: 1;
+            min-width: 260px;
+        }
+
         .capms-settings-title {
             font-size: 22px;
             font-weight: 700;
@@ -18,6 +29,228 @@
             color: var(--capms-text-secondary);
             margin: 0;
         }
+
+        .capms-page-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-left: auto;
+        }
+    }
+
+    // ── Header Save Actions (Top right Save & Reset) ─────────────────────────
+    .capms-header-save-actions {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+
+        .capms-settings-inline-msg {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 6px;
+            line-height: 1.2;
+            animation: capmsFadeIn 0.2s ease-out;
+
+            &--success {
+                background: var(--capms-success-bg, #dcfce7);
+                color: var(--capms-success-text, #166534);
+                border: 1px solid var(--capms-success-border, #bbf7d0);
+            }
+
+            &--error {
+                background: var(--capms-error-bg, #fee2e2);
+                color: var(--capms-error-text, #b91c1c);
+                border: 1px solid #fecaca;
+            }
+        }
+
+        .capms-header-btn-discard {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--capms-text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+
+            &:hover {
+                color: var(--capms-error-text, #dc2626);
+                background: var(--capms-error-bg, #fee2e2);
+            }
+        }
+
+        .capms-header-btn-reset {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--capms-bg-card, #ffffff);
+            border: 1px solid var(--capms-border, #dfdfdf);
+            color: var(--capms-text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            white-space: nowrap;
+            line-height: 1.2;
+
+            &:hover {
+                color: var(--capms-text-primary);
+                background: var(--capms-bg-hover, #f4f6f8);
+                border-color: var(--capms-border-hover, #c4c4c4);
+            }
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        }
+
+        .capms-header-btn-save {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--capms-primary, #2271b1);
+            border: 1px solid var(--capms-primary-hover, #1a5d96);
+            color: #ffffff !important;
+            font-size: 13.5px;
+            font-weight: 600;
+            padding: 8px 20px;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            white-space: nowrap;
+            line-height: 1.2;
+            box-shadow: 0 2px 6px rgba(34, 113, 177, 0.28);
+
+            svg {
+                width: 15px;
+                height: 15px;
+                stroke-width: 2.5;
+            }
+
+            &:hover:not(:disabled) {
+                background: var(--capms-primary-hover, #1a5d96);
+                box-shadow: 0 4px 10px rgba(34, 113, 177, 0.35);
+                transform: translateY(-1px);
+            }
+
+            &:active:not(:disabled) {
+                transform: translateY(0);
+            }
+
+            &:disabled {
+                opacity: 0.55;
+                cursor: not-allowed;
+                box-shadow: none;
+                transform: none;
+            }
+        }
+    }
+
+    // ── Tab Navigation Bar ───────────────────────────────────────────────────
+    .capms-tabs-bar {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px;
+        background: var(--capms-bg-hover);
+        border: 1px solid var(--capms-border);
+        border-radius: 10px;
+        width: fit-content;
+        max-width: 100%;
+        overflow-x: auto;
+        box-sizing: border-box;
+        margin-top: -6px;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .capms-tab-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        font-size: 13.5px;
+        font-weight: 500;
+        color: var(--capms-text-secondary);
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 7px;
+        cursor: pointer;
+        transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+        user-select: none;
+        line-height: 1;
+
+        .capms-tab-btn-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: currentColor;
+
+            svg {
+                width: 15px;
+                height: 15px;
+                stroke-width: 2.2;
+            }
+        }
+
+        .capms-tab-btn-text {
+            line-height: 1.2;
+        }
+
+        .capms-tab-btn-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.08);
+            color: inherit;
+        }
+
+        &:hover {
+            color: var(--capms-text-primary);
+            background: var(--capms-bg-card);
+            border-color: var(--capms-border);
+        }
+
+        &.is-active {
+            color: #ffffff !important;
+            background: var(--capms-primary) !important;
+            border-color: var(--capms-primary) !important;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(34, 113, 177, 0.35);
+
+            .capms-tab-btn-icon {
+                color: #ffffff;
+            }
+
+            .capms-tab-btn-badge {
+                background: rgba(255, 255, 255, 0.25);
+                color: #ffffff;
+            }
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--capms-primary);
+            outline-offset: 1px;
+        }
     }
 
     // ── Sections Container ───────────────────────────────────────────────────
@@ -25,6 +258,18 @@
         display: flex;
         flex-direction: column;
         gap: 16px;
+        animation: capmsFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes capmsFadeIn {
+        from {
+            opacity: 0.65;
+            transform: translateY(4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     // ── Single Section Card ──────────────────────────────────────────────────
@@ -54,7 +299,7 @@
         min-width: 40px;
         border-radius: 8px;
         background: linear-gradient(135deg, var(--capms-primary) 0%, var(--capms-primary-hover) 100%);
-        color: var(--capms-bg-primary);
+        color: #ffffff;
         box-shadow: 0 3px 8px rgba(34, 113, 177, 0.28);
 
         svg {
@@ -115,7 +360,6 @@
         font-size: 12.5px;
         color: var(--capms-text-secondary);
         line-height: 1.55;
-        max-width: 440px;
     }
 
     // ── Cache Button ─────────────────────────────────────────────────────────

@@ -10,13 +10,80 @@ import './settings_card/settings_card.scss';
  * rows, switcher, select).
  */
 
-export const PageHeader = ( { title, subtitle, actions } ) => (
+export const SaveActions = ( { dirty, saving, onSave, onReset, onDiscard, message, messageTone } ) => (
+    <div className="capms-header-save-actions">
+        { message && (
+            <span className={ `capms-settings-inline-msg capms-settings-inline-msg--${ messageTone || 'success' }` }>
+                { message }
+            </span>
+        ) }
+        { dirty && ! saving && onDiscard && (
+            <button
+                type="button"
+                className="capms-header-btn-discard"
+                onClick={ onDiscard }
+            >
+                { __( 'Discard', 'captain-media-shield' ) }
+            </button>
+        ) }
+        { onReset && (
+            <button
+                type="button"
+                className="capms-header-btn-reset"
+                onClick={ onReset }
+                disabled={ saving }
+            >
+                { __( 'Reset to Defaults', 'captain-media-shield' ) }
+            </button>
+        ) }
+        <button
+            type="button"
+            className="capms-header-btn-save"
+            onClick={ onSave }
+            disabled={ ! dirty || saving }
+        >
+            <IconCheck />
+            { saving ? __( 'Saving...', 'captain-media-shield' ) : __( 'Save Changes', 'captain-media-shield' ) }
+        </button>
+    </div>
+);
+
+export const PageHeader = ( { title, subtitle, actions, saveProps } ) => (
     <div className="capms-settings-header capms-page-header">
-        <div>
+        <div className="capms-page-header-text">
             <h1 className="capms-settings-title">{ title }</h1>
             { subtitle && <p className="capms-settings-subtitle">{ subtitle }</p> }
         </div>
-        { actions && <div className="capms-page-header-actions">{ actions }</div> }
+        { ( actions || saveProps ) && (
+            <div className="capms-page-header-actions">
+                { actions }
+                { saveProps && <SaveActions { ...saveProps } /> }
+            </div>
+        ) }
+    </div>
+);
+
+export const TabBar = ( { tabs, activeTab, onChange, className = '' } ) => (
+    <div className={ `capms-tabs-bar ${ className }`.trim() } role="tablist">
+        { tabs.map( ( tab ) => {
+            const isActive = activeTab === tab.id;
+            return (
+                <button
+                    key={ tab.id }
+                    type="button"
+                    role="tab"
+                    aria-selected={ isActive }
+                    className={ `capms-tab-btn ${ isActive ? 'is-active' : '' }` }
+                    onClick={ () => onChange( tab.id ) }
+                >
+                    { tab.icon && <span className="capms-tab-btn-icon">{ tab.icon }</span> }
+                    <span className="capms-tab-btn-text">{ tab.label }</span>
+                    { tab.badge !== undefined && tab.badge !== null && (
+                        <span className="capms-tab-btn-badge">{ tab.badge }</span>
+                    ) }
+                </button>
+            );
+        } ) }
     </div>
 );
 
@@ -108,27 +175,10 @@ export const StatCard = ( { icon, label, value, sub, tone = 'blue' } ) => (
 );
 
 /**
- * Sticky footer with Reset / Save - shown on every settings page.
+ * Legacy sticky footer - deprecated in favor of top-header SaveActions.
+ * Kept as empty component for backward compatibility.
  */
-export const SaveBar = ( { dirty, saving, onSave, onReset, onDiscard, message, messageTone } ) => (
-    <div className={ `capms-savebar ${ dirty ? 'capms-savebar--dirty' : '' }` }>
-        <button type="button" className="capms-scard-reset-link" onClick={ onReset }>
-            { __( 'Reset to Defaults', 'captain-media-shield' ) }
-        </button>
-        <div className="capms-savebar-right">
-            { message && <span className={ `capms-settings-inline-msg capms-settings-inline-msg--${ messageTone || 'success' }` }>{ message }</span> }
-            { dirty && ! saving && (
-                <button type="button" className="capms-scard-btn-cancel" onClick={ onDiscard }>
-                    { __( 'Discard', 'captain-media-shield' ) }
-                </button>
-            ) }
-            <button type="button" className="capms-scard-btn-save" onClick={ onSave } disabled={ ! dirty || saving }>
-                <IconCheck />
-                { saving ? __( 'Saving...', 'captain-media-shield' ) : __( 'Save Changes', 'captain-media-shield' ) }
-            </button>
-        </div>
-    </div>
-);
+export const SaveBar = () => null;
 
 export const ConfirmModal = ( { title, children, confirmLabel, danger, busy, onConfirm, onClose, icon } ) => (
     <SettingsCardModal

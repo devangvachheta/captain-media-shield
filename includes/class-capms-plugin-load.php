@@ -208,6 +208,8 @@ if ( ! class_exists( 'Capms_Plugin_Load' ) ) {
 				require_once CAPMS_PATH . 'includes/cli/class-capms-cli.php';
 			}
 
+			require_once CAPMS_PATH . 'includes/admin/class-capms-admin-bar.php';
+
 			if ( is_admin() ) {
 				require_once CAPMS_PATH . 'includes/admin/class-capms-menu.php';
 				require_once CAPMS_PATH . 'includes/admin/class-capms-dashboard-ajax.php';

@@ -94,6 +94,7 @@ const Backups = () => {
             <PageHeader
                 title={ __( 'Original Backup & Retention Policy', 'captain-media-shield' ) }
                 subtitle={ sprintf( /* translators: %s: backup folder path. */ __( 'Untouched originals are kept in %s so any file can be restored. Decide how long they stay.', 'captain-media-shield' ), capms_data?.backup_dir || 'wp-content/uploads/captain-ms-backups/' ) }
+                saveProps={ { dirty, saving, onSave: save, onReset: reset, onDiscard: discard, message, messageTone: tone } }
             />
 
             <div className="capms-stat-grid capms-stat-grid--3">
@@ -167,8 +168,6 @@ const Backups = () => {
 
                 { actionMsg && <Notice tone={ actionMsg.tone === 'error' ? 'error' : 'success' }>{ actionMsg.text }</Notice> }
             </div>
-
-            <SaveBar dirty={ dirty } saving={ saving } onSave={ save } onReset={ reset } onDiscard={ discard } message={ message } messageTone={ tone } />
 
             { confirmPurge && (
                 <ConfirmModal

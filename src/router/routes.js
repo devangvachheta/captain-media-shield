@@ -11,19 +11,25 @@ const Bulk    = React.lazy( () => import( /* webpackChunkName: "bulk" */ '../pag
 const Health  = React.lazy( () => import( /* webpackChunkName: "health" */ '../page/health/health.jsx' ) );
 const Storage = React.lazy( () => import( /* webpackChunkName: "storage" */ '../page/storage/storage.jsx' ) );
 const Cleanup = React.lazy( () => import( /* webpackChunkName: "cleanup" */ '../page/cleanup/cleanup.jsx' ) );
-const Docs    = React.lazy( () => import( /* webpackChunkName: "docs" */ '../page/docs/docs.jsx' ) );
+const Docs        = React.lazy( () => import( /* webpackChunkName: "docs" */ '../page/docs/docs.jsx' ) );
+const Settings    = React.lazy( () => import( /* webpackChunkName: "settings" */ '../page/settings/settings.jsx' ) );
+const Help        = React.lazy( () => import( /* webpackChunkName: "help" */ '../page/help/help.jsx' ) );
+const OurProducts = React.lazy( () => import( /* webpackChunkName: "our-products" */ '../page/our-products/our-products.jsx' ) );
 
 const routes = [
-    { path: '/',       element: <Dashboard /> },
-    { path: '/images', element: <Images /> },
-    { path: '/videos', element: <Videos /> },
-    { path: '/backup', element: <Backups /> },
-    { path: '/bulk',   element: <Bulk /> },
-    { path: '/health', element: <Health /> },
-    { path: '/storage', element: <Storage /> },
-    { path: '/cleanup', element: <Cleanup /> },
-    { path: '/docs/*', element: <Docs /> },
-    { path: '*',       element: <Dashboard /> },
+    { path: '/',             element: <Dashboard /> },
+    { path: '/images',       element: <Images /> },
+    { path: '/videos',       element: <Videos /> },
+    { path: '/backup',       element: <Backups /> },
+    { path: '/bulk',         element: <Bulk /> },
+    { path: '/health',       element: <Health /> },
+    { path: '/storage',      element: <Storage /> },
+    { path: '/cleanup',      element: <Cleanup /> },
+    { path: '/settings',     element: <Settings /> },
+    { path: '/help',         element: <Help /> },
+    { path: '/our-products', element: <OurProducts /> },
+    { path: '/docs/*',       element: <Docs /> },
+    { path: '*',             element: <Dashboard /> },
 ];
 
 export default routes;

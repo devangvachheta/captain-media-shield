@@ -94,6 +94,13 @@ if ( ! class_exists( 'Capms_Settings' ) ) {
 				'backup_enabled'     => true,
 				'delete_originals'   => false,
 				'backup_retention'   => 'never',
+
+				// Toolbar / Admin Bar.
+				'admin_bar_menu'     => true,
+
+				// Data & Uninstall.
+				'preserve_settings'  => false,
+				'clear_on_uninstall' => false,
 			);
 
 			return $defaults;

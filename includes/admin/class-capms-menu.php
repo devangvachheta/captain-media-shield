@@ -52,6 +52,7 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 			add_action( 'admin_menu', array( $this, 'capms_admin_menu' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'capms_admin_enqueue_scripts' ), 10, 1 );
 			add_filter( 'plugin_action_links_' . plugin_basename( CAPMS_FILE ), array( $this, 'capms_action_links' ) );
+			add_action( 'in_admin_header', array( $this, 'capms_suppress_admin_notices' ), 1000 );
 		}
 
 		/**
@@ -68,7 +69,7 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 
 			// Lives under Media (upload.php). The React app has its own sidebar
 			// with every screen, so one entry is enough here.
-			add_submenu_page(
+			$hook_suffix = add_submenu_page(
 				'upload.php',
 				__( 'Captain Media Shield', 'captain-media-shield' ),
 				__( 'Captain Media Shield', 'captain-media-shield' ),
@@ -76,6 +77,28 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 				'captain-media-shield',
 				array( $this, 'capms_menu_page_template' )
 			);
+
+			if ( $hook_suffix ) {
+				add_action( 'load-' . $hook_suffix, array( $this, 'capms_suppress_admin_notices' ) );
+			}
+		}
+
+		/**
+		 * Suppress admin notices on the plugin's React admin page.
+		 *
+		 * @since 0.1.0
+		 * @return void
+		 */
+		public function capms_suppress_admin_notices() {
+			$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+			if ( ! $screen || 'media_page_captain-media-shield' !== $screen->id ) {
+				return;
+			}
+
+			remove_all_actions( 'admin_notices' );
+			remove_all_actions( 'all_admin_notices' );
+			remove_all_actions( 'user_admin_notices' );
+			remove_all_actions( 'network_admin_notices' );
 		}
 
 		/**
@@ -129,6 +152,26 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 
 			wp_enqueue_style( 'capms-admin-app', CAPMS_URL . 'build/index.css', array(), $build_css_ver );
 			wp_style_add_data( 'capms-admin-app', 'rtl', 'replace' );
+
+			wp_add_inline_style(
+				'capms-admin-app',
+				'body.media_page_captain-media-shield #wpbody-content > .notice,
+				body.media_page_captain-media-shield #wpbody-content > .update-nag,
+				body.media_page_captain-media-shield #wpbody-content > div.error,
+				body.media_page_captain-media-shield #wpbody-content > div.updated,
+				body.media_page_captain-media-shield #wpbody-content > .is-dismissible,
+				body.media_page_captain-media-shield #wpbody-content > * > .notice,
+				body.media_page_captain-media-shield #wpbody-content > * > .update-nag,
+				body.media_page_captain-media-shield #wpbody-content > * > div.error,
+				body.media_page_captain-media-shield #wpbody-content > * > div.updated,
+				body.media_page_captain-media-shield #wpbody-content > * > .is-dismissible,
+				body.media_page_captain-media-shield .notice:not(.capms-notice),
+				body.media_page_captain-media-shield .update-nag,
+				body.media_page_captain-media-shield div.error:not(.capms-notice),
+				body.media_page_captain-media-shield div.updated:not(.capms-notice) {
+					display: none !important;
+				}'
+			);
 
 			wp_enqueue_script( 'capms-admin-app', CAPMS_URL . 'build/index.js', $asset['dependencies'], $build_js_ver, true );
 			wp_set_script_translations( 'capms-admin-app', 'captain-media-shield' );

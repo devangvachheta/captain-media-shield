@@ -76,7 +76,7 @@ const Dashboard = () => {
                         <div><span>{ __( 'Reduction', 'captain-media-shield' ) }</span><strong>{ percentSaved( images.original_size, images.optimized_size ) }%</strong></div>
                         <div><span>{ __( 'WebP versions', 'captain-media-shield' ) }</span><strong>{ images.webp_count || 0 }</strong></div>
                         <div><span>{ __( 'AVIF versions', 'captain-media-shield' ) }</span><strong>{ images.avif_count || 0 }</strong></div>
-                        <div><span>{ __( 'Next-gen size', 'captain-media-shield' ) }</span><strong>{ formatBytes( ( images.webp_size || 0 ) + ( images.avif_size || 0 ) ) }</strong></div>
+                        <div><span>{ __( 'Next Generation size', 'captain-media-shield' ) }</span><strong>{ formatBytes( ( images.webp_size || 0 ) + ( images.avif_size || 0 ) ) }</strong></div>
                     </div>
                 </Section>
                 <Section icon={ <IconVideo /> } title={ __( 'Videos', 'captain-media-shield' ) }>

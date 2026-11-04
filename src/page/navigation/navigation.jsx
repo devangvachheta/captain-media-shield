@@ -4,9 +4,9 @@ import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { __ } from '@wordpress/i18n';
 import { toggleTheme, toggleSidebar } from '../../redux/slice.jsx';
-import { IconDashboard, IconImage, IconVideo, IconBackup, IconBulk, IconHealth, IconDocs, IconDatabase, IconTrash } from '../../components/icons.jsx';
+import { IconDashboard, IconImage, IconVideo, IconBackup, IconBulk, IconHealth, IconDocs, IconDatabase, IconTrash, IconHelp, IconProducts, IconGear } from '../../components/icons.jsx';
 
-const PLUGIN_VERSION = ( typeof capms_data !== 'undefined' && capms_data?.capms_version ) ? capms_data.capms_version : '0.0.1';
+const PLUGIN_VERSION = ( typeof capms_data !== 'undefined' && capms_data?.capms_version ) ? capms_data.capms_version : '1.0.1';
 
 const IconChevron = ( { open } ) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
@@ -72,6 +72,7 @@ const Navigation = () => {
     const sidebarCollapsed = useSelector( state => state.sidebarCollapsed );
     const [ optimizeOpen, setOptimizeOpen ] = useState( true );
     const [ toolsOpen, setToolsOpen ]       = useState( true );
+    const [ extraOpen, setExtraOpen ]       = useState( true );
     const [ mobileOpen, setMobileOpen ]     = useState( false );
 
     const closeMobile = () => setMobileOpen( false );
@@ -182,6 +183,32 @@ const Navigation = () => {
                                 <Link to="/docs/overview" className={ subLinkClass( '/docs' ) } onClick={ closeMobile }>
                                     <span className="capms-nav-icon"><IconDocs /></span>
                                     <span>{ __( 'Documentation', 'captain-media-shield' ) }</span>
+                                </Link>
+                            </div>
+                        ) }
+                    </div>
+
+                    <div className="capms-nav-group">
+                        <button
+                            className={ `capms-nav-group-header ${ extraOpen ? 'capms-nav-group-header--open' : '' }` }
+                            onClick={ () => setExtraOpen( ( o ) => ! o ) }
+                        >
+                            <span className="capms-nav-group-label">{ __( 'Extra Options', 'captain-media-shield' ) }</span>
+                            <span className="capms-nav-group-chevron"><IconChevron open={ extraOpen } /></span>
+                        </button>
+                        { ( extraOpen || sidebarCollapsed ) && (
+                            <div className="capms-nav-group-items">
+                                <Link to="/settings" className={ subLinkClass( '/settings' ) } onClick={ closeMobile }>
+                                    <span className="capms-nav-icon"><IconGear /></span>
+                                    <span>{ __( 'Settings', 'captain-media-shield' ) }</span>
+                                </Link>
+                                <Link to="/help" className={ subLinkClass( '/help' ) } onClick={ closeMobile }>
+                                    <span className="capms-nav-icon"><IconHelp /></span>
+                                    <span>{ __( 'Help', 'captain-media-shield' ) }</span>
+                                </Link>
+                                <Link to="/our-products" className={ subLinkClass( '/our-products' ) } onClick={ closeMobile }>
+                                    <span className="capms-nav-icon"><IconProducts /></span>
+                                    <span>{ __( 'Our Products', 'captain-media-shield' ) }</span>
                                 </Link>
                             </div>
                         ) }

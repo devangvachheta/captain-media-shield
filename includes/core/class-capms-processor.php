@@ -47,6 +47,13 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		public static $skip_processing = false;
 
 		/**
+		 * Effective image quality override for the attachment currently being processed.
+		 *
+		 * @var int|null
+		 */
+		public static $current_attachment_quality = null;
+
+		/**
 		 * Uploads prepared in this request, keyed by normalized file path.
 		 *
 		 * @var array
@@ -209,20 +216,27 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 		 * @return int
 		 */
 		public function capms_editor_quality( $quality, $mime = '' ) {
-			if ( in_array( $mime, array( 'image/jpeg', 'image/webp', 'image/avif' ), true ) && Capms_Settings::get( 'optimize_on_upload', true ) ) {
-				return absint( Capms_Settings::get( 'image_quality', $quality ) );
+			if ( in_array( $mime, array( 'image/jpeg', 'image/webp', 'image/avif' ), true ) ) {
+				if ( null !== self::$current_attachment_quality && self::$current_attachment_quality > 0 ) {
+					return absint( self::$current_attachment_quality );
+				}
+				if ( Capms_Settings::get( 'optimize_on_upload', true ) ) {
+					return absint( Capms_Settings::get( 'image_quality', $quality ) );
+				}
 			}
 			return $quality;
 		}
 
 		/**
-		 * Optimize any attachment (bulk optimizer / "Optimize now").
+		 * Optimize any attachment (bulk optimizer / "Optimize now" / "Re-optimize").
 		 *
 		 * @since 0.0.1
-		 * @param int $attachment_id Attachment ID.
+		 * @param int         $attachment_id  Attachment ID.
+		 * @param bool        $force          Whether to force re-optimization even if already optimized.
+		 * @param int|string  $custom_quality Optional quality override (1-100 or 'default').
 		 * @return array|WP_Error Saved row.
 		 */
-		public function process_attachment( $attachment_id ) {
+		public function process_attachment( $attachment_id, $force = false, $custom_quality = null ) {
 			$attachment_id = absint( $attachment_id );
 			$file          = get_attached_file( $attachment_id );
 			$mime          = get_post_mime_type( $attachment_id );
@@ -231,9 +245,32 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 				return new WP_Error( 'capms_no_file', __( 'File not found on disk.', 'captain-media-shield' ) );
 			}
 
+			if ( null !== $custom_quality ) {
+				if ( 'default' === $custom_quality || '' === $custom_quality ) {
+					delete_post_meta( $attachment_id, '_capms_custom_quality' );
+				} else {
+					$q_val = absint( $custom_quality );
+					if ( $q_val >= 1 && $q_val <= 100 ) {
+						update_post_meta( $attachment_id, '_capms_custom_quality', $q_val );
+					}
+				}
+			}
+
 			$existing = Capms_Stats::get( $attachment_id );
-			if ( $existing && 'optimized' === $existing['status'] ) {
+			if ( ! $force && $existing && 'optimized' === $existing['status'] ) {
 				return $existing;
+			}
+
+			// Re-optimizing an already optimized item: restore untouched original from backup if available so we don't double-compress.
+			if ( $force && $existing && 'optimized' === $existing['status'] ) {
+				if ( ! empty( $existing['backup_path'] ) ) {
+					$backup_abs = Capms_Backup::absolute( $existing['backup_path'] );
+					if ( $backup_abs && is_file( $backup_abs ) ) {
+						@copy( $backup_abs, $file );
+					}
+				}
+				$old_meta = wp_get_attachment_metadata( $attachment_id );
+				self::remove_generated_files( $attachment_id, $file, $old_meta );
 			}
 
 			if ( Capms_Settings::is_excluded( $attachment_id, $file ) ) {
@@ -466,6 +503,9 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			$mime     = get_post_mime_type( $attachment_id );
 			$files    = self::get_image_files( $file, $metadata );
 
+			$quality  = Capms_Image_Optimizer::get_quality( $attachment_id );
+			self::$current_attachment_quality = $quality;
+
 			$sizes_before = 0;
 			foreach ( $files as $index => $path ) {
 				if ( $index > 0 ) {
@@ -486,15 +526,15 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 				// resized - never compress the same pixels twice. Sizes are
 				// generated at our quality on upload, so only bulk needs it.
 				if ( ( $is_main && ! $entry['recompressed'] ) || ( ! $is_main && $recompress_sizes ) ) {
-					Capms_Image_Optimizer::recompress( $path, $mime );
+					Capms_Image_Optimizer::recompress( $path, $mime, $quality );
 				}
 
 				if ( ! empty( $settings['strip_metadata'] ) ) {
 					Capms_Image_Optimizer::strip_metadata( $path, $mime );
 				}
 
-				$webp = ! empty( $settings['webp_enabled'] ) ? Capms_Image_Optimizer::convert( $path, 'webp' ) : 0;
-				$avif = ! empty( $settings['avif_enabled'] ) ? Capms_Image_Optimizer::convert( $path, 'avif' ) : 0;
+				$webp = ! empty( $settings['webp_enabled'] ) ? Capms_Image_Optimizer::convert( $path, 'webp', $quality ) : 0;
+				$avif = ! empty( $settings['avif_enabled'] ) ? Capms_Image_Optimizer::convert( $path, 'avif', $quality ) : 0;
 
 				// AVIF is served first, so it must actually be the smaller
 				// file - some encoders (e.g. GD at default speed) lose to WebP.
@@ -511,6 +551,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			}
 
 			$this->stop_editor_guard();
+			self::$current_attachment_quality = null;
 
 			// Upload path: sizes didn't exist before, so "before" for them
 			// is what they are now - the saving is measured on the original.
@@ -663,7 +704,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			$backup_size = $backup_abs && is_file( $backup_abs ) ? (int) filesize( $backup_abs ) : 0;
 
 			// "Immediate auto-delete originals" or "Immediate (no retention)"
-			// - the next-gen copies exist now, so drop the original backup.
+			// - the Next Generation copies exist now, so drop the original backup.
 			$converted = $webp > 0 || $avif > 0 || $webm > 0 || $after < $before;
 			if ( $backup && $converted && ( Capms_Settings::get( 'delete_originals' ) || 0 === Capms_Settings::get_retention_seconds() ) ) {
 				if ( $backup_abs ) {

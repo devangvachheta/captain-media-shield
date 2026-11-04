@@ -33,7 +33,7 @@ export const Cleanup = () => (
         </DocSection>
 
         <DocSection title={ __( 'Storage Report', T ) }>
-            <p className="capms-doc-text">{ __( 'Shows library size split into originals, thumbnails, next-gen copies and backups, size by file type and by upload year, the largest files, and an estimate of what optimizing the remaining JPEG/PNG files could save. Scanning only reads file sizes.', T ) }</p>
+            <p className="capms-doc-text">{ __( 'Shows library size split into originals, thumbnails, Next Generation copies and backups, size by file type and by upload year, the largest files, and an estimate of what optimizing the remaining JPEG/PNG files could save. Scanning only reads file sizes.', T ) }</p>
         </DocSection>
     </DocArticle>
 );

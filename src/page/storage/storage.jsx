@@ -118,7 +118,7 @@ const Storage = () => {
                         <div className="capms-stat-grid">
                             <StatCard icon={ <IconDatabase /> } label={ __( 'Library size', 'captain-media-shield' ) } value={ formatBytes( total ) } sub={ sprintf( /* translators: %d: files */ __( '%d files', 'captain-media-shield' ), agg.count ) } />
                             <StatCard icon={ <IconLayers /> } label={ __( 'Originals', 'captain-media-shield' ) } value={ formatBytes( agg.main ) } sub={ sprintf( /* translators: %s: size */ __( 'Thumbnails: %s', 'captain-media-shield' ), formatBytes( agg.sizes ) ) } tone="blue" />
-                            <StatCard icon={ <IconZap /> } label={ __( 'Next-gen copies', 'captain-media-shield' ) } value={ formatBytes( agg.extras ) } sub={ __( 'WebP, AVIF, WebM, posters', 'captain-media-shield' ) } tone="green" />
+                            <StatCard icon={ <IconZap /> } label={ __( 'Next Generation copies', 'captain-media-shield' ) } value={ formatBytes( agg.extras ) } sub={ __( 'WebP, AVIF, WebM, posters', 'captain-media-shield' ) } tone="green" />
                             <StatCard icon={ <IconBackup /> } label={ __( 'Original backups', 'captain-media-shield' ) } value={ formatBytes( backup ) } sub={ __( 'Stored outside the library', 'captain-media-shield' ) } tone="orange" />
                         </div>
 

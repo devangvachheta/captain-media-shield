@@ -17,6 +17,16 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 global $wpdb;
 
+// Read settings to check user's uninstall preferences.
+$capms_settings     = get_option( 'capms_settings', array() );
+$clear_on_uninstall = ! empty( $capms_settings['clear_on_uninstall'] );
+$preserve_settings  = ! empty( $capms_settings['preserve_settings'] );
+
+// If preserve is on, or clear on uninstall is off, keep all data safe.
+if ( $preserve_settings || ! $clear_on_uninstall ) {
+	exit;
+}
+
 /**
  * Remove everything this plugin stored for the current site.
  *

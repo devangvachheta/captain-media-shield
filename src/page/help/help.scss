@@ -1,0 +1,269 @@
+@use '../../style/variables.scss' as *;
+
+.capms-help-wrapper {
+
+    .capms-help-header {
+        margin-bottom: 32px;
+
+        .capms-help-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--capms-text-primary);
+            margin: 0 0 8px;
+        }
+
+        .capms-help-subtitle {
+            font-size: 14px;
+            color: var(--capms-text-secondary);
+            margin: 0;
+        }
+    }
+
+    // ── 3 Top Cards ───────────────────────────────────────────────
+    .capms-help-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 32px;
+
+        .capms-help-card {
+            background: var(--capms-bg-card, var(--capms-bg-primary));
+            border: 1px solid var(--capms-border);
+            border-radius: $rs_medium;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: $transition;
+
+            &:hover {
+                border-color: var(--capms-primary);
+                box-shadow: 0 4px 14px rgba(34, 113, 177, 0.1);
+            }
+
+            .capms-help-card-icon {
+                width: 42px;
+                height: 42px;
+                background-color: var(--capms-bg-hover, #f1f5f9);
+                border-radius: $rs_small;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                svg {
+                    width: 20px;
+                    height: 20px;
+                    stroke: var(--capms-primary, #2271b1);
+                }
+            }
+
+            h3 {
+                font-size: 15px;
+                font-weight: 600;
+                color: var(--capms-text-primary);
+                margin: 0;
+            }
+
+            p {
+                font-size: 13px;
+                color: var(--capms-text-secondary);
+                margin: 0;
+                line-height: 1.5;
+            }
+
+            .capms-help-link {
+                font-size: 13px;
+                font-weight: 600;
+                color: var(--capms-primary, #2271b1);
+                text-decoration: none;
+                margin-top: auto;
+                padding-top: 6px;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+
+    // ── Community & Social Channels ──────────────────────────────────
+    .capms-help-section-header {
+        margin-bottom: 14px;
+
+        .capms-help-section-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--capms-text-primary);
+            margin: 0 0 4px;
+        }
+
+        .capms-help-section-subtitle {
+            font-size: 13px;
+            color: var(--capms-text-secondary);
+            margin: 0;
+        }
+    }
+
+    .capms-help-social-cards {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 32px;
+
+        .capms-help-social-card {
+            background: var(--capms-bg-card, var(--capms-bg-primary));
+            border: 1px solid var(--capms-border);
+            border-radius: $rs_medium;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-decoration: none;
+            transition: $transition;
+
+            &:hover {
+                border-color: var(--capms-primary);
+                box-shadow: 0 4px 14px rgba(34, 113, 177, 0.1);
+                text-decoration: none;
+            }
+
+            .capms-help-social-card-icon {
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: var(--capms-bg-hover, #f1f5f9);
+
+                svg { width: 18px; height: 18px; color: var(--capms-primary); }
+            }
+
+            &:nth-child(1) .capms-help-social-card-icon { background: rgba(88, 101, 242, 0.12); svg { color: #5865F2; } } // Discord
+            &:nth-child(2) .capms-help-social-card-icon { background: rgba(255, 0, 0, 0.1); svg { color: #FF0000; } } // YouTube
+            &:nth-child(3) .capms-help-social-card-icon { background: rgba(15, 23, 42, 0.08); svg { color: var(--capms-text-primary); } } // X
+            &:nth-child(4) .capms-help-social-card-icon { background: rgba(24, 119, 242, 0.12); svg { color: #1877F2; } } // Facebook
+
+            .capms-help-social-card-label {
+                font-size: 10.5px;
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                color: var(--capms-text-secondary);
+                text-transform: uppercase;
+            }
+
+            h3 {
+                font-size: 14.5px;
+                font-weight: 600;
+                color: var(--capms-text-primary);
+                margin: 0;
+            }
+
+            p {
+                font-size: 12.5px;
+                color: var(--capms-text-secondary);
+                margin: 0;
+                line-height: 1.5;
+            }
+
+            .capms-help-social-card-link {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                font-size: 12.5px;
+                font-weight: 600;
+                color: var(--capms-primary, #2271b1);
+                margin-top: auto;
+                padding-top: 8px;
+                border-top: 1px solid var(--capms-border);
+
+                svg { width: 13px; height: 13px; }
+            }
+        }
+    }
+
+    // ── FAQ ────────────────────────────────────────────────────────
+    .capms-help-faq {
+        background: var(--capms-bg-card, var(--capms-bg-primary));
+        border: 1px solid var(--capms-border);
+        border-radius: $rs_medium;
+        padding: 28px;
+
+        .capms-help-faq-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--capms-text-primary);
+            margin: 0 0 20px;
+        }
+
+        .capms-help-faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .capms-help-faq-item {
+            border-bottom: 1px solid var(--capms-border);
+            padding-bottom: 20px;
+
+            &:last-child {
+                border-bottom: none;
+                padding-bottom: 0;
+            }
+
+            .capms-help-faq-q {
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--capms-text-primary);
+                margin: 0 0 8px;
+            }
+
+            .capms-help-faq-a {
+                font-size: 13px;
+                color: var(--capms-text-secondary);
+                margin: 0;
+                line-height: 1.6;
+            }
+        }
+    }
+
+    // ── Dark Mode Overrides ───────────────────────────────────────
+    [data-capms-theme="dark"] & {
+        .capms-help-cards .capms-help-card .capms-help-card-icon {
+            background-color: rgba(255, 255, 255, 0.08);
+
+            svg {
+                stroke: #ffffff !important;
+                color: #ffffff !important;
+            }
+        }
+
+        .capms-help-social-cards .capms-help-social-card {
+            .capms-help-social-card-icon {
+                background: rgba(255, 255, 255, 0.08) !important;
+
+                svg {
+                    color: #ffffff !important;
+                    fill: #ffffff !important;
+                    stroke: #ffffff !important;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 1200px) {
+    .capms-help-wrapper .capms-help-social-cards {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: $bp_tablet) {
+    .capms-help-wrapper {
+        .capms-help-cards,
+        .capms-help-social-cards {
+            grid-template-columns: 1fr !important;
+        }
+        padding: 16px;
+    }
+}

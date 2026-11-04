@@ -71,7 +71,7 @@ export const Dashboard = () => (
                     [ __( 'Optimized', T ), __( 'Files processed successfully.', T ) ],
                     [ __( 'Saved / Reduction', T ), __( 'Bytes saved and the percentage, measured against the original.', T ) ],
                     [ __( 'WebP versions / AVIF versions', T ), __( 'How many converted copies exist.', T ) ],
-                    [ __( 'Next-gen size', T ), __( 'Total size of the WebP and AVIF copies.', T ) ],
+                    [ __( 'Next Generation size', T ), __( 'Total size of the WebP and AVIF copies.', T ) ],
                     [ __( 'WebM versions', T ), __( 'How many videos have a WebM companion.', T ) ],
                     [ __( 'Queued', T ), __( 'Videos waiting for the background job.', T ) ],
                     [ __( 'Skipped / Failed', T ), __( 'Files that could not or did not need to be processed. See the message on the file for the reason.', T ) ],

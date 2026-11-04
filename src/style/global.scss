@@ -18,13 +18,22 @@
     display: none !important;
 }
 
-/* Notices from WordPress and other plugins stay visible - they just need
-   some breathing room because #wpcontent has no left padding here. */
-.media_page_captain-media-shield #wpbody-content .notice,
-.media_page_captain-media-shield #wpbody-content .update-nag,
-.media_page_captain-media-shield #wpbody-content div.error,
-.media_page_captain-media-shield #wpbody-content div.updated {
-    margin: 10px 20px;
+/* Suppress all notices from WordPress core, third-party plugins, and integrations on the plugin page */
+.media_page_captain-media-shield #wpbody-content > .notice,
+.media_page_captain-media-shield #wpbody-content > .update-nag,
+.media_page_captain-media-shield #wpbody-content > div.error,
+.media_page_captain-media-shield #wpbody-content > div.updated,
+.media_page_captain-media-shield #wpbody-content > .is-dismissible,
+.media_page_captain-media-shield #wpbody-content > * > .notice,
+.media_page_captain-media-shield #wpbody-content > * > .update-nag,
+.media_page_captain-media-shield #wpbody-content > * > div.error,
+.media_page_captain-media-shield #wpbody-content > * > div.updated,
+.media_page_captain-media-shield #wpbody-content > * > .is-dismissible,
+.media_page_captain-media-shield .notice:not(.capms-notice),
+.media_page_captain-media-shield .update-nag,
+.media_page_captain-media-shield div.error:not(.capms-notice),
+.media_page_captain-media-shield div.updated:not(.capms-notice) {
+    display: none !important;
 }
 
 .media_page_captain-media-shield #wpbody-content .capms-app .notice {

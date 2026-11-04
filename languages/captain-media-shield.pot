@@ -2,22 +2,23 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Captain Media Shield 0.1.0\n"
+"Project-Id-Version: Captain Media Shield 1.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/captain-media-shield\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-26T13:21:57+00:00\n"
+"POT-Creation-Date: 2026-11-04T09:13:35+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: captain-media-shield\n"
 
 #. Plugin Name of the plugin
 #: captain-media-shield.php
-#: includes/admin/class-capms-menu.php:73
+#: includes/admin/class-capms-admin-bar.php:137
 #: includes/admin/class-capms-menu.php:74
+#: includes/admin/class-capms-menu.php:75
 #: build/index.js:1
 msgid "Captain Media Shield"
 msgstr ""
@@ -37,6 +38,106 @@ msgstr ""
 msgid "https://profiles.wordpress.org/devangvachheta/"
 msgstr ""
 
+#: includes/admin/class-capms-admin-bar.php:100
+msgid "WebP Active"
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:101
+msgid "Needs Optimization"
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:102
+msgid "Scanning page media..."
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:103
+msgid "All images on this page are delivered in Next Generation formats."
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:104
+#, php-format
+msgid "%d original image(s) on this page can be optimized."
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:105
+msgid "No uploaded media images found on this page."
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:106
+#, php-format
+msgid "⚡ Optimize Page Images (%d)"
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:107
+msgid "⏳ Optimizing Images..."
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:108
+msgid "✅ Done! Refreshing..."
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:136
+#: includes/admin/class-capms-media-library.php:74
+#: includes/admin/class-capms-media-library.php:245
+#: includes/admin/class-capms-media-library.php:269
+#: includes/admin/class-capms-media-library.php:323
+#: includes/admin/class-capms-media-library.php:333
+#: includes/admin/class-capms-media-library.php:479
+msgid "Media Shield"
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:141
+msgid "Captain Media Shield - Media Optimizer & Storage Saver"
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:177
+msgid "Page Media Inspector"
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:179
+msgid "Scanning..."
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:185
+msgid "Total Images"
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:189
+msgid "WebP / AVIF"
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:193
+msgid "Original"
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:200
+msgid "Detecting images on this page..."
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:207
+msgid "Optimize Images on this Page"
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:213
+msgid "Open Media Shield Dashboard"
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:232
+#: includes/admin/class-capms-dashboard-ajax.php:503
+#: includes/admin/class-capms-dashboard-ajax.php:545
+msgid "Permission denied."
+msgstr ""
+
+#: includes/admin/class-capms-admin-bar.php:254
+msgid "No valid media attachments found to optimize."
+msgstr ""
+
+#. translators: %d: number of optimized images
+#: includes/admin/class-capms-admin-bar.php:277
+#, php-format
+msgid "Successfully optimized %d image(s)!"
+msgstr ""
+
 #: includes/admin/class-capms-dashboard-ajax.php:59
 msgid "Invalid nonce."
 msgstr ""
@@ -50,156 +151,382 @@ msgid "Invalid Permission."
 msgstr ""
 
 #: includes/admin/class-capms-dashboard-ajax.php:63
-#: includes/admin/class-capms-media-library.php:245
+#: includes/admin/class-capms-media-library.php:526
+#: includes/admin/class-capms-media-library.php:605
 msgid "You do not have permission to do this."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:104
-#: includes/admin/class-capms-dashboard-ajax.php:448
+#: includes/admin/class-capms-dashboard-ajax.php:110
+#: includes/admin/class-capms-dashboard-ajax.php:454
 msgid "Invalid type."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:104
+#: includes/admin/class-capms-dashboard-ajax.php:110
 msgid "Something went wrong."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:141
+#: includes/admin/class-capms-dashboard-ajax.php:147
 msgid "Invalid settings payload."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:148
+#: includes/admin/class-capms-dashboard-ajax.php:154
 msgid "Your server does not look like Apache/LiteSpeed - .htaccess rewrites may be ignored. Consider the <picture> tag method."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:150
+#: includes/admin/class-capms-dashboard-ajax.php:156
 msgid "Could not write uploads/.htaccess - check file permissions."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:155
+#: includes/admin/class-capms-dashboard-ajax.php:161
 #: build/backup.js:1
 #: build/images.js:1
+#: build/settings.js:1
 #: build/videos.js:1
 msgid "Settings saved."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:302
+#: includes/admin/class-capms-dashboard-ajax.php:308
 msgid "Invalid attachment."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:423
+#: includes/admin/class-capms-dashboard-ajax.php:429
 msgid "Invalid scan."
 msgstr ""
 
 #. translators: 1: number of files, 2: size
-#: includes/admin/class-capms-dashboard-ajax.php:438
+#: includes/admin/class-capms-dashboard-ajax.php:444
 #, php-format
 msgid "Deleted %1$d file(s), freed %2$s."
 msgstr ""
 
 #. translators: 1: number of files, 2: size
-#: includes/admin/class-capms-dashboard-ajax.php:462
+#: includes/admin/class-capms-dashboard-ajax.php:468
 #, php-format
 msgid "Purged %1$d backup file(s), freed %2$s."
 msgstr ""
 
-#: includes/admin/class-capms-dashboard-ajax.php:476
+#: includes/admin/class-capms-dashboard-ajax.php:482
 msgid "Retention is set to \"Never\" - nothing to clean up automatically."
 msgstr ""
 
 #. translators: %d: number of backups removed
-#: includes/admin/class-capms-dashboard-ajax.php:483
+#: includes/admin/class-capms-dashboard-ajax.php:489
 #, php-format
 msgid "Cleanup finished - %d expired backup(s) removed."
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:71
-#: includes/admin/class-capms-media-library.php:198
-msgid "Media Shield"
+#: includes/admin/class-capms-dashboard-ajax.php:534
+msgid "Status fetched."
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:101
+#: includes/admin/class-capms-dashboard-ajax.php:551
+msgid "Invalid plugin."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:569
+msgid "Plugin is already active."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:573
+msgid "Activation failed."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:575
+msgid "Plugin activated successfully."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:584
+msgid "Could not fetch plugin information."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:592
+#: includes/admin/class-capms-dashboard-ajax.php:593
+msgid "Installation failed."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:610
+msgid "Installed, but activation failed. You can activate it manually."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:612
+msgid "Plugin installed and activated successfully."
+msgstr ""
+
+#: includes/admin/class-capms-dashboard-ajax.php:615
+msgid "Plugin installed."
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:123
+#: includes/admin/class-capms-media-library.php:246
 msgid "Not supported"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:111
+#: includes/admin/class-capms-media-library.php:144
+#: includes/admin/class-capms-media-library.php:441
+#, php-format
+msgid "Saved %s (-%s%%)"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:147
+#: includes/admin/class-capms-media-library.php:270
 #: build/index.js:1
 msgid "Optimized"
 msgstr ""
 
-#. translators: 1: saved size, 2: percent
-#: includes/admin/class-capms-media-library.php:113
+#: includes/admin/class-capms-media-library.php:151
+#: includes/admin/class-capms-media-library.php:214
 #, php-format
-msgid "Saved %1$s (%2$s%%)"
+msgid "Custom Quality: %d%% (Click to change)"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:136
+#: includes/admin/class-capms-media-library.php:151
+#: includes/admin/class-capms-media-library.php:214
+#, php-format
+msgid "Default Quality: %d%% (Click to customize)"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:168
+#: includes/admin/class-capms-media-library.php:296
+msgid "View converted file"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:173
+#: includes/admin/class-capms-media-library.php:275
+#, php-format
+msgid "Saved %s"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:179
+#, php-format
+msgid "Re-optimize (%d%%)"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:179
+#: includes/admin/class-capms-media-library.php:312
+msgid "Re-optimize"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:183
+#: includes/admin/class-capms-media-library.php:316
 msgid "Restore the original file? Optimized and WebP/AVIF/WebM versions will be removed."
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:136
-#: includes/admin/class-capms-media-library.php:175
-msgid "Restore Original"
+#: includes/admin/class-capms-media-library.php:183
+msgid "Restore"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:138
-msgid "No backup kept"
+#: includes/admin/class-capms-media-library.php:189
+msgid "Adjust quality & re-optimize"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:141
+#: includes/admin/class-capms-media-library.php:189
+#: includes/admin/class-capms-media-library.php:224
+msgid "Quality"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:195
+#: includes/admin/class-capms-media-library.php:324
 #: build/index.js:1
 msgid "Queued"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:142
-msgid "Processing in background…"
-msgstr ""
-
-#: includes/admin/class-capms-media-library.php:145
+#: includes/admin/class-capms-media-library.php:204
+#: includes/admin/class-capms-media-library.php:336
 msgid "Failed"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:145
+#: includes/admin/class-capms-media-library.php:206
+#: includes/admin/class-capms-media-library.php:338
 msgid "Skipped"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:150
-msgid "Original restored"
+#: includes/admin/class-capms-media-library.php:208
+#: includes/admin/class-capms-media-library.php:340
+msgid "Restored"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:152
-msgid "Not optimized"
+#: includes/admin/class-capms-media-library.php:210
+#: includes/admin/class-capms-media-library.php:342
+msgid "Not Optimized"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:154
+#: includes/admin/class-capms-media-library.php:219
+#: build/bulk.js:1
+msgid "Retry"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:219
+#, php-format
+msgid "Optimize (%d%%)"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:219
+#: includes/admin/class-capms-media-library.php:353
 msgid "Optimize Now"
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:241
+#: includes/admin/class-capms-media-library.php:224
+msgid "Set custom quality before optimizing"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:301
+msgid "Next Generation:"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:312
+#, php-format
+msgid "Re-optimize at %d%%"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:316
+#: includes/admin/class-capms-media-library.php:424
+msgid "Restore Original"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:352
+msgid "Retry Optimization"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:353
+#, php-format
+msgid "Optimize Now at %d%%"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:376
+#: includes/admin/class-capms-media-library.php:455
+msgid "Quality Setting"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:380
+msgid "Custom"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:382
+#: includes/admin/class-capms-media-library.php:744
+msgid "Global"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:395
+#: includes/admin/class-capms-media-library.php:756
+msgid "Aggressive compression (Maximum disk saving)"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:396
+#: includes/admin/class-capms-media-library.php:757
+msgid "High compression"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:397
+msgid "Balanced quality"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:398
+#: includes/admin/class-capms-media-library.php:759
+msgid "Standard quality"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:399
+#, php-format
+msgid "Reset to global default (%d%%)"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:399
+#: includes/admin/class-capms-media-library.php:760
+#, php-format
+msgid "Default (%d%%)"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:454
+msgid "Quickly adjust image quality setting"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:522
+#: includes/admin/class-capms-media-library.php:613
 msgid "Invalid request."
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:259
+#: includes/admin/class-capms-media-library.php:541
+#: includes/admin/class-capms-media-library.php:618
 msgid "Original file restored."
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:259
+#: includes/admin/class-capms-media-library.php:541
+#: includes/admin/class-capms-media-library.php:634
 msgid "File optimized."
 msgstr ""
 
-#: includes/admin/class-capms-media-library.php:290
+#: includes/admin/class-capms-media-library.php:590
 msgid "Captain Media Shield:"
 msgstr ""
 
-#: includes/admin/class-capms-menu.php:91
+#: includes/admin/class-capms-media-library.php:630
+msgid "Quality setting saved."
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:718
+#: build/images.js:1
+msgid "Image Quality Setting"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:719
+msgid "Quickly tune compression quality for this image"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:722
+msgid "Close"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:741
+msgid "Compression Quality Level:"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:749
+msgid "Max Saving (20%)"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:751
+msgid "Max Quality (100%)"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:754
+msgid "Quick Presets:"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:758
+msgid "Balanced quality & speed"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:766
+msgid "Lower quality (e.g. 40-50%) maximizes disk savings for heavy images, while 75-85% preserves fine photo details. Original file is safely backed up."
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:771
+#: build/index.js:1
+msgid "Cancel"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:773
+msgid "Save setting without re-compressing immediately"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:773
+msgid "Save Quality Only"
+msgstr ""
+
+#: includes/admin/class-capms-media-library.php:776
+msgid "Save & Optimize Now"
+msgstr ""
+
+#: includes/admin/class-capms-menu.php:114
 #: build/index.js:1
 msgid "Dashboard"
 msgstr ""
 
-#: includes/admin/class-capms-menu.php:92
+#: includes/admin/class-capms-menu.php:115
 msgid "Bulk Optimize"
 msgstr ""
 
-#: includes/admin/class-capms-menu.php:93
+#: includes/admin/class-capms-menu.php:116
 msgid "Docs"
 msgstr ""
 
@@ -223,47 +550,47 @@ msgstr ""
 msgid "Original restored."
 msgstr ""
 
-#: includes/core/class-capms-processor.php:187
-#: includes/core/class-capms-processor.php:247
+#: includes/core/class-capms-processor.php:194
+#: includes/core/class-capms-processor.php:284
 msgid "Excluded by your exclude rules."
 msgstr ""
 
-#: includes/core/class-capms-processor.php:231
+#: includes/core/class-capms-processor.php:245
 msgid "File not found on disk."
 msgstr ""
 
-#: includes/core/class-capms-processor.php:296
+#: includes/core/class-capms-processor.php:333
 msgid "Unsupported file type."
 msgstr ""
 
-#: includes/core/class-capms-processor.php:370
+#: includes/core/class-capms-processor.php:407
 msgid "GIF to video is turned off."
 msgstr ""
 
-#: includes/core/class-capms-processor.php:372
+#: includes/core/class-capms-processor.php:409
 msgid "FFmpeg with H.264 is not available on this server - GIF skipped."
 msgstr ""
 
-#: includes/core/class-capms-processor.php:374
+#: includes/core/class-capms-processor.php:411
 msgid "Not an animated GIF."
 msgstr ""
 
 #. translators: 1: MP4 size, 2: original GIF size
-#: includes/core/class-capms-processor.php:395
+#: includes/core/class-capms-processor.php:432
 #, php-format
 msgid "Visitors now get an MP4 (%1$s) instead of the %2$s GIF."
 msgstr ""
 
-#: includes/core/class-capms-processor.php:535
+#: includes/core/class-capms-processor.php:576
 #: includes/core/class-capms-video-optimizer.php:83
 msgid "FFmpeg is not available on this server - video skipped."
 msgstr ""
 
-#: includes/core/class-capms-processor.php:535
+#: includes/core/class-capms-processor.php:576
 msgid "Video optimization is turned off."
 msgstr ""
 
-#: includes/core/class-capms-processor.php:563
+#: includes/core/class-capms-processor.php:604
 msgid "Queued for background optimization."
 msgstr ""
 
@@ -323,6 +650,7 @@ msgstr ""
 
 #: build/backup.js:1
 #: build/images.js:1
+#: build/settings.js:1
 #: build/videos.js:1
 msgid "Could not save settings."
 msgstr ""
@@ -547,6 +875,7 @@ msgid "This permanently deletes every backed-up original. Optimized media keeps 
 msgstr ""
 
 #: build/backup.js:1
+#: build/settings.js:1
 msgid "This action cannot be undone."
 msgstr ""
 
@@ -640,10 +969,6 @@ msgstr ""
 
 #: build/bulk.js:1
 msgid "Include files that failed or were skipped before (e.g. videos uploaded before FFmpeg was installed)."
-msgstr ""
-
-#: build/bulk.js:1
-msgid "Retry"
 msgstr ""
 
 #. translators: %s: estimated time remaining, for example "2 min" or "45 s".
@@ -958,6 +1283,7 @@ msgid "Everything Captain Media Shield needs, checked live on this server."
 msgstr ""
 
 #: build/health.js:1
+#: build/our-products.js:1
 #: build/videos.js:1
 msgid "Checking…"
 msgstr ""
@@ -1099,16 +1425,200 @@ msgstr ""
 msgid "Not writable"
 msgstr ""
 
+#: build/help.js:1
+msgid "How does Captain Media Shield optimize images?"
+msgstr ""
+
+#: build/help.js:1
+msgid "It uses high-performance on-server algorithms (GD / Imagick) to compress images and generate modern WebP and AVIF formats without relying on external cloud APIs or third-party paid subscriptions."
+msgstr ""
+
+#: build/help.js:1
+msgid "Will converting to WebP/AVIF break my existing image URLs?"
+msgstr ""
+
+#: build/help.js:1
+msgid "No! Your original image URLs remain completely intact. Captain Media Shield serves Next Generation WebP/AVIF automatically via .htaccess rewrite rules or <picture> tags for browsers that support them."
+msgstr ""
+
+#: build/help.js:1
+msgid "Can I adjust compression quality for specific images?"
+msgstr ""
+
+#: build/help.js:1
+msgid "Yes! In addition to global settings (default 80%), you can adjust compression quality per image directly from the Media Library list view (using the Quick Quality popup) and the single attachment details screen."
+msgstr ""
+
+#: build/help.js:1
+msgid "Where are original backup images stored and how do I restore?"
+msgstr ""
+
+#: build/help.js:1
+msgid "Original uncompressed files are safely backed up in your wp-content/uploads/capms-backups/ folder. You can click \"Restore\" on any image to instantly bring back the original and remove generated Next Generation files."
+msgstr ""
+
+#: build/help.js:1
+msgid "Does Captain Media Shield support video compression?"
+msgstr ""
+
+#: build/help.js:1
+msgid "Yes! It includes FastStart streaming optimization (moving the MP4 moov atom to the front for instant video playback) and optional WebM conversion with VP9/Opus encoding via on-server ffmpeg."
+msgstr ""
+
+#: build/help.js:1
+msgid "Does Captain Media Shield send my media to external servers?"
+msgstr ""
+
+#: build/help.js:1
+msgid "Never. 100% of the optimization, conversion, and cleanup takes place directly on your own WordPress host server, ensuring zero data leakage, zero monthly quotas, and complete privacy."
+msgstr ""
+
+#: build/help.js:1
+msgid "DISCORD COMMUNITY"
+msgstr ""
+
+#: build/help.js:1
+msgid "Chat with Developers"
+msgstr ""
+
+#: build/help.js:1
+msgid "Join our Discord server to discuss features, get live help, and share feedback with creators."
+msgstr ""
+
+#: build/help.js:1
+msgid "Join Discord"
+msgstr ""
+
+#: build/help.js:1
+msgid "YouTube Video Tutorials"
+msgstr ""
+
+#: build/help.js:1
+msgid "Watch step-by-step visual setup tutorials, feature tours, and walkthroughs."
+msgstr ""
+
+#: build/help.js:1
+msgid "Watch on YouTube"
+msgstr ""
+
+#: build/help.js:1
+msgid "Follow Developer on X"
+msgstr ""
+
+#: build/help.js:1
+msgid "Get immediate updates on upcoming releases, development roadmaps, and tips."
+msgstr ""
+
+#: build/help.js:1
+msgid "Follow on X"
+msgstr ""
+
+#: build/help.js:1
+msgid "CAPTAIN INFOTECH"
+msgstr ""
+
+#: build/help.js:1
+msgid "Facebook Page"
+msgstr ""
+
+#: build/help.js:1
+msgid "Follow Captain InfoTech on Facebook for announcements, news, and community discussions."
+msgstr ""
+
+#: build/help.js:1
+msgid "Visit Facebook Page"
+msgstr ""
+
+#: build/help.js:1
+msgid "Help & Support"
+msgstr ""
+
+#: build/help.js:1
+msgid "Find answers to common questions and get started quickly."
+msgstr ""
+
+#: build/help.js:1
+#: build/index.js:1
+msgid "Documentation"
+msgstr ""
+
+#: build/help.js:1
+msgid "Read our comprehensive documentation to learn all available optimization and storage features."
+msgstr ""
+
+#: build/help.js:1
+msgid "View Docs"
+msgstr ""
+
+#: build/help.js:1
+msgid "Support Forum"
+msgstr ""
+
+#: build/help.js:1
+msgid "Open a support topic on WordPress.org and our engineering team will get back to you quickly."
+msgstr ""
+
+#: build/help.js:1
+#: build/our-products.js:1
+msgid "Get Support"
+msgstr ""
+
+#: build/help.js:1
+msgid "Rate Us"
+msgstr ""
+
+#: build/help.js:1
+msgid "Enjoying faster loading speeds and saved disk space? Leave us a 5-star review on WordPress.org!"
+msgstr ""
+
+#: build/help.js:1
+#: build/our-products.js:1
+msgid "Rate Plugin"
+msgstr ""
+
+#: build/help.js:1
+msgid "Community & Social Channels"
+msgstr ""
+
+#: build/help.js:1
+msgid "Join fellow site owners, watch feature video tutorials, and follow developer updates."
+msgstr ""
+
+#: build/help.js:1
+msgid "Frequently Asked Questions"
+msgstr ""
+
+#: build/images.js:1
+msgid "Formats & Quality"
+msgstr ""
+
+#: build/images.js:1
+msgid "Auto-Resize"
+msgstr ""
+
+#: build/images.js:1
+msgid "Delivery & Server"
+msgstr ""
+
+#: build/images.js:1
+msgid "Exclude Rules"
+msgstr ""
+
+#: build/images.js:1
+#: build/videos.js:1
+msgid "All Settings"
+msgstr ""
+
 #: build/images.js:1
 msgid "Image Optimization & Formats"
 msgstr ""
 
 #: build/images.js:1
-msgid "Compress, resize and convert every image to next-gen formats - right on your own server."
+msgid "Compress, resize and convert every image to Next Generation formats - right on your own server."
 msgstr ""
 
 #: build/images.js:1
-msgid "Next-Gen Formats"
+msgid "Next Generation Formats"
 msgstr ""
 
 #: build/images.js:1
@@ -1152,11 +1662,7 @@ msgid "Applies to recompressed JPEGs, generated thumbnails and WebP/AVIF output.
 msgstr ""
 
 #: build/images.js:1
-msgid "Image Quality Setting"
-msgstr ""
-
-#: build/images.js:1
-msgid "80 is the sweet spot - visually identical for most photos with a big size drop."
+msgid "Global default compression quality (80 is the sweet spot). You can also override and set custom quality (e.g. 40-50%) for any single image directly in the Media Library attachment details."
 msgstr ""
 
 #: build/images.js:1
@@ -1228,7 +1734,7 @@ msgid "WebP / AVIF Delivery"
 msgstr ""
 
 #: build/images.js:1
-msgid "How visitors receive the next-gen files. Browsers without support always get the original JPEG/PNG."
+msgid "How visitors receive the Next Generation files. Browsers without support always get the original JPEG/PNG."
 msgstr ""
 
 #: build/images.js:1
@@ -1249,6 +1755,15 @@ msgstr ""
 
 #: build/images.js:1
 msgid "HTML <picture> tag replacement"
+msgstr ""
+
+#: build/images.js:1
+#: build/settings.js:1
+msgid "Show in WordPress Admin Bar"
+msgstr ""
+
+#: build/images.js:1
+msgid "Displays a live Page Media Inspector, WebP delivery status badge, 1-click optimizer, and quick navigation links in the top toolbar when logged in."
 msgstr ""
 
 #: build/images.js:1
@@ -1288,7 +1803,7 @@ msgid "Nginx rules"
 msgstr ""
 
 #: build/images.js:1
-msgid "Exclude Rules"
+msgid "Your server does not appear to be Apache or LiteSpeed, so .htaccess rules may be ignored. The <picture> tag method works everywhere."
 msgstr ""
 
 #: build/images.js:1
@@ -1315,24 +1830,12 @@ msgstr ""
 msgid "Comma separated. Found in the Media Library URL (post=123). ID rules apply to the Bulk Optimizer and to WebP/AVIF creation; use a folder or file pattern to also keep a brand-new upload untouched."
 msgstr ""
 
-#: build/images.js:1
-msgid "Your server does not appear to be Apache or LiteSpeed, so .htaccess rules may be ignored. The <picture> tag method works everywhere."
-msgstr ""
-
 #: build/index.js:1
-msgid "Available"
-msgstr ""
-
-#: build/index.js:1
-msgid "Not available"
+msgid "Discard"
 msgstr ""
 
 #: build/index.js:1
 msgid "Reset to Defaults"
-msgstr ""
-
-#: build/index.js:1
-msgid "Discard"
 msgstr ""
 
 #: build/index.js:1
@@ -1344,7 +1847,11 @@ msgid "Save Changes"
 msgstr ""
 
 #: build/index.js:1
-msgid "Cancel"
+msgid "Available"
+msgstr ""
+
+#: build/index.js:1
+msgid "Not available"
 msgstr ""
 
 #: build/index.js:1
@@ -1434,7 +1941,7 @@ msgid "AVIF versions"
 msgstr ""
 
 #: build/index.js:1
-msgid "Next-gen size"
+msgid "Next Generation size"
 msgstr ""
 
 #: build/index.js:1
@@ -1527,11 +2034,145 @@ msgid "Server Health"
 msgstr ""
 
 #: build/index.js:1
-msgid "Documentation"
+msgid "Extra Options"
+msgstr ""
+
+#: build/index.js:1
+#: build/settings.js:1
+msgid "Settings"
+msgstr ""
+
+#: build/index.js:1
+msgid "Help"
+msgstr ""
+
+#: build/index.js:1
+#: build/our-products.js:1
+msgid "Our Products"
 msgstr ""
 
 #: build/index.js:1
 msgid "VERSION"
+msgstr ""
+
+#: build/our-products.js:1
+msgid "A powerful Elementor addon with 50+ creative widgets to build stunning WordPress websites without coding."
+msgstr ""
+
+#: build/our-products.js:1
+msgid "Free"
+msgstr ""
+
+#: build/our-products.js:1
+msgid "Display highly customizable YouTube video feeds, channels, and playlists on your WordPress website."
+msgstr ""
+
+#: build/our-products.js:1
+msgid "All-in-one free Image & Video Optimizer, WebP/AVIF Converter, Video Compressor, and Server Storage Saver."
+msgstr ""
+
+#: build/our-products.js:1
+msgid "Active"
+msgstr ""
+
+#: build/our-products.js:1
+msgid "Display stunning social reviews from Google, Facebook, Yelp, Trustpilot, Tripadvisor, and 6 more platforms, fetched live via official APIs."
+msgstr ""
+
+#: build/our-products.js:1
+msgid "Add powerful multi-condition filtering (search, tags, categories, price range and more) to any WordPress list or archive."
+msgstr ""
+
+#: build/our-products.js:1
+msgid "Build WhatsApp-powered chat funnels and click-to-chat buttons to turn website visitors into conversations and leads."
+msgstr ""
+
+#: build/our-products.js:1
+msgid "Self-hosted live chat for WordPress with an AI agent, canned replies and full conversation history - no monthly subscription."
+msgstr ""
+
+#: build/our-products.js:1
+msgid "Installing…"
+msgstr ""
+
+#: build/our-products.js:1
+msgid "Activate"
+msgstr ""
+
+#: build/our-products.js:1
+msgid "Failed, Try Again"
+msgstr ""
+
+#: build/our-products.js:1
+msgid "Install Plugin"
+msgstr ""
+
+#: build/our-products.js:1
+msgid "Explore our collection of free WordPress plugins."
+msgstr ""
+
+#: build/our-products.js:1
+msgid "View on WordPress.org"
+msgstr ""
+
+#: build/our-products.js:1
+msgid "Need Help?"
+msgstr ""
+
+#: build/our-products.js:1
+msgid "Open a support ticket on WordPress.org and our team will get back to you quickly."
+msgstr ""
+
+#: build/settings.js:1
+msgid "Manage WordPress admin bar integration and plugin data retention options."
+msgstr ""
+
+#: build/settings.js:1
+msgid "Toolbar & Admin Bar"
+msgstr ""
+
+#: build/settings.js:1
+msgid "Control how Captain Media Shield appears in the top WordPress admin bar for administrators."
+msgstr ""
+
+#: build/settings.js:1
+msgid "Displays a lightweight live Page Media Inspector, WebP/AVIF delivery status indicator dot, 1-click optimizer, and quick navigation links in the top toolbar when logged in."
+msgstr ""
+
+#: build/settings.js:1
+msgid "Plugin Data & Retention"
+msgstr ""
+
+#: build/settings.js:1
+msgid "Choose whether to preserve or permanently remove plugin tables and settings when uninstalling."
+msgstr ""
+
+#: build/settings.js:1
+msgid "Preserve settings if plugin is removed"
+msgstr ""
+
+#: build/settings.js:1
+msgid "Keeps all your plugin configurations and optimization records in the database even if the plugin is uninstalled."
+msgstr ""
+
+#: build/settings.js:1
+msgid "Clear all data on uninstall"
+msgstr ""
+
+#: build/settings.js:1
+msgid "Permanently deletes all plugin database tables (capms_media), stored settings, post meta, and scheduled cron jobs when uninstalled. "
+msgstr ""
+
+#: build/settings.js:1
+msgid "All plugin data will be deleted on uninstall!"
+msgstr ""
+
+#: build/settings.js:1
+msgid "Note on your media files:"
+msgstr ""
+
+#: build/settings.js:1
+msgid "Your optimized images, videos, and generated WebP/AVIF/WebM companion files stored in wp-content/uploads/ are never deleted during uninstall to protect your live website."
 msgstr ""
 
 #: build/storage.js:1
@@ -1577,7 +2218,7 @@ msgid "Thumbnails: %s"
 msgstr ""
 
 #: build/storage.js:1
-msgid "Next-gen copies"
+msgid "Next Generation copies"
 msgstr ""
 
 #: build/storage.js:1
@@ -1615,15 +2256,27 @@ msgid "Including their thumbnails and generated copies."
 msgstr ""
 
 #: build/videos.js:1
+msgid "FFmpeg Engine"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Compression & Formats"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Streaming"
+msgstr ""
+
+#: build/videos.js:1
+msgid "Audio & Metadata"
+msgstr ""
+
+#: build/videos.js:1
 msgid "Video Optimization & Streaming"
 msgstr ""
 
 #: build/videos.js:1
 msgid "Compress uploads, generate WebM and enable instant playback with FFmpeg. Videos are processed in the background via WP-Cron."
-msgstr ""
-
-#: build/videos.js:1
-msgid "FFmpeg Engine"
 msgstr ""
 
 #: build/videos.js:1
@@ -1656,10 +2309,6 @@ msgstr ""
 
 #: build/videos.js:1
 msgid "FFmpeg was not found. Install it on the server (or set its path above and save) to enable video compression, Fast Start and WebM. Image optimization works without it."
-msgstr ""
-
-#: build/videos.js:1
-msgid "Compression & Formats"
 msgstr ""
 
 #: build/videos.js:1
@@ -1707,10 +2356,6 @@ msgid "Applies to GIFs inserted at full size in post content, widgets and featur
 msgstr ""
 
 #: build/videos.js:1
-msgid "Streaming"
-msgstr ""
-
-#: build/videos.js:1
 msgid "Settings that decide how fast a video starts and how heavy it is to stream."
 msgstr ""
 
@@ -1740,10 +2385,6 @@ msgstr ""
 
 #: build/videos.js:1
 msgid "Keep Original"
-msgstr ""
-
-#: build/videos.js:1
-msgid "Audio & Metadata"
 msgstr ""
 
 #: build/videos.js:1
