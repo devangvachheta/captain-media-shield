@@ -752,6 +752,14 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			$files = array( $file );
 			$dir   = trailingslashit( dirname( $file ) );
 
+			// Also include the unscaled original if WordPress created a "-scaled" copy.
+			if ( ! empty( $metadata['original_image'] ) ) {
+				$orig_path = $dir . $metadata['original_image'];
+				if ( is_file( $orig_path ) && ! in_array( $orig_path, $files, true ) ) {
+					$files[] = $orig_path;
+				}
+			}
+
 			if ( ! empty( $metadata['sizes'] ) && is_array( $metadata['sizes'] ) ) {
 				foreach ( $metadata['sizes'] as $size ) {
 					if ( empty( $size['file'] ) ) {
@@ -784,11 +792,17 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			}
 
 			$candidates = array( $file );
-			if ( is_array( $metadata ) && ! empty( $metadata['sizes'] ) ) {
-				$dir = trailingslashit( dirname( $file ) );
-				foreach ( $metadata['sizes'] as $size ) {
-					if ( ! empty( $size['file'] ) ) {
-						$candidates[] = $dir . $size['file'];
+			$dir        = trailingslashit( dirname( $file ) );
+
+			if ( is_array( $metadata ) ) {
+				if ( ! empty( $metadata['original_image'] ) ) {
+					$candidates[] = $dir . $metadata['original_image'];
+				}
+				if ( ! empty( $metadata['sizes'] ) ) {
+					foreach ( $metadata['sizes'] as $size ) {
+						if ( ! empty( $size['file'] ) ) {
+							$candidates[] = $dir . $size['file'];
+						}
 					}
 				}
 			}

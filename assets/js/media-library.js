@@ -460,4 +460,456 @@
             }
         });
     });
+
+    /* ══════════════════════════════════════════════════════════════════
+       4. CLIENT-SIDE UPLOAD RESCUE & AUTO-COMPRESSION ASSISTANT
+       ══════════════════════════════════════════════════════════════════ */
+
+    var stashedFiles = {};
+
+    // 1. Capture files from any file input selection safely
+    $(document).on('change', 'input[type="file"]', function (e) {
+        try {
+            var files = e.target.files;
+            if (files && files.length) {
+                for (var i = 0; i < files.length; i++) {
+                    if (files[i] && files[i].name) {
+                        stashedFiles[files[i].name] = files[i];
+                    }
+                }
+            }
+        } catch (err) {}
+    });
+
+    // 2. Capture files from drag-and-drop safely (non-capturing phase, never prevents WP drop)
+    window.addEventListener('drop', function (e) {
+        try {
+            if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+                for (var i = 0; i < e.dataTransfer.files.length; i++) {
+                    var f = e.dataTransfer.files[i];
+                    if (f && f.name) {
+                        stashedFiles[f.name] = f;
+                    }
+                }
+            }
+        } catch (err) {}
+    }, false);
+
+    /**
+     * Parse failed filenames from upload error elements
+     */
+    function getOversizedErrorFiles() {
+        var failed = [];
+        $('.upload-error, #media-upload-error, .media-upload-form .error').each(function () {
+            var $err = $(this);
+            var text = $err.text();
+            if (text.indexOf('exceeds the maximum upload size') !== -1 || text.indexOf('maximum upload size') !== -1) {
+                var $fn = $err.find('.upload-error-filename');
+                var name = $fn.length ? $.trim($fn.text()) : '';
+                if (!name) {
+                    var match = text.match(/([^\s\r\n]+\.(png|jpe?g|webp|avif|gif))/i);
+                    if (match) name = match[1];
+                }
+                if (name && failed.indexOf(name) === -1) {
+                    failed.push(name);
+                }
+            }
+        });
+        return failed;
+    }
+
+    /**
+     * Check and inject the Media Shield Upload Assistant Bar
+     */
+    function checkAndInjectAssistant() {
+        try {
+            var failedFiles = getOversizedErrorFiles();
+            if (!failedFiles.length) {
+                $('#capms-upload-assistant-bar').remove();
+                return;
+            }
+
+            if ($('#capms-upload-assistant-bar').length) {
+                // Already injected, update count if not busy
+                var $btn = $('#capms-btn-rescue-compress');
+                if ($btn.length && !$btn.hasClass('is-busy')) {
+                    $btn.find('.capms-rescue-txt').text('Auto-Compress & Upload (' + failedFiles.length + ' ' + (failedFiles.length === 1 ? 'File' : 'Files') + ')');
+                }
+                return;
+            }
+
+            var maxFormatted = (window.capms_media_vars && window.capms_media_vars.max_upload_formatted) ? window.capms_media_vars.max_upload_formatted : '2 MB';
+
+            var barHtml = [
+                '<div class="capms-upload-assistant-bar" id="capms-upload-assistant-bar">',
+                    '<div class="capms-uab-main">',
+                        '<div class="capms-uab-info">',
+                            '<span class="capms-uab-brand">',
+                                '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+                                'Media Shield',
+                            '</span>',
+                            '<span class="capms-uab-text">',
+                                '<strong>' + failedFiles.length + ' image(s) exceed ' + maxFormatted + ' server limit.</strong> ',
+                                'Auto-compress & upload directly under ' + maxFormatted + ' without changing server settings.',
+                            '</span>',
+                        '</div>',
+                        '<div class="capms-uab-actions">',
+                            '<button type="button" class="button button-primary capms-btn-rescue-compress" id="capms-btn-rescue-compress">',
+                                '<span class="capms-rescue-bolt">⚡</span> ',
+                                '<span class="capms-rescue-txt">Auto-Compress & Upload (' + failedFiles.length + ' ' + (failedFiles.length === 1 ? 'File' : 'Files') + ')</span>',
+                            '</button>',
+                            '<button type="button" class="button button-secondary capms-btn-open-inc-modal" id="capms-btn-open-inc-modal">',
+                                '<span class="dashicons dashicons-admin-generic"></span> ',
+                                'Increase ' + maxFormatted + ' Limit',
+                            '</button>',
+                            '<input type="file" id="capms-rescue-file-fallback" multiple accept="image/*" style="display:none;" />',
+                        '</div>',
+                    '</div>',
+                    '<div class="capms-rescue-status" id="capms-rescue-status" style="display:none;">',
+                        '<div class="capms-rescue-pbar"><div class="capms-rescue-pbar-fill" id="capms-rescue-pbar-fill"></div></div>',
+                        '<div class="capms-rescue-status-msg" id="capms-rescue-status-msg"></div>',
+                    '</div>',
+                '</div>'
+            ].join('');
+
+            // Look for mount point:
+            var $mount = $('button.dismiss, .upload-errors button.dismiss, #media-items button.dismiss').last();
+            if (!$mount.length) {
+                $mount = $('#media-upload-error, .upload-errors, #media-items, .upload-error').last();
+            }
+            if ($mount.length) {
+                $mount.after(barHtml);
+            }
+        } catch (e) {}
+    }
+
+    // Debounced observer to prevent layout thrashing
+    var checkTimer = null;
+    function scheduleCheck() {
+        if (checkTimer) return;
+        checkTimer = setTimeout(function () {
+            checkTimer = null;
+            checkAndInjectAssistant();
+        }, 250);
+    }
+
+    if (window.MutationObserver) {
+        var observer = new MutationObserver(scheduleCheck);
+        var targetNode = document.getElementById('wpbody-content') || document.body;
+        observer.observe(targetNode, { childList: true, subtree: true });
+    }
+
+    // Initial check on load
+    $(document).ready(function () {
+        scheduleCheck();
+    });
+
+    /**
+     * Compress an image file using browser Canvas / WebP
+     */
+    function compressImageToLimit(file, maxBytes, callback) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var img = new Image();
+            img.onload = function () {
+                var width = img.naturalWidth || img.width;
+                var height = img.naturalHeight || img.height;
+
+                // Restrict extreme dimensions (max 2560px)
+                var maxDim = 2560;
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) {
+                        height = Math.round((height * maxDim) / width);
+                        width = maxDim;
+                    } else {
+                        width = Math.round((width * maxDim) / height);
+                        height = maxDim;
+                    }
+                }
+
+                var canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Target safe limit: 80% of server upload limit or at most 1.8 MB
+                var targetBytes = Math.min(maxBytes * 0.85, 1850000);
+                if (targetBytes < 200000) targetBytes = maxBytes * 0.9;
+
+                var format = 'image/webp';
+                var quality = 0.84;
+
+                function testBlob(q, scale) {
+                    var curCanvas = canvas;
+                    if (scale < 1) {
+                        var sW = Math.round(width * scale);
+                        var sH = Math.round(height * scale);
+                        var sCanvas = document.createElement('canvas');
+                        sCanvas.width = sW;
+                        sCanvas.height = sH;
+                        sCanvas.getContext('2d').drawImage(img, 0, 0, sW, sH);
+                        curCanvas = sCanvas;
+                    }
+
+                    if (typeof curCanvas.toBlob === 'function') {
+                        curCanvas.toBlob(function (blob) {
+                            if (!blob) {
+                                // Fallback to JPEG
+                                format = 'image/jpeg';
+                                curCanvas.toBlob(function (jBlob) {
+                                    callback(jBlob || file);
+                                }, format, 0.80);
+                                return;
+                            }
+                            if (blob.size <= targetBytes || q <= 0.45) {
+                                callback(blob);
+                            } else {
+                                // Scale down further
+                                testBlob(q - 0.12, (blob.size > targetBytes * 1.4) ? scale * 0.85 : scale);
+                            }
+                        }, format, q);
+                    } else {
+                        // Fallback for older browsers
+                        callback(file);
+                    }
+                }
+
+                testBlob(quality, 1.0);
+            };
+            img.onerror = function () {
+                callback(file);
+            };
+            img.src = e.target.result;
+        };
+        reader.onerror = function () {
+            callback(file);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    /**
+     * Upload compressed blob to WordPress via AJAX rescue endpoint
+     */
+    function uploadRescuedBlob(blob, originalName, onProgress, onDone, onError) {
+        var formData = new FormData();
+        formData.append('action', 'capms_upload_rescue');
+        formData.append('nonce', window.capms_media_vars.upload_rescue_nonce);
+        formData.append('name', originalName);
+        formData.append('file', blob, originalName);
+
+        var ajaxUrl = (window.capms_media_vars && window.capms_media_vars.ajax_url)
+            ? window.capms_media_vars.ajax_url
+            : (window.ajaxurl || '/wp-admin/admin-ajax.php');
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', ajaxUrl, true);
+
+        if (xhr.upload && onProgress) {
+            xhr.upload.onprogress = function (e) {
+                if (e.lengthComputable) {
+                    onProgress(Math.round((e.loaded / e.total) * 100));
+                }
+            };
+        }
+
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                try {
+                    var res = JSON.parse(xhr.responseText);
+                    if (res && res.success) {
+                        onDone(res.data);
+                    } else {
+                        onError((res && res.data && res.data.message) ? res.data.message : 'Upload failed');
+                    }
+                } catch (e) {
+                    onError('Invalid server response');
+                }
+            } else {
+                onError('HTTP ' + xhr.status + ' upload error');
+            }
+        };
+
+        xhr.onerror = function () {
+            onError('Network connection error');
+        };
+
+        xhr.send(formData);
+    }
+
+    /**
+     * Handle "Auto-Compress & Upload" button click
+     */
+    $(document).on('click', '#capms-btn-rescue-compress', function (e) {
+        e.preventDefault();
+        var $btn = $(this);
+        if ($btn.hasClass('is-busy')) return;
+
+        var failedFiles = getOversizedErrorFiles();
+        if (!failedFiles.length) {
+            alert('No oversized files detected.');
+            return;
+        }
+
+        // Check if all failed files are in our stashed cache
+        var missingFiles = [];
+        for (var i = 0; i < failedFiles.length; i++) {
+            if (!stashedFiles[failedFiles[i]]) {
+                missingFiles.push(failedFiles[i]);
+            }
+        }
+
+        if (missingFiles.length) {
+            // Smoothly open file picker to let user select the oversized file
+            $('#capms-rescue-file-fallback').trigger('click');
+            return;
+        }
+
+        startRescueProcess(failedFiles);
+    });
+
+    // Handle fallback file selection
+    $(document).on('change', '#capms-rescue-file-fallback', function (e) {
+        var files = e.target.files;
+        if (files && files.length) {
+            var names = [];
+            for (var i = 0; i < files.length; i++) {
+                stashedFiles[files[i].name] = files[i];
+                names.push(files[i].name);
+            }
+            startRescueProcess(names);
+        }
+    });
+
+    /**
+     * Sequentially compress and upload files
+     */
+    function startRescueProcess(fileNames) {
+        var $btn = $('#capms-btn-rescue-compress');
+        var $status = $('#capms-rescue-status');
+        var $pbarFill = $('#capms-rescue-pbar-fill');
+        var $msg = $('#capms-rescue-status-msg');
+
+        $btn.addClass('is-busy').prop('disabled', true);
+        $status.slideDown(180);
+
+        var total = fileNames.length;
+        var currentIndex = 0;
+        var maxBytes = (window.capms_media_vars && window.capms_media_vars.max_upload_size)
+            ? parseInt(window.capms_media_vars.max_upload_size, 10)
+            : (2 * 1024 * 1024);
+
+        function processNext() {
+            if (currentIndex >= total) {
+                // All finished!
+                $pbarFill.css('width', '100%');
+                $msg.html('<span class="capms-rescue-done-icon">✓</span> <strong>All ' + total + ' file(s) compressed and uploaded successfully!</strong> Refreshing Media Library…');
+                showToast('All ' + total + ' file(s) compressed and uploaded successfully!', true);
+
+                setTimeout(function () {
+                    // Hide errors and reload
+                    $('.upload-errors, #media-items .upload-error, #capms-upload-assistant-bar').fadeOut(250);
+                    if (window.location.href.indexOf('upload.php') !== -1) {
+                        window.location.reload();
+                    }
+                }, 1400);
+                return;
+            }
+
+            var fileName = fileNames[currentIndex];
+            var file = stashedFiles[fileName];
+            var stepNum = currentIndex + 1;
+
+            var basePct = Math.round((currentIndex / total) * 100);
+            $pbarFill.css('width', basePct + '%');
+            $msg.html('<span class="capms-spinner"></span> ⚡ Compressing ' + stepNum + ' of ' + total + ': <code>' + fileName + '</code>…');
+
+            compressImageToLimit(file, maxBytes, function (compressedBlob) {
+                $msg.html('<span class="capms-spinner"></span> 🚀 Uploading ' + stepNum + ' of ' + total + ' (' + Math.round(compressedBlob.size / 1024) + ' KB) to Media Library…');
+
+                uploadRescuedBlob(
+                    compressedBlob,
+                    fileName,
+                    function (progressPct) {
+                        var fileShare = 100 / total;
+                        var totalProgress = basePct + Math.round((progressPct / 100) * fileShare);
+                        $pbarFill.css('width', Math.min(totalProgress, 96) + '%');
+                    },
+                    function (resData) {
+                        currentIndex++;
+                        processNext();
+                    },
+                    function (errMsg) {
+                        showToast('Upload failed for ' + fileName + ': ' + errMsg, false);
+                        currentIndex++;
+                        processNext();
+                    }
+                );
+            });
+        }
+
+        processNext();
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       5. INCREASE UPLOAD LIMIT MODAL
+       ══════════════════════════════════════════════════════════════════ */
+
+    $(document).on('click', '#capms-btn-open-inc-modal', function (e) {
+        e.preventDefault();
+        $('#capms-increase-limit-modal').fadeIn(180);
+    });
+
+    $(document).on('click', '.capms-inc-close', function (e) {
+        e.preventDefault();
+        $('#capms-increase-limit-modal').fadeOut(180);
+    });
+
+    $(document).on('click', '#capms-increase-limit-modal', function (e) {
+        if ($(e.target).is('#capms-increase-limit-modal')) {
+            $(this).fadeOut(180);
+        }
+    });
+
+    $(document).on('click', '#capms-btn-do-auto-increase', function (e) {
+        e.preventDefault();
+        var $btn = $(this);
+        if ($btn.hasClass('is-busy')) return;
+
+        var originalText = $btn.text();
+        $btn.addClass('is-busy').prop('disabled', true).text('Testing & Updating…');
+        var $feedback = $('#capms-inc-feedback').hide();
+
+        var ajaxUrl = (window.capms_media_vars && window.capms_media_vars.ajax_url)
+            ? window.capms_media_vars.ajax_url
+            : (window.ajaxurl || '/wp-admin/admin-ajax.php');
+        var nonce = (window.capms_media_vars && window.capms_media_vars.nonce)
+            ? window.capms_media_vars.nonce
+            : '';
+
+        $.ajax({
+            url: ajaxUrl,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'capms_increase_upload_limit',
+                nonce: nonce
+            }
+        }).done(function (res) {
+            $btn.removeClass('is-busy').prop('disabled', false).text(originalText);
+            if (res && res.success) {
+                $feedback.html('<div class="notice notice-success inline"><p><strong>✓ Success!</strong> ' + res.data.message + ' Refreshing…</p></div>').slideDown(180);
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1200);
+            } else {
+                var msg = (res && res.data && res.data.message) ? res.data.message : 'Could not automatically edit server files.';
+                $feedback.html('<div class="notice notice-warning inline"><p>' + msg + '</p></div>').slideDown(180);
+            }
+        }).fail(function () {
+            $btn.removeClass('is-busy').prop('disabled', false).text(originalText);
+            $feedback.html('<div class="notice notice-error inline"><p>Request failed. Please use manual guide below.</p></div>').slideDown(180);
+        });
+    });
+
 })(jQuery);

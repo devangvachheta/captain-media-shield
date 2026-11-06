@@ -8,16 +8,18 @@ import { ajax } from './api.js';
  * stops pulling the next item.
  */
 const initial = () => ( {
-    status:     'idle', // idle | loading | running | paused | done
-    queue:      [],
-    total:      0,
-    processed:  0,
-    succeeded:  0,
-    failed:     0,
-    savedBytes: 0,
-    current:    null,
-    log:        [],
-    startedAt:  0,
+    status:       'idle', // idle | loading | running | paused | done
+    queue:        [],
+    total:        0,
+    processed:    0,
+    succeeded:    0,
+    failed:       0,
+    savedBytes:   0,
+    current:      null,
+    currentTitle: '',
+    currentThumb: '',
+    log:          [],
+    startedAt:    0,
 } );
 
 let state       = initial();
@@ -50,24 +52,29 @@ const loop = async () => {
 const drain = async () => {
     while ( state.status === 'running' && state.queue.length ) {
         const [ id, ...rest ] = state.queue;
-        update( { current: id } );
+        update( { current: id, currentTitle: `Processing #${ id }…` } );
 
         const result = await ajax( 'bulk_process_item', { id } );
         const row    = result?.data?.row;
         const saved  = row ? Math.max( 0, Number( row.original_size ) - Number( row.optimized_size ) ) : 0;
+        const title  = result?.data?.title || `#${ id }`;
+        const thumb  = result?.data?.thumb || '';
 
         state = {
             ...state,
-            queue:      rest,
-            processed:  state.processed + 1,
-            succeeded:  state.succeeded + ( result.success ? 1 : 0 ),
-            failed:     state.failed + ( result.success ? 0 : 1 ),
-            savedBytes: state.savedBytes + saved,
+            queue:        rest,
+            processed:    state.processed + 1,
+            succeeded:    state.succeeded + ( result.success ? 1 : 0 ),
+            failed:       state.failed + ( result.success ? 0 : 1 ),
+            savedBytes:   state.savedBytes + saved,
+            currentTitle: title,
+            currentThumb: thumb,
         };
 
         pushLog( {
             id,
-            title:   result?.data?.title || `#${ id }`,
+            title,
+            thumb,
             ok:      !! result.success && row?.status !== 'failed',
             status:  row?.status || ( result.success ? 'optimized' : 'failed' ),
             message: result.success ? ( row?.message || '' ) : ( result.message || '' ),
@@ -80,7 +87,7 @@ const drain = async () => {
     }
 
     if ( state.status === 'running' ) {
-        update( { status: 'done', current: null } );
+        update( { status: 'done', current: null, currentTitle: '', currentThumb: '' } );
     }
 };
 
@@ -121,7 +128,7 @@ export const bulkRunner = {
     },
 
     stop() {
-        update( { status: 'done', queue: [], current: null } );
+        update( { status: 'done', queue: [], current: null, currentTitle: '', currentThumb: '' } );
     },
 
     reset() {

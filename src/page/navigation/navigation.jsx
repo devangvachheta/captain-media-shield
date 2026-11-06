@@ -6,7 +6,7 @@ import { __ } from '@wordpress/i18n';
 import { toggleTheme, toggleSidebar } from '../../redux/slice.jsx';
 import { IconDashboard, IconImage, IconVideo, IconBackup, IconBulk, IconHealth, IconDocs, IconDatabase, IconTrash, IconHelp, IconProducts, IconGear } from '../../components/icons.jsx';
 
-const PLUGIN_VERSION = ( typeof capms_data !== 'undefined' && capms_data?.capms_version ) ? capms_data.capms_version : '1.0.1';
+const PLUGIN_VERSION = ( typeof capms_data !== 'undefined' && capms_data?.capms_version ) ? capms_data.capms_version : '1.0.2';
 
 const IconChevron = ( { open } ) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
@@ -17,7 +17,7 @@ const IconChevron = ( { open } ) => (
 
 // Brand mark: the Captain "C" ring wrapped around a shield.
 const LogoSVG = ( { theme } ) => {
-    const color = theme === 'dark' ? '#ffffff' : '#085F63';
+    const color = theme === 'dark' ? '#ffffff' : '#2271b1';
     return (
         <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M89.5 24.2C84.2 15 76.1 7.8 66.4 3.7 56.8-.4 46.2-1.1 36.1 1.6 26 4.3 17.1 10.3 10.6 18.7 4.1 27.1.4 37.5 0 48.3c-.3 10.8 2.7 21.4 8.6 30.2 5.9 8.9 14.5 15.5 24.3 18.9 9.9 3.4 20.5 3.4 30.4.1 9.9-3.4 18.4-10 24.4-18.8L74.6 69.1c-4 5.9-9.7 10.3-16.3 12.5-6.6 2.3-13.7 2.3-20.3 0-6.6-2.3-12.3-6.7-16.2-12.6-4-5.9-6-13-5.7-20.1.2-7.2 2.7-14.1 7-19.7 4.3-5.6 10.3-9.6 17-11.4 6.7-1.8 13.8-1.3 20.2 1.4 6.4 2.7 11.8 7.5 15.4 13.7L89.5 24.2Z" fill={ color } />

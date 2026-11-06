@@ -59,7 +59,10 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 			// Status markup also appears in the media modal (post editor etc.).
 			add_action( 'admin_enqueue_scripts', array( $this, 'capms_column_style' ) );
 			add_action( 'wp_ajax_capms_media_library_action', array( $this, 'capms_ajax_action' ) );
+			add_action( 'wp_ajax_capms_upload_rescue', array( $this, 'capms_ajax_upload_rescue' ) );
+			add_action( 'wp_ajax_capms_increase_upload_limit', array( $this, 'capms_ajax_increase_upload_limit' ) );
 			add_action( 'admin_footer', array( $this, 'capms_render_quick_quality_modal' ) );
+			add_action( 'admin_footer', array( $this, 'capms_render_increase_limit_modal' ) );
 		}
 
 		/**
@@ -154,6 +157,7 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 				$html .= '</div>';
 
 				$original_url = wp_get_attachment_url( $attachment_id );
+				$file_path    = get_attached_file( $attachment_id );
 				$formats      = array(
 					'WebP' => array( 'webp_size', 'webp' ),
 					'AVIF' => array( 'avif_size', 'avif' ),
@@ -164,8 +168,23 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 					if ( (int) $row[ $format[0] ] <= 0 ) {
 						continue;
 					}
-					$format_links[] = $original_url
-						? '<a href="' . esc_url( $original_url . '.' . $format[1] ) . '" target="_blank" rel="noopener noreferrer" class="capms-list-format" title="' . esc_attr__( 'View converted file', 'captain-media-shield' ) . '">' . esc_html( $label ) . '</a>'
+
+					// Resolve actual file URL on disk (handles WordPress "-scaled" images accurately).
+					$target_url = '';
+					if ( $file_path && is_file( $file_path . '.' . $format[1] ) ) {
+						$target_url = $original_url . '.' . $format[1];
+					} elseif ( function_exists( 'wp_get_original_image_path' ) && function_exists( 'wp_get_original_image_url' ) ) {
+						$orig_path = wp_get_original_image_path( $attachment_id );
+						if ( $orig_path && is_file( $orig_path . '.' . $format[1] ) ) {
+							$target_url = wp_get_original_image_url( $attachment_id ) . '.' . $format[1];
+						}
+					}
+					if ( ! $target_url && $original_url ) {
+						$target_url = $original_url . '.' . $format[1];
+					}
+
+					$format_links[] = $target_url
+						? '<a href="' . esc_url( $target_url ) . '" target="_blank" rel="noopener noreferrer" class="capms-list-format" title="' . esc_attr__( 'View converted file', 'captain-media-shield' ) . '">' . esc_html( $label ) . '</a>'
 						: esc_html( $label );
 				}
 
@@ -281,6 +300,7 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 
 				// Formats inline
 				$original_url = wp_get_attachment_url( $attachment_id );
+				$file_path    = get_attached_file( $attachment_id );
 				$formats      = array(
 					'WebP' => array( 'webp_size', 'webp' ),
 					'AVIF' => array( 'avif_size', 'avif' ),
@@ -292,8 +312,23 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 						continue;
 					}
 					$size_str = size_format( (int) $row[ $format[0] ], 1 );
-					$badges[] = $original_url
-						? '<a href="' . esc_url( $original_url . '.' . $format[1] ) . '" target="_blank" rel="noopener noreferrer" class="capms-format-pill" title="' . esc_attr__( 'View converted file', 'captain-media-shield' ) . '"><span>' . esc_html( $label ) . '</span>' . ( $size_str ? '<small>(' . esc_html( $size_str ) . ')</small>' : '' ) . $this->icon_external() . '</a>'
+
+					// Resolve actual file URL on disk (handles WordPress "-scaled" images accurately).
+					$target_url = '';
+					if ( $file_path && is_file( $file_path . '.' . $format[1] ) ) {
+						$target_url = $original_url . '.' . $format[1];
+					} elseif ( function_exists( 'wp_get_original_image_path' ) && function_exists( 'wp_get_original_image_url' ) ) {
+						$orig_path = wp_get_original_image_path( $attachment_id );
+						if ( $orig_path && is_file( $orig_path . '.' . $format[1] ) ) {
+							$target_url = wp_get_original_image_url( $attachment_id ) . '.' . $format[1];
+						}
+					}
+					if ( ! $target_url && $original_url ) {
+						$target_url = $original_url . '.' . $format[1];
+					}
+
+					$badges[] = $target_url
+						? '<a href="' . esc_url( $target_url ) . '" target="_blank" rel="noopener noreferrer" class="capms-format-pill" title="' . esc_attr__( 'View converted file', 'captain-media-shield' ) . '"><span>' . esc_html( $label ) . '</span>' . ( $size_str ? '<small>(' . esc_html( $size_str ) . ')</small>' : '' ) . $this->icon_external() . '</a>'
 						: '<span class="capms-format-pill"><span>' . esc_html( $label ) . '</span></span>';
 				}
 				if ( $badges ) {
@@ -660,12 +695,31 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 			$js_file = CAPMS_PATH . 'assets/js/media-library.js';
 			$js_ver  = file_exists( $js_file ) ? filemtime( $js_file ) : CAPMS_VERSION;
 			wp_enqueue_script( 'capms-media-library', CAPMS_URL . 'assets/js/media-library.js', array( 'jquery' ), $js_ver, true );
+			$max_bytes     = wp_max_upload_size();
+			$max_formatted = size_format( $max_bytes );
+			$php_ini_file  = function_exists( 'php_ini_loaded_file' ) ? (string) php_ini_loaded_file() : '';
+			$is_wamp       = false !== stripos( $php_ini_file, 'wamp' ) || false !== stripos( (string) ( $_SERVER['SERVER_SOFTWARE'] ?? '' ), 'wamp' );
+
 			wp_localize_script(
 				'capms-media-library',
 				'capms_media_vars',
 				array(
-					'ajax_url' => admin_url( 'admin-ajax.php' ),
-					'nonce'    => wp_create_nonce( 'capms_media_action_nonce' ),
+					'ajax_url'             => admin_url( 'admin-ajax.php' ),
+					'nonce'                => wp_create_nonce( 'capms_media_action_nonce' ),
+					'upload_rescue_nonce'  => wp_create_nonce( 'capms_upload_rescue_nonce' ),
+					'max_upload_size'      => $max_bytes,
+					'max_upload_formatted' => $max_formatted,
+					'is_wamp'              => $is_wamp,
+					'php_ini'              => $php_ini_file,
+					'i18n'                 => array(
+						'compress_btn'         => __( 'Compress & Upload with Media Shield', 'captain-media-shield' ),
+						'compressing'          => __( 'Compressing %1$d of %2$d (%3$s)…', 'captain-media-shield' ),
+						'uploading'            => __( 'Uploading %1$d of %2$d (%3$s)…', 'captain-media-shield' ),
+						'all_done'             => __( 'All %d image(s) compressed and uploaded successfully!', 'captain-media-shield' ),
+						'fits_under'           => sprintf( __( 'Fits under %s', 'captain-media-shield' ), $max_formatted ),
+						'increase_limit_btn'   => sprintf( __( 'Increase %s Limit', 'captain-media-shield' ), $max_formatted ),
+						'select_files_to_comp' => __( 'Select File(s) to Compress & Upload', 'captain-media-shield' ),
+					),
 				)
 			);
 		}
@@ -776,6 +830,261 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 								<span class="capms-btn-label"><?php esc_html_e( 'Save & Optimize Now', 'captain-media-shield' ); ?></span>
 							</button>
 						</div>
+					</div>
+				</div>
+			</div>
+			<?php
+		}
+
+		/**
+		 * AJAX handler for client-side compressed upload rescue.
+		 *
+		 * @since 1.0.2
+		 * @return void
+		 */
+		public function capms_ajax_upload_rescue() {
+			check_ajax_referer( 'capms_upload_rescue_nonce', 'nonce' );
+
+			if ( ! current_user_can( 'upload_files' ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'You do not have permission to upload files.', 'captain-media-shield' ) ) );
+			}
+
+			if ( empty( $_FILES['file'] ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'No file data received.', 'captain-media-shield' ) ) );
+			}
+
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			require_once ABSPATH . 'wp-admin/includes/media.php';
+
+			$original_name = ! empty( $_POST['name'] ) ? sanitize_file_name( wp_unslash( $_POST['name'] ) ) : '';
+			if ( $original_name ) {
+				$_FILES['file']['name'] = $original_name;
+			}
+
+			$upload_overrides = array( 'test_form' => false );
+			$uploaded_file    = wp_handle_upload( $_FILES['file'], $upload_overrides );
+
+			if ( isset( $uploaded_file['error'] ) ) {
+				wp_send_json_error( array( 'message' => $uploaded_file['error'] ) );
+			}
+
+			$filename = $uploaded_file['file'];
+			$url      = $uploaded_file['url'];
+			$type     = $uploaded_file['type'];
+
+			$attachment = array(
+				'post_mime_type' => $type,
+				'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $filename ) ),
+				'post_content'   => '',
+				'post_status'    => 'inherit',
+			);
+
+			$attachment_id = wp_insert_attachment( $attachment, $filename );
+
+			if ( is_wp_error( $attachment_id ) ) {
+				wp_send_json_error( array( 'message' => $attachment_id->get_error_message() ) );
+			}
+
+			$attach_data = wp_generate_attachment_metadata( $attachment_id, $filename );
+			wp_update_attachment_metadata( $attachment_id, $attach_data );
+
+			// Immediately optimize the rescued image with Captain Media Shield
+			Capms_Processor::get_instance()->process_attachment( $attachment_id, true );
+
+			$size_formatted = size_format( (int) @filesize( $filename ) );
+
+			wp_send_json_success(
+				array(
+					'id'       => $attachment_id,
+					'title'    => get_the_title( $attachment_id ),
+					'url'      => $url,
+					'thumb'    => wp_get_attachment_image_url( $attachment_id, 'thumbnail' ),
+					'filename' => basename( $filename ),
+					'filesize' => $size_formatted,
+					'message'  => sprintf(
+						/* translators: 1: file name, 2: file size */
+						__( '%1$s compressed & uploaded successfully (%2$s)!', 'captain-media-shield' ),
+						basename( $filename ),
+						$size_formatted
+					),
+				)
+			);
+		}
+
+		/**
+		 * AJAX handler to increase upload limit via .htaccess or .user.ini.
+		 *
+		 * @since 1.0.2
+		 * @return void
+		 */
+		public function capms_ajax_increase_upload_limit() {
+			check_ajax_referer( 'capms_media_action_nonce', 'nonce' );
+
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'You do not have permission to modify settings.', 'captain-media-shield' ) ) );
+			}
+
+			$target_val = '64M';
+			$target_int = 64 * 1024 * 1024;
+			$changed    = false;
+
+			// 1. Try .htaccess (Apache)
+			$htaccess_file = ABSPATH . '.htaccess';
+			if ( file_exists( $htaccess_file ) && is_writable( $htaccess_file ) ) {
+				$content = (string) @file_get_contents( $htaccess_file );
+				$content = preg_replace( '/# BEGIN Captain Media Shield Upload Limit.*?# END Captain Media Shield Upload Limit\s*/s', '', $content );
+				$block   = "\n# BEGIN Captain Media Shield Upload Limit\n";
+				$block  .= "<IfModule mod_php7.c>\n";
+				$block  .= "php_value upload_max_filesize 64M\n";
+				$block  .= "php_value post_max_size 64M\n";
+				$block  .= "php_value memory_limit 256M\n";
+				$block  .= "</IfModule>\n";
+				$block  .= "<IfModule mod_php.c>\n";
+				$block  .= "php_value upload_max_filesize 64M\n";
+				$block  .= "php_value post_max_size 64M\n";
+				$block  .= "php_value memory_limit 256M\n";
+				$block  .= "</IfModule>\n";
+				$block  .= "# END Captain Media Shield Upload Limit\n";
+				if ( false !== @file_put_contents( $htaccess_file, $content . $block ) ) {
+					$changed = true;
+				}
+			}
+
+			// 2. Try .user.ini (CGI / FastCGI / PHP-FPM)
+			$user_ini = ABSPATH . '.user.ini';
+			$can_write_ini = ( ! file_exists( $user_ini ) && is_writable( ABSPATH ) ) || ( file_exists( $user_ini ) && is_writable( $user_ini ) );
+			if ( $can_write_ini ) {
+				$ini_content = file_exists( $user_ini ) ? (string) @file_get_contents( $user_ini ) : '';
+				$ini_content = preg_replace( '/; BEGIN Captain Media Shield Upload Limit.*?; END Captain Media Shield Upload Limit\s*/s', '', $ini_content );
+				$ini_block   = "\n; BEGIN Captain Media Shield Upload Limit\n";
+				$ini_block  .= "upload_max_filesize = 64M\n";
+				$ini_block  .= "post_max_size = 64M\n";
+				$ini_block  .= "memory_limit = 256M\n";
+				$ini_block  .= "; END Captain Media Shield Upload Limit\n";
+				if ( false !== @file_put_contents( $user_ini, $ini_content . $ini_block ) ) {
+					$changed = true;
+				}
+			}
+
+			$new_max = wp_max_upload_size();
+
+			if ( $new_max >= $target_int ) {
+				wp_send_json_success(
+					array(
+						'increased' => true,
+						'new_limit' => size_format( $new_max ),
+						'message'   => sprintf(
+							/* translators: %s: new upload limit */
+							esc_html__( 'Success! Upload limit increased to %s.', 'captain-media-shield' ),
+							size_format( $new_max )
+						),
+					)
+				);
+			}
+
+			$php_ini_file = function_exists( 'php_ini_loaded_file' ) ? (string) php_ini_loaded_file() : '';
+			$server_soft  = isset( $_SERVER['SERVER_SOFTWARE'] ) ? (string) $_SERVER['SERVER_SOFTWARE'] : '';
+			$is_wamp      = false !== stripos( $php_ini_file, 'wamp' ) || false !== stripos( $server_soft, 'wamp' );
+
+			wp_send_json_error(
+				array(
+					'increased' => false,
+					'is_wamp'   => $is_wamp,
+					'php_ini'   => $php_ini_file,
+					'message'   => esc_html__( 'Server configuration prevented automatic file edits. Follow the quick guide below.', 'captain-media-shield' ),
+				)
+			);
+		}
+
+		/**
+		 * Render Increase Upload Limit Modal in admin footer.
+		 *
+		 * @since 1.0.2
+		 * @return void
+		 */
+		public function capms_render_increase_limit_modal() {
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
+			$screen = get_current_screen();
+			if ( ! $screen || 'upload' !== $screen->base ) {
+				return;
+			}
+
+			$current_limit_str = size_format( wp_max_upload_size() );
+			$php_ini_file      = function_exists( 'php_ini_loaded_file' ) ? (string) php_ini_loaded_file() : '';
+			$server_soft       = isset( $_SERVER['SERVER_SOFTWARE'] ) ? (string) $_SERVER['SERVER_SOFTWARE'] : '';
+			$is_wamp           = false !== stripos( $php_ini_file, 'wamp' ) || false !== stripos( $server_soft, 'wamp' );
+			?>
+			<div id="capms-increase-limit-modal" class="capms-modal-backdrop" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="capms-inc-heading">
+				<div class="capms-modal-card capms-modal-card--increase-limit">
+					<div class="capms-modal-header">
+						<div class="capms-modal-header-left">
+							<span class="capms-modal-icon"><?php echo $this->icon_shield(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+							<div>
+								<h3 id="capms-inc-heading" class="capms-modal-heading"><?php esc_html_e( 'Server Upload Size Limit', 'captain-media-shield' ); ?></h3>
+								<p class="capms-modal-sub"><?php printf( esc_html__( 'Current maximum file size: %s', 'captain-media-shield' ), '<strong>' . esc_html( $current_limit_str ) . '</strong>' ); ?></p>
+							</div>
+						</div>
+						<button type="button" class="capms-modal-close capms-inc-close" aria-label="<?php esc_attr_e( 'Close', 'captain-media-shield' ); ?>">&times;</button>
+					</div>
+
+					<div class="capms-modal-body">
+						<div class="capms-inc-auto-box">
+							<div class="capms-inc-auto-text">
+								<strong><?php esc_html_e( '1-Click Automatic Boost (to 64 MB)', 'captain-media-shield' ); ?></strong>
+								<p><?php esc_html_e( 'Attempts to automatically update .htaccess / .user.ini server configuration.', 'captain-media-shield' ); ?></p>
+							</div>
+							<button type="button" class="button button-primary" id="capms-btn-do-auto-increase">
+								<span class="capms-inc-spinner" style="display:none;"></span>
+								<?php esc_html_e( 'Try 1-Click Increase', 'captain-media-shield' ); ?>
+							</button>
+						</div>
+						<div id="capms-inc-feedback" style="display:none;"></div>
+
+						<?php if ( $is_wamp ) : ?>
+							<div class="capms-inc-guide-card">
+								<h4 class="capms-guide-title">
+									<span class="capms-guide-icon">💻</span>
+									<?php esc_html_e( 'Localhost / WAMP Quick Fix:', 'captain-media-shield' ); ?>
+								</h4>
+								<ol class="capms-guide-steps">
+									<li><?php esc_html_e( 'Left-click the green WAMP icon in your Windows taskbar.', 'captain-media-shield' ); ?></li>
+									<li><?php esc_html_e( 'Navigate to: PHP → PHP Settings → click upload_max_filesize and change to 64M (or 128M).', 'captain-media-shield' ); ?></li>
+									<li><?php esc_html_e( 'Navigate to: PHP → PHP Settings → click post_max_size and change to 64M.', 'captain-media-shield' ); ?></li>
+									<li><?php esc_html_e( 'Click "Restart All Services". Refresh this page!', 'captain-media-shield' ); ?></li>
+								</ol>
+								<?php if ( $php_ini_file ) : ?>
+									<div class="capms-guide-ini">
+										<span><?php esc_html_e( 'Your active PHP config file:', 'captain-media-shield' ); ?></span>
+										<code><?php echo esc_html( $php_ini_file ); ?></code>
+									</div>
+								<?php endif; ?>
+							</div>
+						<?php else : ?>
+							<div class="capms-inc-guide-card">
+								<h4 class="capms-guide-title">
+									<span class="capms-guide-icon">🌐</span>
+									<?php esc_html_e( 'Live Hosting Manual Directives:', 'captain-media-shield' ); ?>
+								</h4>
+								<p class="capms-guide-p"><strong><?php esc_html_e( 'Apache / LiteSpeed / cPanel (.htaccess):', 'captain-media-shield' ); ?></strong></p>
+								<pre class="capms-code-snippet"><code>php_value upload_max_filesize 64M
+php_value post_max_size 64M
+php_value memory_limit 256M</code></pre>
+								<p class="capms-guide-p" style="margin-top:10px;"><strong><?php esc_html_e( 'Nginx / FastCGI / Cloudways (.user.ini or php.ini):', 'captain-media-shield' ); ?></strong></p>
+								<pre class="capms-code-snippet"><code>upload_max_filesize = 64M
+post_max_size = 64M
+memory_limit = 256M</code></pre>
+								<p class="capms-guide-p" style="margin-top:10px; font-size:11.5px; color:#64748b; line-height:1.4;">
+									💡 <?php esc_html_e( 'Tip: In cPanel, you can also search for "MultiPHP INI Editor" or "Select PHP Version" to adjust upload limits with one click.', 'captain-media-shield' ); ?>
+								</p>
+							</div>
+						<?php endif; ?>
+					</div>
+
+					<div class="capms-modal-footer">
+						<button type="button" class="button capms-inc-close"><?php esc_html_e( 'Close', 'captain-media-shield' ); ?></button>
 					</div>
 				</div>
 			</div>

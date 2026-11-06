@@ -1,11 +1,11 @@
 import React from 'react';
 import { __ } from '@wordpress/i18n';
 import useSettings from '../../hooks/useSettings.js';
-import { PageHeader, Section, ToggleRow, Notice, Skeleton } from '../../components/ui.jsx';
+import { PageHeader, Section, ToggleRow, SelectRow, Notice, Skeleton } from '../../components/ui.jsx';
 import { IconGlobe, IconDatabase } from '../../components/icons.jsx';
 import './settings.scss';
 
-const KEYS = [ 'admin_bar_menu', 'preserve_settings', 'clear_on_uninstall' ];
+const KEYS = [ 'admin_bar_menu', 'admin_bar_inspector_mode', 'preserve_settings', 'clear_on_uninstall' ];
 
 const Settings = () => {
     const { draft, set, save, reset, discard, dirty, saving, message, tone } = useSettings( KEYS );
@@ -49,12 +49,27 @@ const Settings = () => {
                     description={ __( 'Control how Captain Media Shield appears in the top WordPress admin bar for administrators.', 'captain-media-shield' ) }
                 >
                     <ToggleRow
-                        last
+                        last={ draft.admin_bar_menu === false }
                         label={ __( 'Show in WordPress Admin Bar', 'captain-media-shield' ) }
-                        hint={ __( 'Displays a lightweight live Page Media Inspector, WebP/AVIF delivery status indicator dot, 1-click optimizer, and quick navigation links in the top toolbar when logged in.', 'captain-media-shield' ) }
+                        hint={ __( 'Displays a live Page Media Inspector and status indicator in the top toolbar when logged in as administrator.', 'captain-media-shield' ) }
                         checked={ draft.admin_bar_menu !== false }
                         onChange={ ( v ) => set( 'admin_bar_menu', v ) }
                     />
+
+                    { draft.admin_bar_menu !== false && (
+                        <SelectRow
+                            last
+                            label={ __( 'Unoptimized Images Display Mode', 'captain-media-shield' ) }
+                            hint={ __( 'Choose how unoptimized original images on the current page are shown and located in the Page Media Inspector.', 'captain-media-shield' ) }
+                            value={ draft.admin_bar_inspector_mode || 'list' }
+                            options={ [
+                                { value: 'list', label: __( 'Expandable Thumbnail List (Click to Scroll) — Recommended', 'captain-media-shield' ) },
+                                { value: 'highlight', label: __( 'Highlight on Page (Glowing Borders)', 'captain-media-shield' ) },
+                                { value: 'both', label: __( 'Both (Thumbnail List & Highlight Button)', 'captain-media-shield' ) },
+                            ] }
+                            onChange={ ( v ) => set( 'admin_bar_inspector_mode', v ) }
+                        />
+                    ) }
                 </Section>
 
                 <Section

@@ -11,6 +11,7 @@
     padding: 0 10px 0 9px !important;
     text-decoration: none !important;
     gap: 0 !important;
+    cursor: pointer !important;
 }
 
 #wpadminbar #wp-admin-bar-capms-admin-bar .ab-icon {
@@ -325,6 +326,217 @@
     height: auto !important;
 }
 
+/* ── Unoptimized Tools Row ──────────────────────────────────────── */
+#wpadminbar .capms-bar-tools-row {
+    display: flex !important;
+    gap: 8px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+}
+
+#wpadminbar .capms-bar-tool-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    flex: 1 1 0 !important;
+    padding: 6px 9px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 6px !important;
+    color: #cbd5e1 !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    margin: 0 !important;
+    height: auto !important;
+    white-space: nowrap !important;
+    text-decoration: none !important;
+}
+
+#wpadminbar .capms-bar-tool-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+}
+
+#wpadminbar .capms-bar-tool-btn.capms-tool-btn--active {
+    background: rgba(245, 158, 11, 0.18) !important;
+    border-color: rgba(245, 158, 11, 0.45) !important;
+    color: #fbbf24 !important;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.2) !important;
+}
+
+#wpadminbar .capms-bar-tool-btn svg {
+    display: block !important;
+    flex-shrink: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* ── Expandable Thumbnail List ──────────────────────────────────── */
+#wpadminbar .capms-bar-thumb-list-wrap {
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-radius: 8px !important;
+    padding: 8px !important;
+    margin: 0 !important;
+    height: auto !important;
+    box-sizing: border-box !important;
+}
+
+#wpadminbar .capms-bar-thumb-list-head {
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    color: #94a3b8 !important;
+    padding: 0 0 6px 2px !important;
+    margin: 0 0 6px 0 !important;
+    line-height: 1.2 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    height: auto !important;
+}
+
+#wpadminbar .capms-bar-thumb-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    max-height: 155px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    margin: 0 !important;
+    padding: 0 2px 0 0 !important;
+    height: auto !important;
+}
+
+#wpadminbar .capms-bar-thumb-list::-webkit-scrollbar {
+    width: 4px !important;
+}
+
+#wpadminbar .capms-bar-thumb-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18) !important;
+    border-radius: 4px !important;
+}
+
+#wpadminbar .capms-bar-thumb-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 5px 7px !important;
+    border-radius: 6px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid transparent !important;
+    cursor: pointer !important;
+    transition: all 0.18s ease !important;
+    margin: 0 !important;
+    height: auto !important;
+    text-align: left !important;
+}
+
+#wpadminbar .capms-bar-thumb-item:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(56, 189, 248, 0.3) !important;
+    transform: translateX(2px) !important;
+}
+
+#wpadminbar .capms-bar-thumb-img {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    border-radius: 4px !important;
+    object-fit: cover !important;
+    background: #1e293b !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#wpadminbar .capms-bar-thumb-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#wpadminbar .capms-bar-thumb-name {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: #e2e8f0 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#wpadminbar .capms-bar-thumb-meta {
+    font-size: 9.5px !important;
+    color: #38bdf8 !important;
+    line-height: 1.1 !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#wpadminbar .capms-bar-thumb-locate-icon {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #94a3b8 !important;
+    flex-shrink: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transition: transform 0.15s ease !important;
+}
+
+#wpadminbar .capms-bar-thumb-item:hover .capms-bar-thumb-locate-icon {
+    color: #38bdf8 !important;
+    transform: translateX(2px) !important;
+}
+
+/* ── Live Page Highlight & Pulse Styles (Targeted on webpage <img>) ── */
+img.capms-page-highlighted {
+    outline: 3px dashed #f59e0b !important;
+    outline-offset: 3px !important;
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.7) !important;
+    transition: outline 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+@keyframes capmsPulseGlow {
+    0% {
+        outline: 4px solid #38bdf8;
+        outline-offset: 3px;
+        box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.9);
+    }
+    50% {
+        outline: 5px solid #0d9488;
+        outline-offset: 4px;
+        box-shadow: 0 0 25px 8px rgba(13, 148, 136, 0.9);
+        transform: scale(1.02);
+    }
+    100% {
+        outline: 4px solid #38bdf8;
+        outline-offset: 3px;
+        box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+    }
+}
+
+img.capms-highlight-pulse {
+    animation: capmsPulseGlow 1.1s ease-in-out 2 !important;
+    position: relative !important;
+    z-index: 99999 !important;
+}
+
 /* ── 1-Click Action Button ──────────────────────────────────────── */
 #wpadminbar .capms-bar-action-wrap {
     margin: 0 !important;
@@ -339,7 +551,7 @@
     gap: 7px !important;
     width: 100% !important;
     padding: 9px 12px !important;
-    background: linear-gradient(135deg, #085F63 0%, #0d9488 100%) !important;
+    background: linear-gradient(135deg, #2271b1 0%, #135e96 100%) !important;
     color: #ffffff !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     border-radius: 8px !important;
@@ -348,7 +560,7 @@
     text-align: center !important;
     cursor: pointer !important;
     box-sizing: border-box !important;
-    box-shadow: 0 4px 14px rgba(8, 95, 99, 0.45) !important;
+    box-shadow: 0 4px 14px rgba(34, 113, 177, 0.35) !important;
     transition: all 0.2s ease !important;
     margin: 0 !important;
     height: auto !important;
@@ -356,8 +568,8 @@
 }
 
 #wpadminbar .capms-bar-btn-action:hover:not(:disabled) {
-    background: linear-gradient(135deg, #0b797e 0%, #14b8a6 100%) !important;
-    box-shadow: 0 6px 18px rgba(8, 95, 99, 0.6) !important;
+    background: linear-gradient(135deg, #1A5D96 0%, #0c4a75 100%) !important;
+    box-shadow: 0 6px 18px rgba(34, 113, 177, 0.5) !important;
     transform: translateY(-1px) !important;
     color: #ffffff !important;
 }

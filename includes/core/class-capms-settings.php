@@ -96,7 +96,8 @@ if ( ! class_exists( 'Capms_Settings' ) ) {
 				'backup_retention'   => 'never',
 
 				// Toolbar / Admin Bar.
-				'admin_bar_menu'     => true,
+				'admin_bar_menu'           => true,
+				'admin_bar_inspector_mode' => 'list', // 'list' | 'highlight' | 'both'.
 
 				// Data & Uninstall.
 				'preserve_settings'  => false,
@@ -188,6 +189,10 @@ if ( ! class_exists( 'Capms_Settings' ) ) {
 
 					case 'delivery_method':
 						$clean[ $key ] = in_array( $value, array( 'htaccess', 'picture' ), true ) ? $value : $current[ $key ];
+						break;
+
+					case 'admin_bar_inspector_mode':
+						$clean[ $key ] = in_array( (string) $value, array( 'list', 'highlight', 'both' ), true ) ? (string) $value : 'list';
 						break;
 
 					case 'video_resolution':

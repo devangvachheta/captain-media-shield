@@ -30,6 +30,179 @@
     padding-top: 6px !important;
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   1.1 SINGLE ATTACHMENT EDIT PAGE (post.php?post=...&action=edit)
+   Full-width, spacious, comfortable professional card!
+   ══════════════════════════════════════════════════════════════════ */
+
+body.post-type-attachment .compat-attachment-fields {
+    width: 100% !important;
+    max-width: 820px !important;
+    margin-top: 15px !important;
+}
+
+body.post-type-attachment .compat-attachment-fields .compat-field-capms_status td.field {
+    width: 100% !important;
+    max-width: 820px !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal {
+    width: 100% !important;
+    max-width: 820px !important;
+    background: #ffffff !important;
+    border: 1px solid #c3c4c7 !important;
+    border-left: 4px solid #2271b1 !important;
+    border-radius: 4px !important;
+    padding: 16px 20px !important;
+    margin: 10px 0 20px 0 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-meta-header {
+    padding-bottom: 10px !important;
+    margin-bottom: 12px !important;
+    border-bottom: 1px solid #f0f0f1 !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-meta-brand {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: #1d2327 !important;
+    gap: 8px !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-meta-brand svg {
+    width: 18px !important;
+    height: 18px !important;
+    color: #2271b1 !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-meta-badge {
+    font-size: 12px !important;
+    padding: 3px 10px !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-meta-badge .capms-badge-dot {
+    width: 6px !important;
+    height: 6px !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-meta-summary {
+    font-size: 13.5px !important;
+    gap: 12px !important;
+    margin-bottom: 12px !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-saved-highlight {
+    font-size: 14px !important;
+    color: #2271b1 !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-stat-pct {
+    font-size: 12px !important;
+    padding: 2px 6px !important;
+    background: #e8f0fe !important;
+    color: #135e96 !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-size-flow {
+    font-size: 13px !important;
+    color: #64748b !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-meta-formats-inline {
+    font-size: 13px !important;
+    gap: 8px !important;
+    margin-bottom: 14px !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-formats-label-sm {
+    font-size: 12px !important;
+    color: #50575e !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-format-pill {
+    font-size: 12px !important;
+    padding: 3px 8px !important;
+    gap: 4px !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-meta-quality-box {
+    padding: 12px 16px !important;
+    margin: 12px 0 16px 0 !important;
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-quality-header {
+    font-size: 13px !important;
+    margin-bottom: 8px !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-quality-title {
+    font-size: 13px !important;
+    color: #334155 !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-quality-num {
+    font-size: 13px !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-tag-badge {
+    font-size: 11px !important;
+    padding: 2px 7px !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-quality-slider-row {
+    margin: 8px 0 10px 0 !important;
+    max-width: 520px !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-quality-slider {
+    height: 6px !important;
+    accent-color: #2271b1 !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-quality-presets {
+    gap: 6px !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-preset-pill {
+    padding: 3px 10px !important;
+    font-size: 12px !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-meta-footer {
+    gap: 10px !important;
+    margin-top: 14px !important;
+    padding-top: 10px !important;
+    border-top: 1px solid #f0f0f1 !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-btn-action {
+    height: 32px !important;
+    padding: 0 14px !important;
+    font-size: 13px !important;
+    border-radius: 4px !important;
+    line-height: 30px !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-btn--subtle {
+    background: #2271b1 !important;
+    color: #ffffff !important;
+    border-color: #135e96 !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-btn--subtle:hover {
+    background: #135e96 !important;
+    color: #ffffff !important;
+}
+
+body.post-type-attachment .capms-meta-box--minimal .capms-btn--subtle svg {
+    color: #ffffff !important;
+}
+
 /* Minimal Box in Modal */
 .capms-meta-box--minimal {
     background: #fbfcfd;
@@ -959,4 +1132,284 @@ body.capms-modal-open {
 .capms-toast-icon {
     font-weight: 700;
     margin-right: 4px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   5. UPLOAD ERROR RESCUE ASSISTANT BAR (MINIMAL & BRAND BLUE)
+   ══════════════════════════════════════════════════════════════════ */
+
+.capms-upload-assistant-bar {
+    background: #ffffff;
+    border: 1px solid #c3c4c7;
+    border-left: 4px solid #2271b1;
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin: 8px 0 10px 0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    animation: capms-slide-fade 0.2s ease-out;
+    box-sizing: border-box;
+}
+
+@keyframes capms-slide-fade {
+    from { opacity: 0; transform: translateY(-3px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.capms-uab-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.capms-uab-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #3c434a;
+}
+
+.capms-uab-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: #2271b1;
+    background: #f0f6fc;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid #d0d7de;
+}
+
+.capms-uab-brand svg {
+    color: #2271b1;
+}
+
+.capms-uab-text {
+    font-size: 12.5px;
+    color: #50575e;
+}
+
+.capms-uab-text strong {
+    color: #1d2327;
+}
+
+.capms-uab-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.capms-btn-rescue-compress {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    background: #2271b1 !important;
+    border-color: #135e96 !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 12px !important;
+    height: 30px !important;
+    line-height: 28px !important;
+    padding: 0 12px !important;
+    border-radius: 3px !important;
+    box-shadow: none !important;
+    transition: background 0.15s ease, border-color 0.15s ease !important;
+}
+
+.capms-btn-rescue-compress:hover {
+    background: #135e96 !important;
+    border-color: #0f4c7a !important;
+    color: #ffffff !important;
+}
+
+.capms-rescue-bolt {
+    font-size: 12px;
+}
+
+.capms-btn-open-inc-modal {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    height: 30px !important;
+    line-height: 28px !important;
+    font-size: 12px !important;
+    color: #50575e !important;
+    border: 1px solid #c3c4c7 !important;
+    background: #f6f7f7 !important;
+    border-radius: 3px !important;
+    padding: 0 10px !important;
+    box-shadow: none !important;
+}
+
+.capms-btn-open-inc-modal:hover {
+    color: #2271b1 !important;
+    border-color: #2271b1 !important;
+    background: #ffffff !important;
+}
+
+.capms-btn-open-inc-modal .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    line-height: 28px;
+    color: #64748b;
+}
+
+/* Rescue Progress Bar */
+.capms-rescue-status {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #f0f0f1;
+}
+
+.capms-rescue-pbar {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.capms-rescue-pbar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #2271b1 0%, #135e96 100%);
+    border-radius: 999px;
+    transition: width 0.25s ease;
+}
+
+.capms-rescue-status-msg {
+    font-size: 12px;
+    color: #1d2327;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.capms-rescue-status-msg code {
+    background: #f0f0f1;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 11px;
+}
+
+.capms-rescue-done-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #2271b1;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   6. INCREASE LIMIT MODAL
+   ══════════════════════════════════════════════════════════════════ */
+
+.capms-modal-card--increase-limit {
+    max-width: 520px !important;
+}
+
+.capms-inc-auto-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+}
+
+.capms-inc-auto-text strong {
+    font-size: 13px;
+    color: #0f172a;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.capms-inc-auto-text p {
+    font-size: 12px;
+    color: #64748b;
+    margin: 0 !important;
+    line-height: 1.35;
+}
+
+.capms-inc-guide-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 12px 14px;
+}
+
+.capms-guide-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 10px 0;
+}
+
+.capms-guide-steps {
+    margin: 0 0 12px 18px;
+    padding: 0;
+    font-size: 12.5px;
+    color: #334155;
+    line-height: 1.6;
+}
+
+.capms-guide-steps li {
+    margin-bottom: 5px;
+}
+
+.capms-guide-ini {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 8px 10px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+}
+
+.capms-guide-ini code {
+    background: transparent;
+    padding: 0;
+    color: #2271b1;
+    font-weight: 600;
+    word-break: break-all;
+}
+
+.capms-guide-p {
+    font-size: 12px;
+    color: #475569;
+    margin: 0 0 8px 0;
+}
+
+.capms-code-snippet {
+    background: #0f172a;
+    color: #38bdf8;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 11.5px;
+    margin: 0;
+    overflow-x: auto;
 }

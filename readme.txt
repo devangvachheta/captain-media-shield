@@ -4,7 +4,7 @@ Tags: image optimizer, webp converter, avif converter, media cleanup, speed opti
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -201,6 +201,16 @@ Upon deactivation or uninstallation, the plugin cleans up its database tables an
 
 == Changelog ==
 
+= 1.0.2 (06/11/2026) =
+
+* New: Media Limit Bypass : Automatically resizes oversized image uploads (exceeding limits like 2 MB) directly in-browser for seamless WordPress uploads.
+* New: Server Limit Booster Guide : Interactive popup modal with quick Apache/htaccess and php.ini directives to boost upload limit, including WAMP/local server quick steps.
+* New: Front-End Admin Bar Click Protection : Prevents accidental page redirects when hovering over the Media Shield top admin bar node on front-end pages.
+* Improve: Bulk Media Optimizer Celebratory UI : Re-engineered bulk optimizer completion state with brand blue styling, celebratory badge, and high-contrast green progress bar.
+* Improve: Single Attachment Edit Layout : Optimized single media edit page (`post.php?action=edit`) to render spacious, comfortable full-width card controls while preserving compact sidebar display in modal view.
+* Fix: Prevent plupload prototype collision and optimize mutation observer on WordPress upload screens.
+* Fix: Minor UI polish, responsive layout refinements, and code stability enhancements.
+
 = 1.0.1 (04/11/2026) =
 
 * New: Page Media Inspector : Added a live Page Media Inspector directly inside the top WordPress Admin Bar on front-end pages.
@@ -242,6 +252,9 @@ Upon deactivation or uninstallation, the plugin cleans up its database tables an
 * New: Comprehensive WordPress Multisite : Comprehensive WordPress Multisite (WPMU) support.
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+Version 1.0.2 introduces the in-browser Media Upload Rescue Assistant for oversized images, Server Limit Booster guide, improved Bulk Optimizer completion screen, and single attachment edit layout improvements.
 
 = 1.0.1 =
 Version 1.0.1 introduces the live Page Media Inspector in the WordPress Admin Bar, 1-click page image optimization, dedicated Settings page with data retention controls, Next Generation terminology standardization, and UI improvements.

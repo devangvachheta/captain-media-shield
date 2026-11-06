@@ -316,6 +316,10 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 
 			$result = Capms_Processor::get_instance()->process_attachment( $id );
 			$title  = get_the_title( $id );
+			$thumb  = wp_get_attachment_image_url( $id, 'thumbnail' );
+			if ( ! $thumb ) {
+				$thumb = wp_get_attachment_url( $id );
+			}
 
 			if ( is_wp_error( $result ) ) {
 				Capms_Stats::save(
@@ -332,7 +336,8 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 					'',
 					array(
 						'id'    => $id,
-						'title' => $title,
+						'title' => $title ? $title : basename( (string) get_attached_file( $id ) ),
+						'thumb' => $thumb ? $thumb : '',
 					)
 				);
 			}
@@ -343,7 +348,8 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 				'',
 				array(
 					'id'    => $id,
-					'title' => $title,
+					'title' => $title ? $title : basename( (string) get_attached_file( $id ) ),
+					'thumb' => $thumb ? $thumb : '',
 					'row'   => $result,
 				)
 			);

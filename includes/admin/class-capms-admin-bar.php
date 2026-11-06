@@ -96,6 +96,7 @@ if ( ! class_exists( 'Capms_Admin_Bar' ) ) {
 						'ajax_url'        => admin_url( 'admin-ajax.php' ),
 						'nonce'           => wp_create_nonce( 'capms_admin_bar_nonce' ),
 						'uploads_baseurl' => wp_get_upload_dir()['baseurl'],
+						'inspector_mode'  => Capms_Settings::get( 'admin_bar_inspector_mode', 'list' ),
 						'i18n'            => array(
 							'webp_active'         => esc_html__( 'WebP Active', 'captain-media-shield' ),
 							'partially_optimized' => esc_html__( 'Needs Optimization', 'captain-media-shield' ),
@@ -106,6 +107,11 @@ if ( ! class_exists( 'Capms_Admin_Bar' ) ) {
 							'optimize_btn'        => esc_html__( '⚡ Optimize Page Images (%d)', 'captain-media-shield' ),
 							'optimizing_btn'      => esc_html__( '⏳ Optimizing Images...', 'captain-media-shield' ),
 							'done_btn'            => esc_html__( '✅ Done! Refreshing...', 'captain-media-shield' ),
+							'highlight_on_page'   => esc_html__( 'Highlight on Page', 'captain-media-shield' ),
+							'highlights_active'   => esc_html__( 'Highlights Active', 'captain-media-shield' ),
+							'view_unoptimized'    => esc_html__( 'View Images (%d)', 'captain-media-shield' ),
+							'hide_unoptimized'    => esc_html__( 'Hide List', 'captain-media-shield' ),
+							'locate'              => esc_html__( 'Locate', 'captain-media-shield' ),
 						),
 					)
 				);
@@ -126,7 +132,7 @@ if ( ! class_exists( 'Capms_Admin_Bar' ) ) {
 
 			$icon_svg = '<svg class="capms-bar-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>';
 
-			// ── 1. Top-Level Parent Node (Centered Icon & Dot) ────────────────
+			// ── 1. Top-Level Parent Node (Centered Icon & Dot - Click Disabled for Hover) ──
 			$wp_admin_bar->add_node(
 				array(
 					'id'    => 'capms-admin-bar',
@@ -136,7 +142,7 @@ if ( ! class_exists( 'Capms_Admin_Bar' ) ) {
 						esc_html__( 'Media Shield', 'captain-media-shield' ),
 						esc_attr__( 'Captain Media Shield', 'captain-media-shield' )
 					),
-					'href'  => admin_url( 'upload.php?page=captain-media-shield#/' ),
+					'href'  => false, // Disabled click navigation so hover dropdown does not accidentally redirect.
 					'meta'  => array(
 						'title' => esc_html__( 'Captain Media Shield - Media Optimizer & Storage Saver', 'captain-media-shield' ),
 					),
@@ -199,6 +205,24 @@ if ( ! class_exists( 'Capms_Admin_Bar' ) ) {
 					<p class="capms-bar-desc-text" id="capms-bar-desc-text">
 						<?php esc_html_e( 'Detecting images on this page...', 'captain-media-shield' ); ?>
 					</p>
+				</div>
+
+				<div class="capms-bar-tools-row" id="capms-bar-tools-row" style="display:none;">
+					<button type="button" class="capms-bar-tool-btn" id="capms-bar-btn-toggle-list" title="<?php esc_attr_e( 'View unoptimized images', 'captain-media-shield' ); ?>">
+						<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+						<span id="capms-bar-toggle-list-label"><?php esc_html_e( 'View Images', 'captain-media-shield' ); ?></span>
+					</button>
+					<button type="button" class="capms-bar-tool-btn" id="capms-bar-btn-highlight" title="<?php esc_attr_e( 'Toggle borders on page', 'captain-media-shield' ); ?>">
+						<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg>
+						<span id="capms-bar-highlight-label"><?php esc_html_e( 'Highlight on Page', 'captain-media-shield' ); ?></span>
+					</button>
+				</div>
+
+				<div class="capms-bar-thumb-list-wrap" id="capms-bar-thumb-list-wrap" style="display:none;">
+					<div class="capms-bar-thumb-list-head">
+						<span><?php esc_html_e( 'Click any image to locate on page:', 'captain-media-shield' ); ?></span>
+					</div>
+					<div class="capms-bar-thumb-list" id="capms-bar-thumb-list"></div>
 				</div>
 
 				<div class="capms-bar-action-wrap" id="capms-bar-action-wrap" style="display:none;">

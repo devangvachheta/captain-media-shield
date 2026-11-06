@@ -111,9 +111,7 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 		public function capms_action_links( $links ) {
 			array_unshift(
 				$links,
-				'<a href="' . esc_url( admin_url( 'upload.php?page=captain-media-shield' ) ) . '">' . esc_html__( 'Dashboard', 'captain-media-shield' ) . '</a>',
-				'<a href="' . esc_url( admin_url( 'upload.php?page=captain-media-shield#/bulk' ) ) . '">' . esc_html__( 'Bulk Optimize', 'captain-media-shield' ) . '</a>',
-				'<a href="' . esc_url( admin_url( 'upload.php?page=captain-media-shield#/docs/overview' ) ) . '">' . esc_html__( 'Docs', 'captain-media-shield' ) . '</a>'
+				'<a href="' . esc_url( admin_url( 'upload.php?page=captain-media-shield' ) ) . '">' . esc_html__( 'Dashboard', 'captain-media-shield' ) . '</a>'
 			);
 			return $links;
 		}

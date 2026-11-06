@@ -169,7 +169,7 @@ const PRODUCTS = [
 
 const OurProducts = () => {
     const theme = useSelector( ( state ) => state.theme );
-    const logoColor = theme === 'dark' ? '#ffffff' : '#085F63';
+    const logoColor = theme === 'dark' ? '#ffffff' : '#2271b1';
 
     const [ productStatus, setProductStatus ] = useState( {} );
 
