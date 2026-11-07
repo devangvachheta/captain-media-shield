@@ -167,6 +167,10 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		 */
 		public static function maybe_resize( $file, $mime, $quality = null ) {
 			if ( ! Capms_Settings::get( 'resize_enabled' ) ) {
+				// Even if resize is disabled, prepare_original handles EXIF rotation if strip_metadata is active.
+				if ( Capms_Settings::get( 'strip_metadata' ) ) {
+					return self::prepare_original( $file, $mime, $quality );
+				}
 				return false;
 			}
 			return self::prepare_original( $file, $mime, $quality );

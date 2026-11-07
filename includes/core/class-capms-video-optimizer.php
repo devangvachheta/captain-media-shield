@@ -402,17 +402,83 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 		 * @param array  $args   Arguments.
 		 * @return true|WP_Error
 		 */
-		private static function run( $ffmpeg, $args ) {
-			if ( ! Capms_Environment::shell_function_available( 'exec' ) ) {
-				return new WP_Error( 'capms_no_exec', __( 'exec() is disabled on this server.', 'captain-media-shield' ) );
+		private static function run( $ffmpeg, $args, $timeout_seconds = 120 ) {
+			if ( ! Capms_Environment::shell_function_available( 'exec' ) && ! Capms_Environment::shell_function_available( 'proc_open' ) ) {
+				return new WP_Error( 'capms_no_exec', __( 'exec() and proc_open() are disabled on this server.', 'captain-media-shield' ) );
 			}
 
-			$cmd = escapeshellarg( $ffmpeg ) . ' ' . implode( ' ', array_map( 'escapeshellarg', $args ) ) . ' 2>&1';
+			if ( function_exists( 'set_time_limit' ) ) {
+				@set_time_limit( $timeout_seconds + 30 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			}
+
+			$cmd = escapeshellarg( $ffmpeg ) . ' ' . implode( ' ', array_map( 'escapeshellarg', $args ) );
+
+			if ( Capms_Environment::shell_function_available( 'proc_open' ) ) {
+				$descriptors = array(
+					0 => array( 'pipe', 'r' ),
+					1 => array( 'pipe', 'w' ),
+					2 => array( 'pipe', 'w' ),
+				);
+				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open
+				$process = @proc_open( $cmd, $descriptors, $pipes );
+				if ( is_resource( $process ) ) {
+					fclose( $pipes[0] );
+					stream_set_blocking( $pipes[1], false );
+					stream_set_blocking( $pipes[2], false );
+					$output    = '';
+					$start     = time();
+					$timed_out = false;
+
+					while ( true ) {
+						// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_get_status
+						$status = proc_get_status( $process );
+						$out1   = stream_get_contents( $pipes[1] );
+						$out2   = stream_get_contents( $pipes[2] );
+						if ( $out1 ) {
+							$output .= $out1;
+						}
+						if ( $out2 ) {
+							$output .= $out2;
+						}
+
+						if ( ! $status['running'] ) {
+							break;
+						}
+
+						if ( ( time() - $start ) > $timeout_seconds ) {
+							$timed_out = true;
+							// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_terminate
+							@proc_terminate( $process, 9 );
+							break;
+						}
+						usleep( 100000 ); // 100ms
+					}
+
+					fclose( $pipes[1] );
+					fclose( $pipes[2] );
+					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_close
+					$exit_code = proc_close( $process );
+
+					if ( $timed_out ) {
+						/* translators: %d: timeout seconds */
+						return new WP_Error( 'capms_ffmpeg_timeout', sprintf( __( 'FFmpeg process timed out after %d seconds.', 'captain-media-shield' ), $timeout_seconds ) );
+					}
+
+					if ( 0 !== $exit_code ) {
+						$lines = array_filter( explode( "\n", trim( $output ) ) );
+						$tail  = trim( implode( ' ', array_slice( $lines, -3 ) ) );
+						/* translators: %s: last lines of ffmpeg error */
+						return new WP_Error( 'capms_ffmpeg_failed', sprintf( __( 'FFmpeg failed: %s', 'captain-media-shield' ), sanitize_text_field( $tail ) ) );
+					}
+
+					return true;
+				}
+			}
 
 			$output = array();
 			$code   = 1;
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec
-			exec( $cmd, $output, $code );
+			exec( $cmd . ' 2>&1', $output, $code );
 
 			if ( 0 !== $code ) {
 				$tail = trim( implode( ' ', array_slice( $output, -3 ) ) );

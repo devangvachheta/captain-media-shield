@@ -87,7 +87,7 @@ if ( ! class_exists( 'Capms_Cron' ) ) {
 				wp_schedule_event( time() + HOUR_IN_SECONDS, 'hourly', 'capms_backup_cleanup_event' );
 			}
 
-			if ( $new['backup_retention'] !== $old['backup_retention'] && 'never' !== $new['backup_retention'] ) {
+			if ( $new['backup_retention'] !== $old['backup_retention'] && ! in_array( $new['backup_retention'], array( 'never', 'immediate' ), true ) ) {
 				$this->capms_run_cleanup();
 			}
 

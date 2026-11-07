@@ -263,10 +263,13 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 				$done = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(p.ID) FROM {$wpdb->posts} p INNER JOIN {$table} m ON m.attachment_id = p.ID WHERE p.post_type = 'attachment' AND p.post_mime_type IN ($placeholders) AND m.status = 'optimized'", $mimes ) );
 
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+				$excluded = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(p.ID) FROM {$wpdb->posts} p INNER JOIN {$table} m ON m.attachment_id = p.ID WHERE p.post_type = 'attachment' AND p.post_mime_type IN ($placeholders) AND m.status IN ('failed', 'skipped', 'restored')", $mimes ) );
+
 				$counts[ $type ] = array(
 					'total'     => $total,
 					'optimized' => $done,
-					'remaining' => max( 0, $total - $done ),
+					'remaining' => max( 0, $total - $done - $excluded ),
 				);
 			}
 

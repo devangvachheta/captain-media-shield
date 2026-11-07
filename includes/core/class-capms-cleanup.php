@@ -87,14 +87,29 @@ if ( ! class_exists( 'Capms_Cleanup' ) ) {
 				return array();
 			}
 
-			$needles  = array();
-			$dir      = dirname( $relative );
-			$dir      = '.' === $dir ? '' : trailingslashit( $dir );
-			$needles[] = $dir . pathinfo( $relative, PATHINFO_FILENAME );
+			$needles   = array();
+			$dir       = dirname( $relative );
+			$dir       = '.' === $dir ? '' : trailingslashit( $dir );
+			$filename  = pathinfo( $relative, PATHINFO_FILENAME );
+			$basename  = basename( $relative );
+
+			$needles[] = $dir . $filename;
+			$needles[] = $relative;
 
 			$meta = wp_get_attachment_metadata( $id );
 			if ( is_array( $meta ) && ! empty( $meta['original_image'] ) ) {
 				$needles[] = $dir . pathinfo( $meta['original_image'], PATHINFO_FILENAME );
+				$needles[] = $dir . $meta['original_image'];
+			}
+
+			// Sub-size filenames as needles as well.
+			if ( is_array( $meta ) && ! empty( $meta['sizes'] ) && is_array( $meta['sizes'] ) ) {
+				foreach ( $meta['sizes'] as $size_data ) {
+					if ( ! empty( $size_data['file'] ) ) {
+						$needles[] = $dir . $size_data['file'];
+						$needles[] = $dir . pathinfo( $size_data['file'], PATHINFO_FILENAME );
+					}
+				}
 			}
 
 			// "-scaled" copies are referenced by their un-scaled name too.
@@ -104,7 +119,15 @@ if ( ! class_exists( 'Capms_Cleanup' ) ) {
 				}
 			}
 
-			return array_values( array_unique( array_filter( $needles ) ) );
+			// Add JSON-escaped needles (e.g. Elementor stores "uploads\/2024\/05\/image.jpg").
+			$json_needles = array();
+			foreach ( $needles as $needle ) {
+				if ( false !== strpos( $needle, '/' ) ) {
+					$json_needles[] = str_replace( '/', '\/', $needle );
+				}
+			}
+
+			return array_values( array_unique( array_filter( array_merge( $needles, $json_needles ) ) ) );
 		}
 
 		/**
@@ -159,14 +182,29 @@ if ( ! class_exists( 'Capms_Cleanup' ) ) {
 				$content_args[] = $like;
 				$content_args[] = $like;
 			}
-			foreach ( array( '%"id":' . $id . ',%', '%"id":' . $id . '}%', '%wp-image-' . $id . '"%', '%wp-image-' . $id . ' %', '%"mediaId":' . $id . '%', '%"ids":[%' . $id . '%' ) as $pattern ) {
+			foreach ( array(
+				'%"id":' . $id . ',%',
+				'%"id":' . $id . '}%',
+				'%"id":"' . $id . '"%',
+				'%wp-image-' . $id . '"%',
+				'%wp-image-' . $id . ' %',
+				'%"mediaId":' . $id . '%',
+				'%"ids":[%' . $id . '%',
+				'%image="' . $id . '"%',
+				'%image=\'' . $id . '\'%',
+				'%images="' . $id . '"%',
+				'%ids="' . $id . '"%',
+				'%ids=\'' . $id . '\'%',
+			) as $pattern ) {
 				$clauses[]      = 'post_content LIKE %s';
 				$content_args[] = $pattern;
 			}
-			// [gallery ids="1,2,3"] style lists.
-			$clauses[]      = '( post_content LIKE %s AND post_content LIKE %s )';
+			// [gallery ids="1,2,3"] style lists and comma separated IDs.
+			$clauses[]      = '( post_content LIKE %s AND ( post_content LIKE %s OR post_content LIKE %s OR post_content LIKE %s ) )';
 			$content_args[] = '%[gallery%';
 			$content_args[] = '%' . $wpdb->esc_like( (string) $id ) . '%';
+			$content_args[] = '%,' . $wpdb->esc_like( (string) $id ) . ',%';
+			$content_args[] = '%,' . $wpdb->esc_like( (string) $id ) . '"%';
 
 			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 			if ( $wpdb->get_var( $wpdb->prepare( $content_sql . implode( ' OR ', $clauses ) . ') LIMIT 1', $content_args ) ) ) {
@@ -225,8 +263,20 @@ if ( ! class_exists( 'Capms_Cleanup' ) ) {
 
 			// 6) Term meta (e.g. WooCommerce category images).
 			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			if ( $wpdb->get_var( $wpdb->prepare( "SELECT meta_id FROM {$wpdb->termmeta} WHERE meta_value = %s AND meta_key LIKE %s LIMIT 1", (string) $id, '%' . $wpdb->esc_like( 'thumb' ) . '%' ) ) ) {
+			if ( $wpdb->get_var( $wpdb->prepare( "SELECT meta_id FROM {$wpdb->termmeta} WHERE (meta_value = %s OR meta_value LIKE %s) LIMIT 1", (string) $id, '%' . $wpdb->esc_like( (string) $id ) . '%' ) ) ) {
 				$reasons[] = 'term';
+			}
+
+			// 7) Usermeta (local avatars, author profile pictures).
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			if ( $wpdb->get_var( $wpdb->prepare( "SELECT umeta_id FROM {$wpdb->usermeta} WHERE (meta_value = %s OR meta_value LIKE %s) AND (meta_key LIKE %s OR meta_key LIKE %s OR meta_key LIKE %s OR meta_key LIKE %s) LIMIT 1", (string) $id, '%"id":' . $id . '%', '%avatar%', '%photo%', '%image%', '%profile%' ) ) ) {
+				$reasons[] = 'user';
+			}
+
+			// 8) Elementor _elementor_data JSON check.
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			if ( $wpdb->get_var( $wpdb->prepare( "SELECT meta_id FROM {$wpdb->postmeta} WHERE meta_key = '_elementor_data' AND (meta_value LIKE %s OR meta_value LIKE %s OR meta_value LIKE %s) LIMIT 1", '%"id":' . $id . ',%', '%"id":' . $id . '}%', '%"id":"' . $id . '"%' ) ) ) {
+				$reasons[] = 'elementor';
 			}
 			// phpcs:enable WordPress.DB.DirectDatabaseQuery
 
@@ -599,7 +649,8 @@ if ( ! class_exists( 'Capms_Cleanup' ) ) {
 
 			foreach ( $ids as $id ) {
 				$id = absint( $id );
-				if ( ! $id || 'attachment' !== get_post_type( $id ) || ! current_user_can( 'delete_post', $id ) ) {
+				$can_delete = ( defined( 'WP_CLI' ) && WP_CLI ) || current_user_can( 'delete_post', $id );
+				if ( ! $id || 'attachment' !== get_post_type( $id ) || ! $can_delete ) {
 					$skipped[] = $id;
 					continue;
 				}
@@ -612,7 +663,12 @@ if ( ! class_exists( 'Capms_Cleanup' ) ) {
 
 				$size = self::get_bytes( $id );
 				if ( $keep ) {
-					self::keep_copy( $id );
+					$copied = self::keep_copy( $id );
+					if ( ! $copied ) {
+						// Safety copy failed, do not proceed with deletion.
+						$skipped[] = $id;
+						continue;
+					}
 				}
 
 				if ( wp_delete_attachment( $id, true ) ) {

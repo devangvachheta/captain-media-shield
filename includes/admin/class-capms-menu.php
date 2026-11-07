@@ -52,7 +52,6 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 			add_action( 'admin_menu', array( $this, 'capms_admin_menu' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'capms_admin_enqueue_scripts' ), 10, 1 );
 			add_filter( 'plugin_action_links_' . plugin_basename( CAPMS_FILE ), array( $this, 'capms_action_links' ) );
-			add_action( 'in_admin_header', array( $this, 'capms_suppress_admin_notices' ), 1000 );
 		}
 
 		/**
@@ -81,24 +80,6 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 			if ( $hook_suffix ) {
 				add_action( 'load-' . $hook_suffix, array( $this, 'capms_suppress_admin_notices' ) );
 			}
-		}
-
-		/**
-		 * Suppress admin notices on the plugin's React admin page.
-		 *
-		 * @since 0.1.0
-		 * @return void
-		 */
-		public function capms_suppress_admin_notices() {
-			$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-			if ( ! $screen || 'media_page_captain-media-shield' !== $screen->id ) {
-				return;
-			}
-
-			remove_all_actions( 'admin_notices' );
-			remove_all_actions( 'all_admin_notices' );
-			remove_all_actions( 'user_admin_notices' );
-			remove_all_actions( 'network_admin_notices' );
 		}
 
 		/**
@@ -143,6 +124,15 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 				'version'      => CAPMS_VERSION,
 			);
 
+			// Backward compatibility: ensure react-jsx-runtime exists on WordPress < 6.6
+			if ( ! wp_script_is( 'react-jsx-runtime', 'registered' ) ) {
+				wp_register_script( 'react-jsx-runtime', false, array( 'react' ), CAPMS_VERSION, true );
+				wp_add_inline_script(
+					'react-jsx-runtime',
+					'window.ReactJSXRuntime = window.ReactJSXRuntime || (window.React ? { jsx: window.React.createElement, jsxs: window.React.createElement, Fragment: window.React.Fragment } : {});'
+				);
+			}
+
 			$build_css_path = CAPMS_PATH . 'build/index.css';
 			$build_js_path  = CAPMS_PATH . 'build/index.js';
 			$build_css_ver  = file_exists( $build_css_path ) ? filemtime( $build_css_path ) : CAPMS_VERSION;
@@ -150,26 +140,6 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 
 			wp_enqueue_style( 'capms-admin-app', CAPMS_URL . 'build/index.css', array(), $build_css_ver );
 			wp_style_add_data( 'capms-admin-app', 'rtl', 'replace' );
-
-			wp_add_inline_style(
-				'capms-admin-app',
-				'body.media_page_captain-media-shield #wpbody-content > .notice,
-				body.media_page_captain-media-shield #wpbody-content > .update-nag,
-				body.media_page_captain-media-shield #wpbody-content > div.error,
-				body.media_page_captain-media-shield #wpbody-content > div.updated,
-				body.media_page_captain-media-shield #wpbody-content > .is-dismissible,
-				body.media_page_captain-media-shield #wpbody-content > * > .notice,
-				body.media_page_captain-media-shield #wpbody-content > * > .update-nag,
-				body.media_page_captain-media-shield #wpbody-content > * > div.error,
-				body.media_page_captain-media-shield #wpbody-content > * > div.updated,
-				body.media_page_captain-media-shield #wpbody-content > * > .is-dismissible,
-				body.media_page_captain-media-shield .notice:not(.capms-notice),
-				body.media_page_captain-media-shield .update-nag,
-				body.media_page_captain-media-shield div.error:not(.capms-notice),
-				body.media_page_captain-media-shield div.updated:not(.capms-notice) {
-					display: none !important;
-				}'
-			);
 
 			wp_enqueue_script( 'capms-admin-app', CAPMS_URL . 'build/index.js', $asset['dependencies'], $build_js_ver, true );
 			wp_set_script_translations( 'capms-admin-app', 'captain-media-shield' );

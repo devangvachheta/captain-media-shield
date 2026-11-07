@@ -217,7 +217,7 @@ if ( ! class_exists( 'Capms_Settings' ) ) {
 
 					case 'ffmpeg_path':
 						// A filesystem path to a binary - never a command line.
-						$path          = trim( sanitize_text_field( wp_unslash( (string) $value ) ) );
+						$path          = trim( sanitize_text_field( (string) $value ) );
 						$clean[ $key ] = preg_match( '/[;&|`$<>"\']/', $path ) ? '' : $path;
 						break;
 
@@ -240,7 +240,7 @@ if ( ! class_exists( 'Capms_Settings' ) ) {
 		 * @return string
 		 */
 		public static function sanitize_patterns( $value ) {
-			$lines = preg_split( '/\r\n|\r|\n/', (string) wp_unslash( $value ) );
+			$lines = preg_split( '/\r\n|\r|\n/', (string) $value );
 			$out   = array();
 
 			foreach ( (array) $lines as $line ) {

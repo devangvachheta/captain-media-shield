@@ -65,11 +65,17 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		public function __construct() {
 			add_action( 'capms_settings_updated', array( __CLASS__, 'sync_htaccess' ), 10, 0 );
 
+			if ( ! is_admin() ) {
+				add_action( 'wp_head', array( $this, 'capms_frontend_css' ), 100 );
+			}
+
 			if ( ! is_admin() && 'picture' === Capms_Settings::get( 'delivery_method' ) ) {
 				add_filter( 'the_content', array( $this, 'capms_filter_html' ), 999 );
 				add_filter( 'post_thumbnail_html', array( $this, 'capms_filter_html' ), 999 );
 				add_filter( 'widget_text', array( $this, 'capms_filter_html' ), 999 );
 				add_filter( 'widget_block_content', array( $this, 'capms_filter_html' ), 999 );
+				add_filter( 'wp_get_attachment_image', array( $this, 'capms_filter_html' ), 999 );
+				add_filter( 'woocommerce_single_product_image_thumbnail_html', array( $this, 'capms_filter_html' ), 999 );
 			}
 
 			if ( ! is_admin() && ( Capms_Settings::get( 'webm_enabled' ) || Capms_Settings::get( 'video_poster' ) ) ) {
@@ -82,7 +88,18 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 				add_filter( 'post_thumbnail_html', array( $this, 'capms_filter_gifs' ), 998 );
 				add_filter( 'widget_text', array( $this, 'capms_filter_gifs' ), 998 );
 				add_filter( 'widget_block_content', array( $this, 'capms_filter_gifs' ), 998 );
+				add_filter( 'wp_get_attachment_image', array( $this, 'capms_filter_gifs' ), 998 );
 			}
+		}
+
+		/**
+		 * Front-end CSS for responsive Next-Gen pictures and converted GIF videos.
+		 *
+		 * @since 1.0.2
+		 * @return void
+		 */
+		public function capms_frontend_css() {
+			echo "<style id=\"capms-frontend-css\">\n.capms-gif { max-width: 100%; height: auto; display: inline-block; vertical-align: middle; }\n.capms-picture { display: inline-block; max-width: 100%; }\n.capms-picture img { max-width: 100%; height: auto; }\n</style>\n";
 		}
 
 		/**
@@ -205,7 +222,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		 * @return string
 		 */
 		public function capms_filter_html( $html ) {
-			if ( ! is_string( $html ) || false === stripos( $html, '<img' ) || is_feed() ) {
+			if ( ! is_string( $html ) || false === stripos( $html, '<img' ) || is_feed() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) || ( function_exists( 'wp_is_json_request' ) && wp_is_json_request() ) ) {
 				return $html;
 			}
 
@@ -282,12 +299,13 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		 * @return string
 		 */
 		private function map_srcset( $srcset, $ext ) {
+			$candidates = array_filter( array_map( 'trim', explode( ',', $srcset ) ) );
+			if ( empty( $candidates ) ) {
+				return '';
+			}
+
 			$out = array();
-			foreach ( explode( ',', $srcset ) as $candidate ) {
-				$candidate = trim( $candidate );
-				if ( '' === $candidate ) {
-					continue;
-				}
+			foreach ( $candidates as $candidate ) {
 				$pieces     = preg_split( '/\s+/', $candidate, 2 );
 				$url        = $pieces[0];
 				$descriptor = isset( $pieces[1] ) ? ' ' . $pieces[1] : '';
@@ -297,6 +315,12 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 					$out[] = strtok( $url, '?' ) . '.' . $ext . $descriptor;
 				}
 			}
+
+			// Do not return a partial srcset if intermediate candidate sizes were skipped/deleted
+			if ( count( $candidates ) > 1 && count( $out ) < count( $candidates ) ) {
+				return '';
+			}
+
 			return implode( ', ', $out );
 		}
 
@@ -394,7 +418,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		 * @return string
 		 */
 		public function capms_filter_gifs( $html ) {
-			if ( ! is_string( $html ) || false === stripos( $html, '.gif' ) || false === stripos( $html, '<img' ) || is_feed() ) {
+			if ( ! is_string( $html ) || false === stripos( $html, '.gif' ) || false === stripos( $html, '<img' ) || is_feed() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) || ( function_exists( 'wp_is_json_request' ) && wp_is_json_request() ) ) {
 				return $html;
 			}
 
@@ -442,7 +466,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 			$sources .= '<source src="' . esc_url( $base . '.mp4' ) . '" type="video/mp4" />';
 
 			$class = trim( 'capms-gif ' . $this->get_attr( $img, 'class' ) );
-			$attrs = ' class="' . esc_attr( $class ) . '"';
+			$attrs = ' class="' . esc_attr( $class ) . '" style="max-width:100%;height:auto;"';
 			foreach ( array( 'width', 'height' ) as $dim ) {
 				$value = $this->get_attr( $img, $dim );
 				if ( '' !== $value ) {

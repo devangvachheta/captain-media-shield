@@ -51,6 +51,25 @@ function capms_uninstall_site() {
 	delete_post_meta_by_key( '_capms_pending' );
 	delete_post_meta_by_key( '_capms_hash' );
 	delete_post_meta_by_key( '_capms_hash_sig' );
+	delete_post_meta_by_key( '_capms_custom_quality' );
+
+	// 4. Server configuration blocks cleanup.
+	$htaccess_file = ABSPATH . '.htaccess';
+	if ( file_exists( $htaccess_file ) && is_writable( $htaccess_file ) ) {
+		$content = (string) @file_get_contents( $htaccess_file );
+		if ( false !== strpos( $content, '# BEGIN Captain Media Shield' ) ) {
+			$content = preg_replace( '/\s*# BEGIN Captain Media Shield.*?# END Captain Media Shield\s*/s', "\n", $content );
+			@file_put_contents( $htaccess_file, $content );
+		}
+	}
+	$user_ini = ABSPATH . '.user.ini';
+	if ( file_exists( $user_ini ) && is_writable( $user_ini ) ) {
+		$ini_content = (string) @file_get_contents( $user_ini );
+		if ( false !== strpos( $ini_content, '; BEGIN Captain Media Shield' ) ) {
+			$ini_content = preg_replace( '/\s*; BEGIN Captain Media Shield.*?; END Captain Media Shield\s*/s', "\n", $ini_content );
+			@file_put_contents( $user_ini, $ini_content );
+		}
+	}
 
 	// 4. Cron.
 	wp_clear_scheduled_hook( 'capms_backup_cleanup_event' );

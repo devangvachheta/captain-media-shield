@@ -292,15 +292,18 @@ if ( defined( 'WP_CLI' ) && WP_CLI && ! class_exists( 'Capms_CLI' ) ) {
 			$to_delete = array();
 			foreach ( $described as $number => $members ) {
 				WP_CLI::log( sprintf( 'Group %d:', $number + 1 ) );
-				// Keep the first one that is in use, or the oldest.
+				// Keep the first one that is in use, or the oldest (lowest ID).
 				$keeper = null;
+				$oldest = null;
 				foreach ( $members as $member ) {
-					if ( $member['used'] ) {
+					if ( null === $oldest || $member['id'] < $oldest ) {
+						$oldest = $member['id'];
+					}
+					if ( $member['used'] && null === $keeper ) {
 						$keeper = $member['id'];
-						break;
 					}
 				}
-				$keeper = null === $keeper ? $members[0]['id'] : $keeper;
+				$keeper = null === $keeper ? $oldest : $keeper;
 
 				foreach ( $members as $member ) {
 					WP_CLI::log( sprintf( '  #%1$d %2$s %3$s%4$s', $member['id'], $member['path'], size_format( $member['bytes'], 1 ), $member['used'] ? ' (in use)' : '' ) );

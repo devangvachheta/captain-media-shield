@@ -145,7 +145,9 @@ const UnusedTab = () => {
             ) }
 
             { s.state === 'done' && ! s.error && items.length === 0 && ! result && (
-                <Notice tone="info">{ __( 'No unused media found. Your library looks tidy.', 'captain-media-shield' ) }</Notice>
+                s.cancel.current
+                    ? <Notice tone="info">{ __( 'Scan was stopped. Run scan again to inspect all media files.', 'captain-media-shield' ) }</Notice>
+                    : <Notice tone="info">{ __( 'No unused media found. Your library looks tidy.', 'captain-media-shield' ) }</Notice>
             ) }
 
             { items.length > 0 && (
@@ -430,7 +432,7 @@ const ThumbsTab = () => {
                 onData: ( data ) => { found.push( ...( data.items || [] ) ); setItems( [ ...found ] ); },
                 onProgress: ( done, total ) => s.setProg( { done, total } ),
             } );
-            setSelected( new Set( found.map( ( i ) => i.id ) ) );
+            setSelected( new Set() );
         } catch ( e ) {
             s.setError( e.message );
         }
@@ -492,7 +494,9 @@ const ThumbsTab = () => {
             ) }
 
             { s.state === 'done' && ! s.error && items.length === 0 && ! result && (
-                <Notice tone="info">{ __( 'No unused thumbnail sizes found.', 'captain-media-shield' ) }</Notice>
+                s.cancel.current
+                    ? <Notice tone="info">{ __( 'Scan was stopped. Run scan again to inspect thumbnail files.', 'captain-media-shield' ) }</Notice>
+                    : <Notice tone="info">{ __( 'No unused thumbnail sizes found.', 'captain-media-shield' ) }</Notice>
             ) }
 
             { items.length > 0 && (

@@ -10,9 +10,12 @@
             $toast = $('<div id="capms-toast" class="capms-toast"></div>').appendTo('body');
         }
         var icon = isSuccess ? '✓ ' : '✕ ';
+        var $iconSpan = $('<span class="capms-toast-icon"></span>').text(icon);
+        var $msgSpan  = $('<span class="capms-toast-msg"></span>').text(message);
+
         $toast.removeClass('capms-toast--error capms-toast--success')
               .addClass(isSuccess ? 'capms-toast--success' : 'capms-toast--error')
-              .html('<span class="capms-toast-icon">' + icon + '</span><span class="capms-toast-msg">' + message + '</span>')
+              .empty().append($iconSpan).append($msgSpan)
               .stop(true, true).fadeIn(180);
 
         clearTimeout($toast.data('timer'));
@@ -259,7 +262,9 @@
         var $modal = $('#capms-quick-quality-modal');
         var id = $modal.data('id');
         var title = $modal.data('title') || 'Image';
-        var quality = parseInt($('#capms-modal-slider').val(), 10) || 80;
+        var globalQ = parseInt($modal.data('global'), 10) || 82;
+        var quality = parseInt($('#capms-modal-slider').val(), 10) || globalQ;
+        var sendQuality = (quality === globalQ) ? 'default' : quality;
 
         if (!id) {
             return;
@@ -287,7 +292,7 @@
                 id: id,
                 do: 'optimize',
                 context: 'column',
-                quality: quality
+                quality: sendQuality
             }
         }).done(function (res) {
             $btn.removeClass('is-busy').prop('disabled', false).find('.capms-btn-label').text(origText);
@@ -299,7 +304,7 @@
                     $target.replaceWith($(res.data.html));
                 }
                 closeModal();
-                showToast('✓ ' + title + ' optimized at ' + quality + '%!', true);
+                showToast(title + ' optimized at ' + quality + '%!', true);
             } else {
                 var err = (res && res.data && res.data.message) ? res.data.message : 'Optimization failed.';
                 alert(err);
@@ -321,7 +326,10 @@
 
         var $modal = $('#capms-quick-quality-modal');
         var id = $modal.data('id');
-        var quality = parseInt($('#capms-modal-slider').val(), 10) || 80;
+        var title = $modal.data('title') || 'Image';
+        var globalQ = parseInt($modal.data('global'), 10) || 82;
+        var quality = parseInt($('#capms-modal-slider').val(), 10) || globalQ;
+        var sendQuality = (quality === globalQ) ? 'default' : quality;
 
         if (!id) {
             return;
@@ -347,7 +355,7 @@
                 id: id,
                 do: 'save_quality',
                 context: 'column',
-                quality: quality
+                quality: sendQuality
             }
         }).done(function (res) {
             $btn.removeClass('is-busy').prop('disabled', false).text('Save Quality Only');
@@ -500,16 +508,37 @@
      */
     function getOversizedErrorFiles() {
         var failed = [];
+        var maxBytes = (window.capms_media_vars && window.capms_media_vars.max_upload_size)
+            ? parseInt(window.capms_media_vars.max_upload_size, 10)
+            : 2097152;
+
         $('.upload-error, #media-upload-error, .media-upload-form .error').each(function () {
             var $err = $(this);
             var text = $err.text();
-            if (text.indexOf('exceeds the maximum upload size') !== -1 || text.indexOf('maximum upload size') !== -1) {
-                var $fn = $err.find('.upload-error-filename');
-                var name = $fn.length ? $.trim($fn.text()) : '';
-                if (!name) {
-                    var match = text.match(/([^\s\r\n]+\.(png|jpe?g|webp|avif|gif))/i);
-                    if (match) name = match[1];
+            var $fn = $err.find('.upload-error-filename');
+            var name = $fn.length ? $.trim($fn.text()) : '';
+            if (!name) {
+                var match = text.match(/([^\s\r\n]+\.(png|jpe?g|webp|avif|gif))/i);
+                if (match) name = match[1];
+            }
+
+            // Language-agnostic check: if name matches a stashed file that exceeds maxBytes
+            var isOversized = false;
+            if (name && stashedFiles[name] && stashedFiles[name].size > maxBytes) {
+                isOversized = true;
+            } else {
+                for (var stashedName in stashedFiles) {
+                    if (stashedFiles.hasOwnProperty(stashedName)) {
+                        if (stashedFiles[stashedName].size > maxBytes && (text.indexOf(stashedName) !== -1 || name === stashedName)) {
+                            name = stashedName;
+                            isOversized = true;
+                            break;
+                        }
+                    }
                 }
+            }
+
+            if (isOversized || text.indexOf('maximum upload size') !== -1 || text.indexOf('exceeds') !== -1) {
                 if (name && failed.indexOf(name) === -1) {
                     failed.push(name);
                 }
@@ -608,6 +637,17 @@
      * Compress an image file using browser Canvas / WebP
      */
     function compressImageToLimit(file, maxBytes, callback) {
+        if (!file) {
+            callback(null, 'no_file');
+            return;
+        }
+
+        // Animated GIF check: canvas flattens animated GIFs to a single static frame
+        if (file.type === 'image/gif' || /\.gif$/i.test(file.name)) {
+            callback(null, 'gif');
+            return;
+        }
+
         var reader = new FileReader();
         reader.onload = function (e) {
             var img = new Image();
@@ -658,15 +698,25 @@
                                 // Fallback to JPEG
                                 format = 'image/jpeg';
                                 curCanvas.toBlob(function (jBlob) {
-                                    callback(jBlob || file);
+                                    if (jBlob && jBlob.size <= maxBytes) {
+                                        callback(jBlob);
+                                    } else {
+                                        callback(null, 'too_large');
+                                    }
                                 }, format, 0.80);
                                 return;
                             }
-                            if (blob.size <= targetBytes || q <= 0.45) {
+                            if (blob.size <= targetBytes) {
                                 callback(blob);
+                            } else if (q <= 0.45 && scale <= 0.35) {
+                                if (blob.size <= maxBytes) {
+                                    callback(blob);
+                                } else {
+                                    callback(null, 'too_large');
+                                }
                             } else {
                                 // Scale down further
-                                testBlob(q - 0.12, (blob.size > targetBytes * 1.4) ? scale * 0.85 : scale);
+                                testBlob(Math.max(0.40, q - 0.12), (blob.size > targetBytes * 1.3) ? scale * 0.75 : scale * 0.88);
                             }
                         }, format, q);
                     } else {
@@ -678,12 +728,12 @@
                 testBlob(quality, 1.0);
             };
             img.onerror = function () {
-                callback(file);
+                callback(null, 'load_error');
             };
             img.src = e.target.result;
         };
         reader.onerror = function () {
-            callback(file);
+            callback(null, 'read_error');
         };
         reader.readAsDataURL(file);
     }
@@ -822,10 +872,27 @@
 
             var basePct = Math.round((currentIndex / total) * 100);
             $pbarFill.css('width', basePct + '%');
-            $msg.html('<span class="capms-spinner"></span> ⚡ Compressing ' + stepNum + ' of ' + total + ': <code>' + fileName + '</code>…');
+            $msg.empty()
+                .append($('<span class="capms-spinner"></span>'))
+                .append(document.createTextNode(' ⚡ Compressing ' + stepNum + ' of ' + total + ': '))
+                .append($('<code></code>').text(fileName))
+                .append(document.createTextNode('…'));
 
-            compressImageToLimit(file, maxBytes, function (compressedBlob) {
-                $msg.html('<span class="capms-spinner"></span> 🚀 Uploading ' + stepNum + ' of ' + total + ' (' + Math.round(compressedBlob.size / 1024) + ' KB) to Media Library…');
+            compressImageToLimit(file, maxBytes, function (compressedBlob, failReason) {
+                if (!compressedBlob) {
+                    var errorNotice = (failReason === 'gif')
+                        ? 'Animated GIFs cannot be compressed without losing animation frames. Please use Server Limit Booster.'
+                        : 'Could not compress file below upload limit.';
+                    showToast(fileName + ': ' + errorNotice, false);
+                    delete stashedFiles[fileName];
+                    currentIndex++;
+                    processNext();
+                    return;
+                }
+
+                $msg.empty()
+                    .append($('<span class="capms-spinner"></span>'))
+                    .append(document.createTextNode(' 🚀 Uploading ' + stepNum + ' of ' + total + ' (' + Math.round(compressedBlob.size / 1024) + ' KB) to Media Library…'));
 
                 uploadRescuedBlob(
                     compressedBlob,
@@ -836,11 +903,13 @@
                         $pbarFill.css('width', Math.min(totalProgress, 96) + '%');
                     },
                     function (resData) {
+                        delete stashedFiles[fileName];
                         currentIndex++;
                         processNext();
                     },
                     function (errMsg) {
                         showToast('Upload failed for ' + fileName + ': ' + errMsg, false);
+                        delete stashedFiles[fileName];
                         currentIndex++;
                         processNext();
                     }

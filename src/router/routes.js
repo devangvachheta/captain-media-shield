@@ -1,20 +1,16 @@
 import React from 'react';
 import Dashboard from '../page/dashboard/dashboard.jsx';
-
-/* Every route except Dashboard is code-split into its own chunk via
- * React.lazy() - webpack.config.js merges all CSS back into index.css so
- * WordPress can still RTL-swap it. */
-const Images  = React.lazy( () => import( /* webpackChunkName: "images" */ '../page/images/images.jsx' ) );
-const Videos  = React.lazy( () => import( /* webpackChunkName: "videos" */ '../page/videos/videos.jsx' ) );
-const Backups = React.lazy( () => import( /* webpackChunkName: "backup" */ '../page/backups/backups.jsx' ) );
-const Bulk    = React.lazy( () => import( /* webpackChunkName: "bulk" */ '../page/bulk/bulk.jsx' ) );
-const Health  = React.lazy( () => import( /* webpackChunkName: "health" */ '../page/health/health.jsx' ) );
-const Storage = React.lazy( () => import( /* webpackChunkName: "storage" */ '../page/storage/storage.jsx' ) );
-const Cleanup = React.lazy( () => import( /* webpackChunkName: "cleanup" */ '../page/cleanup/cleanup.jsx' ) );
-const Docs        = React.lazy( () => import( /* webpackChunkName: "docs" */ '../page/docs/docs.jsx' ) );
-const Settings    = React.lazy( () => import( /* webpackChunkName: "settings" */ '../page/settings/settings.jsx' ) );
-const Help        = React.lazy( () => import( /* webpackChunkName: "help" */ '../page/help/help.jsx' ) );
-const OurProducts = React.lazy( () => import( /* webpackChunkName: "our-products" */ '../page/our-products/our-products.jsx' ) );
+import Images from '../page/images/images.jsx';
+import Videos from '../page/videos/videos.jsx';
+import Backups from '../page/backups/backups.jsx';
+import Bulk from '../page/bulk/bulk.jsx';
+import Health from '../page/health/health.jsx';
+import Storage from '../page/storage/storage.jsx';
+import Cleanup from '../page/cleanup/cleanup.jsx';
+import Docs from '../page/docs/docs.jsx';
+import Settings from '../page/settings/settings.jsx';
+import Help from '../page/help/help.jsx';
+import OurProducts from '../page/our-products/our-products.jsx';
 
 const routes = [
     { path: '/',             element: <Dashboard /> },

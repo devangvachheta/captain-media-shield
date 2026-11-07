@@ -180,7 +180,18 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			if ( Capms_Settings::is_excluded( $attachment_id, $file ) ) {
 				if ( ! empty( $entry['backup'] ) ) {
 					$abs = Capms_Backup::absolute( $entry['backup'] );
-					if ( $abs ) {
+					if ( $abs && is_file( $abs ) ) {
+						// If prepare_original or EXIF strip altered the file during upload, restore the untouched original before deleting the backup.
+						if ( ! empty( $entry['recompressed'] ) || Capms_Settings::get( 'strip_metadata' ) ) {
+							$uploads = wp_get_upload_dir();
+							$target  = trailingslashit( $uploads['basedir'] ) . $entry['backup'];
+							if ( is_file( $target ) ) {
+								@copy( $abs, $target );
+							}
+							if ( $file && is_file( $file ) ) {
+								@copy( $abs, $file );
+							}
+						}
 						wp_delete_file( $abs );
 					}
 				}
@@ -246,7 +257,8 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			}
 
 			if ( null !== $custom_quality ) {
-				if ( 'default' === $custom_quality || '' === $custom_quality ) {
+				$global_q = absint( Capms_Settings::get( 'image_quality', 82 ) );
+				if ( 'default' === $custom_quality || '' === $custom_quality || absint( $custom_quality ) === $global_q ) {
 					delete_post_meta( $attachment_id, '_capms_custom_quality' );
 				} else {
 					$q_val = absint( $custom_quality );
@@ -261,12 +273,26 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 				return $existing;
 			}
 
+			$lock_key = 'capms_proc_lock_' . $attachment_id;
+			if ( get_transient( $lock_key ) ) {
+				return Capms_Stats::get( $attachment_id );
+			}
+			set_transient( $lock_key, time(), 90 );
+
 			// Re-optimizing an already optimized item: restore untouched original from backup if available so we don't double-compress.
 			if ( $force && $existing && 'optimized' === $existing['status'] ) {
 				if ( ! empty( $existing['backup_path'] ) ) {
 					$backup_abs = Capms_Backup::absolute( $existing['backup_path'] );
 					if ( $backup_abs && is_file( $backup_abs ) ) {
-						@copy( $backup_abs, $file );
+						$uploads = wp_get_upload_dir();
+						$target  = trailingslashit( $uploads['basedir'] ) . $existing['backup_path'];
+						if ( wp_normalize_path( $target ) === wp_normalize_path( $file ) ) {
+							@copy( $backup_abs, $file );
+						} elseif ( function_exists( 'wp_get_original_image_path' ) && ( $orig_path = wp_get_original_image_path( $attachment_id ) ) && wp_normalize_path( $target ) === wp_normalize_path( $orig_path ) ) {
+							@copy( $backup_abs, $orig_path );
+						} else {
+							@copy( $backup_abs, $file );
+						}
 					}
 				}
 				$old_meta = wp_get_attachment_metadata( $attachment_id );
@@ -274,6 +300,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			}
 
 			if ( Capms_Settings::is_excluded( $attachment_id, $file ) ) {
+				delete_transient( $lock_key );
 				Capms_Stats::save(
 					$attachment_id,
 					array(
@@ -288,7 +315,9 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			}
 
 			if ( 'image/gif' === $mime ) {
-				return $this->process_gif( $attachment_id, $file );
+				$gif_res = $this->process_gif( $attachment_id, $file );
+				delete_transient( $lock_key );
+				return $gif_res;
 			}
 
 			$entry = array(
@@ -298,8 +327,15 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			);
 
 			if ( Capms_Settings::get( 'backup_enabled' ) ) {
-				$backup          = Capms_Backup::backup_file( $file );
-				$entry['backup'] = $backup ? $backup : '';
+				if ( ! empty( $existing['backup_path'] ) ) {
+					$existing_backup = Capms_Backup::absolute( $existing['backup_path'] );
+					if ( $existing_backup && is_file( $existing_backup ) ) {
+						$entry['backup'] = $existing['backup_path'];
+					}
+				} elseif ( ! $existing || 'optimized' !== $existing['status'] ) {
+					$backup          = Capms_Backup::backup_file( $file );
+					$entry['backup'] = $backup ? $backup : '';
+				}
 			}
 
 			if ( Capms_Image_Optimizer::is_supported( $mime ) ) {
@@ -330,9 +366,11 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			} elseif ( Capms_Video_Optimizer::is_supported( $mime ) ) {
 				$this->process_video( $attachment_id, $entry );
 			} else {
+				delete_transient( $lock_key );
 				return new WP_Error( 'capms_unsupported', __( 'Unsupported file type.', 'captain-media-shield' ) );
 			}
 
+			delete_transient( $lock_key );
 			return Capms_Stats::get( $attachment_id );
 		}
 
@@ -478,7 +516,7 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			$mimes        = self::get_mimes( $scope );
 			$placeholders = implode( ',', array_fill( 0, count( $mimes ), '%s' ) );
 			$table        = esc_sql( Capms_Stats::table() );
-			$statuses     = $retry_failed ? array( 'optimized' ) : array( 'optimized', 'failed', 'skipped' );
+			$statuses     = $retry_failed ? array( 'optimized', 'restored' ) : array( 'optimized', 'restored', 'failed', 'skipped' );
 			$status_holds = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
@@ -556,6 +594,10 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			// Upload path: sizes didn't exist before, so "before" for them
 			// is what they are now - the saving is measured on the original.
 			$before = (int) $entry['original_size'] + ( $recompress_sizes ? $sizes_before : max( 0, $after - (int) @filesize( $file ) ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+
+			if ( $after > $before ) {
+				$before = $after;
+			}
 
 			$this->finish( $attachment_id, 'image', $entry, $before, $after, $webp_total, $avif_total, 0, '' );
 		}

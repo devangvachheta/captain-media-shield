@@ -14,10 +14,10 @@ const useBulkState = () => {
 
 const AI_STEPS = [
     __( 'Analyzing image dimensions and EXIF metadata…', 'captain-media-shield' ),
-    __( 'Applying smart lossless compression algorithms…', 'captain-media-shield' ),
+    __( 'Applying smart visual compression algorithms…', 'captain-media-shield' ),
     __( 'Generating ultra-sharp Next Generation WebP copy…', 'captain-media-shield' ),
     __( 'Optimizing companion thumbnail sizes…', 'captain-media-shield' ),
-    __( 'Shrinking byte footprint without quality loss…', 'captain-media-shield' ),
+    __( 'Shrinking byte footprint with high perceptual quality…', 'captain-media-shield' ),
     __( 'Finalizing media records and saving storage…', 'captain-media-shield' ),
 ];
 
@@ -75,9 +75,9 @@ const Bulk = () => {
     }, [ library, scope ] );
 
     // Detect when all media in the chosen scope is already optimized
-    const isAllOptimized = ! active && (
+    const isAllOptimized = ! active && run.status !== 'error' && run.status !== 'stopped' && (
         ( remainingForScope === 0 && totalForScope > 0 && run.processed === 0 ) ||
-        ( run.status === 'done' && run.total === 0 )
+        ( run.status === 'done' && run.total === 0 && run.processed === 0 && ! run.errorMessage )
     );
 
     const pct = isAllOptimized
@@ -89,6 +89,8 @@ const Bulk = () => {
         loading: __( 'Building queue…', 'captain-media-shield' ),
         running: __( 'Optimizing…', 'captain-media-shield' ),
         paused:  __( 'Paused', 'captain-media-shield' ),
+        stopped: __( 'Stopped', 'captain-media-shield' ),
+        error:   __( 'Error', 'captain-media-shield' ),
         done:    run.total ? __( 'Completed', 'captain-media-shield' ) : __( 'All Media Optimized', 'captain-media-shield' ),
     }[ run.status ];
 
@@ -187,6 +189,36 @@ const Bulk = () => {
                             </div>
                         ) }
 
+                        { /* Error Card if queue retrieval or network failed */ }
+                        { run.status === 'error' && (
+                            <div className="capms-bulk-error-card" style={ { background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '16px 20px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 14 } }>
+                                <span style={ { fontSize: 24 } }>⚠️</span>
+                                <div>
+                                    <h4 style={ { margin: '0 0 4px', color: '#991b1b', fontSize: 14, fontWeight: 600 } }>
+                                        { __( 'Bulk Optimization Could Not Start', 'captain-media-shield' ) }
+                                    </h4>
+                                    <p style={ { margin: 0, color: '#b91c1c', fontSize: 13 } }>
+                                        { run.errorMessage || __( 'An error occurred while connecting to WordPress server.', 'captain-media-shield' ) }
+                                    </p>
+                                </div>
+                            </div>
+                        ) }
+
+                        { /* Stopped Notification if user cancelled */ }
+                        { run.status === 'stopped' && (
+                            <div className="capms-bulk-stopped-card" style={ { background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: '16px 20px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 14 } }>
+                                <span style={ { fontSize: 24 } }>⏹️</span>
+                                <div>
+                                    <h4 style={ { margin: '0 0 4px', color: '#334155', fontSize: 14, fontWeight: 600 } }>
+                                        { __( 'Optimization Stopped', 'captain-media-shield' ) }
+                                    </h4>
+                                    <p style={ { margin: 0, color: '#64748b', fontSize: 13 } }>
+                                        { sprintf( /* translators: 1: processed files, 2: saved size formatted */ __( 'Process stopped by user. %1$d file(s) were processed and %2$s saved.', 'captain-media-shield' ), run.processed, formatBytes( run.savedBytes ) ) }
+                                    </p>
+                                </div>
+                            </div>
+                        ) }
+
                         { /* Celebratory Completion Card when finished */ }
                         { run.status === 'done' && run.processed > 0 && (
                             <div className="capms-bulk-done-card">
@@ -196,7 +228,9 @@ const Bulk = () => {
                                 <div className="capms-done-text">
                                     <h4 className="capms-done-title">
                                         { run.failed === 0
-                                            ? __( 'All Media Optimized Successfully!', 'captain-media-shield' )
+                                            ? ( ( run.skipped && run.skipped > 0 )
+                                                ? sprintf( /* translators: 1: succeeded, 2: skipped */ __( 'Finished: %1$d optimized, %2$d skipped (rules)', 'captain-media-shield' ), run.succeeded, run.skipped )
+                                                : __( 'All Media Optimized Successfully!', 'captain-media-shield' ) )
                                             : sprintf( /* translators: 1: succeeded count, 2: failed count */ __( 'Optimization Finished (%1$d succeeded, %2$d failed)', 'captain-media-shield' ), run.succeeded, run.failed ) }
                                     </h4>
                                     <p className="capms-done-desc">
@@ -418,11 +452,11 @@ const Bulk = () => {
                     <Section icon={ <IconCheck /> } title={ __( 'Live Activity', 'captain-media-shield' ) }>
                         <ul className="capms-log">
                             { run.log.map( ( item, i ) => (
-                                <li key={ `${ item.id }-${ i }` } className={ `capms-log-item ${ item.ok ? '' : 'capms-log-item--error' }` }>
+                                <li key={ `${ item.id }-${ i }` } className={ `capms-log-item ${ item.skipped ? 'capms-log-item--skipped' : ( item.ok ? '' : 'capms-log-item--error' ) }` }>
                                     { item.thumb ? (
                                         <img src={ item.thumb } alt="" className="capms-log-thumb" />
                                     ) : (
-                                        <span className="capms-log-icon">{ item.ok ? <IconCheck /> : <IconX /> }</span>
+                                        <span className="capms-log-icon">{ item.skipped ? '⏭️' : ( item.ok ? <IconCheck /> : <IconX /> ) }</span>
                                     ) }
                                     <div className="capms-log-content">
                                         <span className="capms-log-title">{ item.title }</span>
@@ -435,7 +469,7 @@ const Bulk = () => {
                                                     { item.avif && <em className="capms-pill-format">AVIF</em> }
                                                     { item.webm && <em className="capms-pill-format">WebM</em> }
                                                 </>
-                                                : ( item.message || item.status ) }
+                                                : ( item.skipped ? ( <span style={ { color: '#d97706', fontWeight: 500 } }>{ item.message || __( 'Skipped (Exclude Rule)', 'captain-media-shield' ) }</span> ) : ( item.message || item.status ) ) }
                                         </span>
                                     </div>
                                 </li>

@@ -347,10 +347,15 @@
                 .then(function(res) { return res.json(); })
                 .then(function(json) {
                     if (json && json.success) {
-                        btnAction.textContent = i18n.done_btn || '✅ Done! Refreshing...';
-                        setTimeout(function() {
-                            window.location.reload();
-                        }, 800);
+                        if (json.data && json.data.optimized > 0) {
+                            btnAction.textContent = i18n.done_btn || '✅ Done! Refreshing...';
+                            setTimeout(function() {
+                                window.location.reload();
+                            }, 800);
+                        } else {
+                            btnAction.textContent = (json.data && json.data.message) ? json.data.message : 'Images already up to date.';
+                            btnAction.disabled    = false;
+                        }
                     } else {
                         btnAction.textContent = (json && json.data && json.data.message) ? json.data.message : 'Optimization failed.';
                         btnAction.disabled    = false;

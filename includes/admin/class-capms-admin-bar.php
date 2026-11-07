@@ -96,6 +96,7 @@ if ( ! class_exists( 'Capms_Admin_Bar' ) ) {
 						'ajax_url'        => admin_url( 'admin-ajax.php' ),
 						'nonce'           => wp_create_nonce( 'capms_admin_bar_nonce' ),
 						'uploads_baseurl' => wp_get_upload_dir()['baseurl'],
+						'delivery_method' => Capms_Settings::get( 'delivery_method', 'picture' ),
 						'inspector_mode'  => Capms_Settings::get( 'admin_bar_inspector_mode', 'list' ),
 						'i18n'            => array(
 							'webp_active'         => esc_html__( 'WebP Active', 'captain-media-shield' ),
@@ -272,10 +273,14 @@ if ( ! class_exists( 'Capms_Admin_Bar' ) ) {
 				}
 			}
 
-			$attachment_ids = array_filter( array_unique( $attachment_ids ) );
+			$attachment_ids = array_slice( array_filter( array_unique( $attachment_ids ) ), 0, 25 );
 
 			if ( empty( $attachment_ids ) ) {
 				wp_send_json_error( array( 'message' => esc_html__( 'No valid media attachments found to optimize.', 'captain-media-shield' ) ) );
+			}
+
+			if ( function_exists( 'set_time_limit' ) ) {
+				@set_time_limit( 120 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 			}
 
 			$processor = Capms_Processor::get_instance();
@@ -283,12 +288,21 @@ if ( ! class_exists( 'Capms_Admin_Bar' ) ) {
 			$errors    = array();
 
 			foreach ( $attachment_ids as $id ) {
-				$res = $processor->process_attachment( $id, true );
+				$res = $processor->process_attachment( $id, false );
 				if ( is_wp_error( $res ) ) {
 					$errors[] = sprintf( '#%d: %s', $id, $res->get_error_message() );
 				} else {
 					$optimized++;
 				}
+			}
+
+			if ( 0 === $optimized && ! empty( $errors ) ) {
+				wp_send_json_error(
+					array(
+						'message' => implode( ', ', $errors ),
+						'errors'  => $errors,
+					)
+				);
 			}
 
 			wp_send_json_success(
@@ -298,7 +312,7 @@ if ( ! class_exists( 'Capms_Admin_Bar' ) ) {
 					'errors'    => $errors,
 					'message'   => sprintf(
 						/* translators: %d: number of optimized images */
-						esc_html__( 'Successfully optimized %d image(s)!', 'captain-media-shield' ),
+						esc_html__( 'Successfully processed %d image(s)!', 'captain-media-shield' ),
 						$optimized
 					),
 				)

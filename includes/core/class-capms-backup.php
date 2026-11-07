@@ -29,23 +29,41 @@ if ( ! class_exists( 'Capms_Backup' ) ) {
 	class Capms_Backup {
 
 		/**
+		 * Get the unique, secure backup directory name.
+		 *
+		 * @since 1.0.2
+		 * @return string
+		 */
+		public static function get_backup_dir_name() {
+			$salt = get_option( 'capms_backup_salt' );
+			if ( empty( $salt ) ) {
+				$salt = wp_generate_password( 16, false, false );
+				update_option( 'capms_backup_salt', $salt );
+			}
+			return CAPMS_BACKUP_DIR_NAME . '-' . $salt;
+		}
+
+		/**
 		 * Absolute backup root (no trailing slash).
 		 *
 		 * @since 0.0.1
 		 * @return string
 		 */
 		public static function get_root() {
-			$uploads = wp_get_upload_dir();
-			$base    = untrailingslashit( $uploads['basedir'] );
-			$root    = $base . '/' . CAPMS_BACKUP_DIR_NAME;
+			$uploads  = wp_get_upload_dir();
+			$base     = untrailingslashit( $uploads['basedir'] );
+			$dir_name = self::get_backup_dir_name();
+			$root     = $base . '/' . $dir_name;
 
-			// One-time move of backups made before the folder was renamed.
-			// DB paths are relative to the backup root, so a plain rename keeps
-			// every existing restore working.
+			// One-time migration of plain or legacy backup folder to salted secure folder.
 			static $migrated = false;
 			if ( ! $migrated ) {
 				$migrated = true;
-				$legacy   = $base . '/' . CAPMS_LEGACY_BACKUP_DIR_NAME;
+				$plain    = $base . '/' . CAPMS_BACKUP_DIR_NAME;
+				if ( is_dir( $plain ) && ! file_exists( $root ) ) {
+					@rename( $plain, $root ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename
+				}
+				$legacy = $base . '/' . CAPMS_LEGACY_BACKUP_DIR_NAME;
 				if ( is_dir( $legacy ) && ! file_exists( $root ) ) {
 					@rename( $legacy, $root ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename
 				}
@@ -55,7 +73,7 @@ if ( ! class_exists( 'Capms_Backup' ) ) {
 		}
 
 		/**
-		 * Create the backup root and lock it down from direct web access.
+		 * Create the backup root and lock it down from direct web access across Apache, Nginx, and IIS.
 		 *
 		 * @since 0.0.1
 		 * @return bool
@@ -66,11 +84,24 @@ if ( ! class_exists( 'Capms_Backup' ) ) {
 				return false;
 			}
 
+			// 1. PHP silence + 403 header
 			if ( ! file_exists( $root . '/index.php' ) ) {
-				file_put_contents( $root . '/index.php', "<?php\n// Silence is golden.\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+				file_put_contents( $root . '/index.php', "<?php\nif ( function_exists( 'status_header' ) ) { status_header( 403 ); }\nexit;\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 			}
+
+			// 2. Empty HTML file
+			if ( ! file_exists( $root . '/index.html' ) ) {
+				file_put_contents( $root . '/index.html', '' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+			}
+
+			// 3. Apache / LiteSpeed .htaccess
 			if ( ! file_exists( $root . '/.htaccess' ) ) {
 				file_put_contents( $root . '/.htaccess', "Options -Indexes\n<IfModule mod_authz_core.c>\n\tRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\n\tDeny from all\n</IfModule>\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+			}
+
+			// 4. IIS web.config
+			if ( ! file_exists( $root . '/web.config' ) ) {
+				file_put_contents( $root . '/web.config', "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<configuration>\n\t<system.webServer>\n\t\t<authorization>\n\t\t\t<deny users=\"*\" />\n\t\t</authorization>\n\t</system.webServer>\n</configuration>\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 			}
 
 			return true;
@@ -176,11 +207,34 @@ if ( ! class_exists( 'Capms_Backup' ) ) {
 			$is_image    = 'image' === $row['media_type'];
 			$old_meta    = wp_get_attachment_metadata( $attachment_id );
 
-			Capms_Processor::remove_generated_files( $attachment_id, $file, $old_meta );
+			// Step 1: Copy backup file into place FIRST and verify integrity!
+			if ( ! wp_mkdir_p( dirname( $target ) ) ) {
+				return new WP_Error( 'capms_folder_failed', __( 'Could not create destination directory. Check folder permissions.', 'captain-media-shield' ) );
+			}
 
-			if ( ! wp_mkdir_p( dirname( $target ) ) || ! @copy( $backup, $target ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			$tmp_target = $target . '.capms_restoring';
+			if ( ! @copy( $backup, $tmp_target ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+				if ( file_exists( $tmp_target ) ) {
+					wp_delete_file( $tmp_target );
+				}
 				return new WP_Error( 'capms_copy_failed', __( 'Could not copy the backup back into place. Check folder permissions.', 'captain-media-shield' ) );
 			}
+
+			// Verify copied file integrity
+			clearstatcache( true, $tmp_target );
+			if ( (int) @filesize( $tmp_target ) !== (int) @filesize( $backup ) ) {
+				wp_delete_file( $tmp_target );
+				return new WP_Error( 'capms_copy_corrupt', __( 'Restored file size mismatch. Restore aborted for safety.', 'captain-media-shield' ) );
+			}
+
+			// Move verified copy into final target position
+			if ( ! @rename( $tmp_target, $target ) ) {
+				@copy( $tmp_target, $target );
+				wp_delete_file( $tmp_target );
+			}
+
+			// Step 2: ONLY after original is safely restored on disk, delete generated WebP/AVIF/WebM siblings!
+			Capms_Processor::remove_generated_files( $attachment_id, $file, $old_meta );
 
 			if ( wp_normalize_path( $target ) !== wp_normalize_path( $file ) ) {
 				wp_delete_file( $file );
@@ -310,12 +364,19 @@ if ( ! class_exists( 'Capms_Backup' ) ) {
 				);
 				foreach ( $iterator as $item ) {
 					$path = $item->getPathname();
+					// Preserve deleted/ safety folder (used by cleanup)
+					$normalized_path = wp_normalize_path( $path );
+					$deleted_dir     = wp_normalize_path( trailingslashit( $root ) . 'deleted' );
+					if ( 0 === strpos( $normalized_path, $deleted_dir ) ) {
+						continue;
+					}
+
 					if ( $item->isDir() ) {
 						@rmdir( $path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
 						continue;
 					}
 					$name = $item->getFilename();
-					if ( dirname( $path ) === $root && in_array( $name, array( 'index.php', '.htaccess' ), true ) ) {
+					if ( in_array( $name, array( 'index.php', 'index.html', '.htaccess', 'web.config' ), true ) ) {
 						continue;
 					}
 					$bytes += (int) $item->getSize();
