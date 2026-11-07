@@ -1,6 +1,7 @@
 import React from 'react';
 import { __ } from '@wordpress/i18n';
-import { DocArticle, DocSection, DocSteps, DocList, DocNote, DocCode, DocTable, DocDivider } from './doc_kit.jsx';
+import { DocArticle, DocSection, DocSteps, DocList, DocNote, DocCode, DocTable, DocDivider, DocVideo } from './doc_kit.jsx';
+import { OVERVIEW_VIDEO_ID } from '../../constants/videos.js';
 
 const T = 'captain-media-shield';
 
@@ -10,6 +11,9 @@ export const Overview = () => (
         title={ __( 'What Captain Media Shield Does', T ) }
         intro={ __( 'Captain Media Shield optimizes the images and videos in your Media Library on your own server. No external API or account is needed: files are resized, compressed, converted and delivered by your site.', T ) }
     >
+        <DocVideo id={ OVERVIEW_VIDEO_ID } title={ __( 'Captain Media Shield - Plugin Overview', T ) } />
+        <DocDivider />
+
         <DocSection title={ __( 'What you get', T ) }>
             <DocList items={ [
                 { term: __( 'Image optimization', T ), text: __( 'Large uploads are resized, recompressed at your quality setting and cleaned of EXIF and GPS data.', T ) },

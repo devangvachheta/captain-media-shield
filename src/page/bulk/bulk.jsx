@@ -12,12 +12,12 @@ const useBulkState = () => {
     return state;
 };
 
-const AI_STEPS = [
+const PIPELINE_STEPS = [
     __( 'Analyzing image dimensions and EXIF metadata…', 'captain-media-shield' ),
-    __( 'Applying smart visual compression algorithms…', 'captain-media-shield' ),
-    __( 'Generating ultra-sharp Next Generation WebP copy…', 'captain-media-shield' ),
+    __( 'Applying configured visual compression settings…', 'captain-media-shield' ),
+    __( 'Generating Next Generation WebP copy…', 'captain-media-shield' ),
     __( 'Optimizing companion thumbnail sizes…', 'captain-media-shield' ),
-    __( 'Shrinking byte footprint with high perceptual quality…', 'captain-media-shield' ),
+    __( 'Safely archiving original file in backup storage…', 'captain-media-shield' ),
     __( 'Finalizing media records and saving storage…', 'captain-media-shield' ),
 ];
 
@@ -26,7 +26,7 @@ const Bulk = () => {
     const [ scope, setScope ]             = useState( 'all' );
     const [ retryFailed, setRetryFailed ] = useState( false );
     const [ library, setLibrary ]         = useState( null );
-    const [ aiStepIndex, setAiStepIndex ] = useState( 0 );
+    const [ stepIndex, setStepIndex ]     = useState( 0 );
     const [ fadeAnim, setFadeAnim ]       = useState( true );
 
     const loadLibrary = async () => {
@@ -43,13 +43,13 @@ const Bulk = () => {
         if ( run.status === 'done' ) loadLibrary();
     }, [ run.status ] );
 
-    // Cycle animated AI status text while running
+    // Cycle animated status text while running
     useEffect( () => {
         if ( run.status !== 'running' ) return;
         const interval = setInterval( () => {
             setFadeAnim( false );
             setTimeout( () => {
-                setAiStepIndex( ( prev ) => ( prev + 1 ) % AI_STEPS.length );
+                setStepIndex( ( prev ) => ( prev + 1 ) % PIPELINE_STEPS.length );
                 setFadeAnim( true );
             }, 220 );
         }, 2400 );
@@ -276,7 +276,7 @@ const Bulk = () => {
 
                                     <div className={ `capms-live-ai-msg ${ fadeAnim ? 'is-visible' : 'is-fading' }` }>
                                         <span className="capms-ai-icon">⚡</span>
-                                        <span>{ AI_STEPS[ aiStepIndex ] }</span>
+                                        <span>{ PIPELINE_STEPS[ stepIndex ] }</span>
                                     </div>
                                 </div>
                             </div>
@@ -341,7 +341,7 @@ const Bulk = () => {
                                     <button
                                         type="button"
                                         className="capms-btn capms-btn--subtle-text"
-                                        onClick={ () => bulkRunner.start( scope, true ) }
+                                        onClick={ () => bulkRunner.start( scope, retryFailed ) }
                                         title={ __( 'Scan media library again for any new uploads', 'captain-media-shield' ) }
                                     >
                                         { __( 'Scan Again', 'captain-media-shield' ) }

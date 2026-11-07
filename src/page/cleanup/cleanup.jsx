@@ -10,6 +10,7 @@ const TABS = () => [
     { id: 'unused', label: __( 'Unused Media', 'captain-media-shield' ) },
     { id: 'duplicates', label: __( 'Duplicate Files', 'captain-media-shield' ) },
     { id: 'thumbs', label: __( 'Unused Thumbnails', 'captain-media-shield' ) },
+    { id: 'safety', label: __( 'Safety Archive (deleted/)', 'captain-media-shield' ) },
 ];
 
 /* ---------- shared bits ---------- */
@@ -411,6 +412,7 @@ const ThumbsTab = () => {
     const [ registered, setReg ]    = useState( [] );
     const [ selected, setSelected ] = useState( new Set() );
     const [ confirm, setConfirm ]   = useState( false );
+    const [ keep, setKeep ]         = useState( true );
     const [ busy, setBusy ]         = useState( false );
     const [ result, setResult ]     = useState( null );
 
@@ -432,7 +434,7 @@ const ThumbsTab = () => {
                 onData: ( data ) => { found.push( ...( data.items || [] ) ); setItems( [ ...found ] ); },
                 onProgress: ( done, total ) => s.setProg( { done, total } ),
             } );
-            setSelected( new Set() );
+            setSelected( new Set( found.map( ( it ) => it.id ) ) );
         } catch ( e ) {
             s.setError( e.message );
         }
@@ -446,7 +448,7 @@ const ThumbsTab = () => {
         try {
             const ids = [ ...selected ];
             for ( let i = 0; i < ids.length; i += 10 ) {
-                const res = await ajax( 'cleanup_clean_thumbs', { ids: ids.slice( i, i + 10 ) } );
+                const res = await ajax( 'cleanup_clean_thumbs', { ids: ids.slice( i, i + 10 ), keep: keep ? 1 : 0 } );
                 if ( ! res.success || ! res.data ) throw new Error( res.message || 'Request failed.' );
                 files += Number( res.data.files ) || 0;
                 bytes += Number( res.data.bytes ) || 0;
@@ -542,9 +544,190 @@ const ThumbsTab = () => {
                     onClose={ () => ! busy && setConfirm( false ) }
                 >
                     <p>{ __( 'Only the leftover thumbnail files (and their WebP/AVIF copies) are removed. The original images are never touched.', 'captain-media-shield' ) }</p>
+                    <label className="capms-checkbox">
+                        <input type="checkbox" checked={ keep } onChange={ ( e ) => setKeep( e.target.checked ) } />
+                        <span>{ __( 'Keep a copy of thumbnails in backup folder before deleting', 'captain-media-shield' ) }</span>
+                    </label>
                 </ConfirmModal>
             ) }
         </>
+    );
+};
+
+/* ---------- Safety Archive (deleted/) ---------- */
+
+const SafetyTab = () => {
+    const [ items, setItems ] = useState( [] );
+    const [ totalBytes, setTotalBytes ] = useState( 0 );
+    const [ loading, setLoading ] = useState( false );
+    const [ restoring, setRestoring ] = useState( null );
+    const [ notice, setNotice ] = useState( null );
+    const [ confirmPurge, setConfirmPurge ] = useState( false );
+    const [ purging, setPurging ] = useState( false );
+
+    const load = async () => {
+        setLoading( true );
+        setNotice( null );
+        try {
+            const res = await ajax( 'cleanup_safety_list' );
+            if ( res.success && res.data ) {
+                setItems( res.data.items || [] );
+                setTotalBytes( res.data.total_bytes || 0 );
+            }
+        } catch ( e ) {
+            setNotice( { tone: 'error', text: e.message || __( 'Could not load safety copies.', 'captain-media-shield' ) } );
+        } finally {
+            setLoading( false );
+        }
+    };
+
+    React.useEffect( () => {
+        load();
+    }, [] );
+
+    const handleRestore = async ( item ) => {
+        setRestoring( item.rel_path );
+        setNotice( null );
+        try {
+            const res = await ajax( 'cleanup_safety_restore', { file: item.rel_path } );
+            if ( res.success ) {
+                setNotice( { tone: 'success', text: res.data?.message || res.message || __( 'Restored successfully.', 'captain-media-shield' ) } );
+                setItems( ( prev ) => prev.filter( ( it ) => it.rel_path !== item.rel_path ) );
+                setTotalBytes( ( prev ) => Math.max( 0, prev - item.size ) );
+            } else {
+                setNotice( { tone: 'error', text: res.message || __( 'Restore failed.', 'captain-media-shield' ) } );
+            }
+        } catch ( e ) {
+            setNotice( { tone: 'error', text: e.message || __( 'Restore failed.', 'captain-media-shield' ) } );
+        } finally {
+            setRestoring( null );
+        }
+    };
+
+    const handlePurge = async () => {
+        setPurging( true );
+        setNotice( null );
+        try {
+            const res = await ajax( 'cleanup_safety_purge' );
+            if ( res.success ) {
+                setNotice( { tone: 'success', text: res.message || __( 'Safety archive cleared.', 'captain-media-shield' ) } );
+                setItems( [] );
+                setTotalBytes( 0 );
+            } else {
+                setNotice( { tone: 'error', text: res.message || __( 'Purge failed.', 'captain-media-shield' ) } );
+            }
+        } catch ( e ) {
+            setNotice( { tone: 'error', text: e.message || __( 'Purge failed.', 'captain-media-shield' ) } );
+        } finally {
+            setPurging( false );
+            setConfirmPurge( false );
+        }
+    };
+
+    return (
+        <div className="capms-cl-safety-tab">
+            <Section
+                icon={ <IconDatabase /> }
+                title={ __( 'Safety Archive (deleted/ folder)', 'captain-media-shield' ) }
+                description={ __( 'Files preserved during cleanup deletion. If you ever delete something by mistake, you can restore originals directly back to your Media Library or permanently purge the folder.', 'captain-media-shield' ) }
+                actions={
+                    <div style={ { display: 'flex', gap: '8px' } }>
+                        <button type="button" className="capms-btn capms-btn--ghost" onClick={ load } disabled={ loading }>
+                            <IconRefresh />
+                            { loading ? __( 'Refreshing…', 'captain-media-shield' ) : __( 'Refresh', 'captain-media-shield' ) }
+                        </button>
+                        { items.length > 0 && (
+                            <button type="button" className="capms-btn capms-btn--danger" onClick={ () => setConfirmPurge( true ) }>
+                                <IconTrash />
+                                { __( 'Clear Safety Archive', 'captain-media-shield' ) }
+                            </button>
+                        ) }
+                    </div>
+                }
+            >
+                { notice && <Notice tone={ notice.tone } onDismiss={ () => setNotice( null ) }>{ notice.text }</Notice> }
+
+                <div className="capms-stat-grid" style={ { marginBottom: '20px' } }>
+                    <StatCard
+                        icon={ <IconDatabase /> }
+                        label={ __( 'Archived Files', 'captain-media-shield' ) }
+                        value={ items.length }
+                        sub={ __( 'Safety copies in deleted/', 'captain-media-shield' ) }
+                    />
+                    <StatCard
+                        icon={ <IconLayers /> }
+                        tone={ totalBytes > 0 ? 'green' : 'neutral' }
+                        label={ __( 'Archive Storage Used', 'captain-media-shield' ) }
+                        value={ formatBytes( totalBytes ) }
+                        sub={ __( 'Occupied by safety backups', 'captain-media-shield' ) }
+                    />
+                </div>
+
+                { items.length === 0 ? (
+                    <div className="capms-cl-empty">
+                        <IconDatabase />
+                        <h3>{ __( 'Safety archive is empty', 'captain-media-shield' ) }</h3>
+                        <p>{ __( 'When you run cleanup with "Keep a copy of every original in the backup folder (deleted/)" enabled, your deleted files will be preserved here so you can restore them anytime.', 'captain-media-shield' ) }</p>
+                    </div>
+                ) : (
+                    <div className="capms-table-responsive">
+                        <table className="capms-table capms-cl-table">
+                            <thead>
+                                <tr>
+                                    <th>{ __( 'File Name', 'captain-media-shield' ) }</th>
+                                    <th>{ __( 'Type', 'captain-media-shield' ) }</th>
+                                    <th>{ __( 'Size', 'captain-media-shield' ) }</th>
+                                    <th>{ __( 'Archived Date', 'captain-media-shield' ) }</th>
+                                    <th style={ { textAlign: 'right' } }>{ __( 'Actions', 'captain-media-shield' ) }</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                { items.map( ( it, idx ) => (
+                                    <tr key={ idx }>
+                                        <td>
+                                            <div style={ { display: 'flex', flexDirection: 'column' } }>
+                                                <strong>{ it.orig_name || it.filename }</strong>
+                                                <small style={ { color: '#64748b', fontSize: '11px', wordBreak: 'break-all' } }>{ it.rel_path }</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <Pill tone={ it.is_thumb ? 'neutral' : 'blue' }>
+                                                { it.is_thumb ? __( 'Thumbnail', 'captain-media-shield' ) : __( 'Original File', 'captain-media-shield' ) }
+                                            </Pill>
+                                        </td>
+                                        <td><strong>{ formatBytes( it.size ) }</strong></td>
+                                        <td style={ { color: '#64748b', fontSize: '12px' } }>{ it.date }</td>
+                                        <td style={ { textAlign: 'right' } }>
+                                            <button
+                                                type="button"
+                                                className="capms-btn capms-btn--primary capms-btn--sm"
+                                                disabled={ restoring === it.rel_path }
+                                                onClick={ () => handleRestore( it ) }
+                                            >
+                                                <IconRefresh />
+                                                { restoring === it.rel_path ? __( 'Restoring…', 'captain-media-shield' ) : __( 'Restore', 'captain-media-shield' ) }
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ) ) }
+                            </tbody>
+                        </table>
+                    </div>
+                ) }
+
+                { confirmPurge && (
+                    <ConfirmModal
+                        title={ __( 'Clear Safety Archive?', 'captain-media-shield' ) }
+                        confirmText={ purging ? __( 'Clearing…', 'captain-media-shield' ) : __( 'Yes, Permanently Delete All', 'captain-media-shield' ) }
+                        danger
+                        onConfirm={ handlePurge }
+                        onCancel={ () => setConfirmPurge( false ) }
+                    >
+                        <p>{ __( 'Are you sure you want to permanently delete all safety copies in the deleted/ backup folder? This action cannot be undone.', 'captain-media-shield' ) }</p>
+                    </ConfirmModal>
+                ) }
+            </Section>
+        </div>
     );
 };
 
@@ -579,6 +762,7 @@ const Cleanup = () => {
                 <div hidden={ tab !== 'unused' }><UnusedTab /></div>
                 <div hidden={ tab !== 'duplicates' }><DuplicatesTab /></div>
                 <div hidden={ tab !== 'thumbs' }><ThumbsTab /></div>
+                <div hidden={ tab !== 'safety' }><SafetyTab /></div>
             </div>
         </div>
     );

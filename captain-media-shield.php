@@ -1,9 +1,10 @@
 <?php
 /**
  * Plugin Name: Captain Media Shield
+ * Plugin URI: https://wordpress.org/plugins/captain-media-shield/
  * Description: All-in-one free Image & Video Optimizer, WebP/AVIF Converter, Video Compressor (WebM/Fast Start), Metadata Stripper, and Server Storage Saver for WordPress.
- * Version: 1.0.2
- * Requires at least: 6.0
+ * Version: 1.0.3
+ * Requires at least: 6.6
  * Requires PHP: 7.4
  * Author: devangvachheta
  * Author URI: https://profiles.wordpress.org/devangvachheta/
@@ -21,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CAPMS_VERSION', '1.0.2' );
+define( 'CAPMS_VERSION', '1.0.3' );
 define( 'CAPMS_FILE', __FILE__ );
 define( 'CAPMS_URL', plugins_url( '/', __FILE__ ) );
 define( 'CAPMS_PATH', plugin_dir_path( __FILE__ ) );

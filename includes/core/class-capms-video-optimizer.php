@@ -98,7 +98,18 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 				'notes'     => array(),
 			);
 
-			// 1) In-place compression / fast start for MP4-family files.
+			// 1) WebM companion: generated FIRST directly from the original source file
+			// to avoid double-lossy recompression from an already-compressed MP4.
+			if ( ! empty( $settings['webm_enabled'] ) && 'video/webm' !== $mime ) {
+				$webm = self::encode_webm( $ffmpeg, $file, $settings );
+				if ( is_wp_error( $webm ) ) {
+					$result['notes'][] = $webm->get_error_message();
+				} else {
+					$result['webm_size'] = (int) $webm;
+				}
+			}
+
+			// 2) In-place compression / fast start for MP4-family files.
 			if ( in_array( $mime, self::INPLACE_MIMES, true ) && ( ! empty( $settings['video_enabled'] ) || ! empty( $settings['faststart_enabled'] ) ) ) {
 				$inplace = self::encode_inplace( $ffmpeg, $file, $settings );
 				if ( is_wp_error( $inplace ) ) {
@@ -107,16 +118,6 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 					clearstatcache();
 					$result['replaced'] = true;
 					$result['size']     = (int) filesize( $file );
-				}
-			}
-
-			// 2) WebM companion.
-			if ( ! empty( $settings['webm_enabled'] ) && 'video/webm' !== $mime ) {
-				$webm = self::encode_webm( $ffmpeg, $file, $settings );
-				if ( is_wp_error( $webm ) ) {
-					$result['notes'][] = $webm->get_error_message();
-				} else {
-					$result['webm_size'] = (int) $webm;
 				}
 			}
 
@@ -243,13 +244,26 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 		 * @param array $settings Settings.
 		 * @return string Empty when keeping the original resolution.
 		 */
+		/**
+		 * Scale filter argument based on max width setting, with HDR-to-SDR tonemapping.
+		 *
+		 * @since 0.0.1
+		 * @param array $settings Settings.
+		 * @return string Empty when keeping the original resolution without tonemap.
+		 */
 		private static function scale_filter( $settings ) {
-			$max = 'original' === $settings['video_resolution'] ? 0 : absint( $settings['video_resolution'] );
-			if ( ! $max ) {
-				return '';
+			$max   = 'original' === $settings['video_resolution'] ? 0 : absint( $settings['video_resolution'] );
+			$parts = array();
+
+			if ( $max ) {
+				// Cap the shorter side, so portrait videos are handled too.
+				$parts[] = sprintf( "scale='if(gt(iw,ih),-2,min(%1\$d,iw))':'if(gt(iw,ih),min(%1\$d,ih),-2)'", $max );
 			}
-			// Cap the shorter side, so portrait videos are handled too.
-			return sprintf( "scale='if(gt(iw,ih),-2,min(%1\$d,iw))':'if(gt(iw,ih),min(%1\$d,ih),-2)'", $max );
+
+			// Tone-map HDR/HEVC colors to 8-bit BT.709 SDR to avoid washed-out colors.
+			$parts[] = 'tonemap=tonemap=hable:desat=0';
+
+			return implode( ',', $parts );
 		}
 
 		/**
@@ -269,7 +283,8 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 			$args = array( '-y', '-hide_banner', '-loglevel', 'error', '-i', $file );
 
 			if ( ! empty( $settings['video_strip_meta'] ) ) {
-				array_push( $args, '-map_metadata', '-1', '-map_chapters', '-1' );
+				// Strip global metadata (EXIF/GPS/comments) while preserving stream rotation & display matrix tags.
+				array_push( $args, '-map_metadata:g', '-1', '-map_chapters', '-1' );
 			}
 
 			$compress = ! empty( $settings['video_enabled'] ) && Capms_Environment::ffmpeg_has_encoder( 'libx264' );
@@ -283,18 +298,40 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 				$crf   = (int) apply_filters( 'capms_video_crf', 26 );
 				$scale = self::scale_filter( $settings );
 
-				array_push( $args, '-c:v', 'libx264', '-preset', 'medium', '-crf', (string) $crf, '-pix_fmt', 'yuv420p' );
+				array_push(
+					$args,
+					'-c:v',
+					'libx264',
+					'-preset',
+					'medium',
+					'-crf',
+					(string) $crf,
+					'-pix_fmt',
+					'yuv420p',
+					'-colorspace',
+					'bt709',
+					'-color_primaries',
+					'bt709',
+					'-color_trc',
+					'bt709'
+				);
 				if ( $scale ) {
 					array_push( $args, '-vf', $scale );
 				}
 
-				if ( 'original' === $settings['audio_bitrate'] ) {
-					array_push( $args, '-c:a', 'aac', '-b:a', '192k' );
+				if ( self::has_audio( $file ) ) {
+					// Map only primary video and primary audio stream (drops extra foreign/commentary audio tracks).
+					array_push( $args, '-map', '0:v:0', '-map', '0:a:0?' );
+					if ( 'original' === $settings['audio_bitrate'] ) {
+						array_push( $args, '-c:a', 'aac', '-b:a', '192k' );
+					} else {
+						array_push( $args, '-c:a', 'aac', '-b:a', absint( $settings['audio_bitrate'] ) . 'k', '-ac', '2' );
+					}
 				} else {
-					array_push( $args, '-c:a', 'aac', '-b:a', absint( $settings['audio_bitrate'] ) . 'k', '-ac', '2' );
+					array_push( $args, '-map', '0:v:0', '-an' );
 				}
 			} else {
-				array_push( $args, '-c', 'copy' );
+				array_push( $args, '-map', '0:v:0', '-map', '0:a:0?', '-c', 'copy' );
 			}
 
 			if ( ! empty( $settings['faststart_enabled'] ) ) {
@@ -304,6 +341,14 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 			$args[] = $tmp;
 
 			$run = self::run( $ffmpeg, $args );
+			if ( is_wp_error( $run ) && false !== strpos( $run->get_error_message(), 'tonemap' ) ) {
+				// Fallback if the host's FFmpeg build lacks tonemap filter.
+				$fallback_args = array();
+				foreach ( $args as $arg ) {
+					$fallback_args[] = str_replace( array( ',tonemap=tonemap=hable:desat=0', 'tonemap=tonemap=hable:desat=0' ), '', $arg );
+				}
+				$run = self::run( $ffmpeg, $fallback_args );
+			}
 			if ( is_wp_error( $run ) ) {
 				wp_delete_file( $tmp );
 				return $run;
@@ -358,24 +403,61 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 			$args = array( '-y', '-hide_banner', '-loglevel', 'error', '-i', $file );
 
 			if ( ! empty( $settings['video_strip_meta'] ) ) {
-				array_push( $args, '-map_metadata', '-1' );
+				// Strip global metadata while keeping stream rotation/matrix intact.
+				array_push( $args, '-map_metadata:g', '-1' );
 			}
 
-			array_push( $args, '-c:v', 'libvpx-vp9', '-crf', (string) $crf, '-b:v', '0', '-row-mt', '1', '-deadline', 'good', '-cpu-used', '4' );
+			array_push(
+				$args,
+				'-c:v',
+				'libvpx-vp9',
+				'-crf',
+				(string) $crf,
+				'-b:v',
+				'0',
+				'-row-mt',
+				'1',
+				'-deadline',
+				'good',
+				'-cpu-used',
+				'4',
+				'-pix_fmt',
+				'yuv420p',
+				'-colorspace',
+				'bt709',
+				'-color_primaries',
+				'bt709',
+				'-color_trc',
+				'bt709'
+			);
 			if ( $scale ) {
 				array_push( $args, '-vf', $scale );
 			}
 
-			$audio = 'original' === $settings['audio_bitrate'] ? '128' : absint( $settings['audio_bitrate'] );
-			if ( Capms_Environment::ffmpeg_has_encoder( 'libopus' ) ) {
-				array_push( $args, '-c:a', 'libopus', '-b:a', $audio . 'k' );
+			if ( self::has_audio( $file ) ) {
+				// Map only primary video and primary audio stream (drops extra foreign/commentary audio tracks).
+				array_push( $args, '-map', '0:v:0', '-map', '0:a:0?' );
+				$audio = 'original' === $settings['audio_bitrate'] ? '128' : absint( $settings['audio_bitrate'] );
+				if ( Capms_Environment::ffmpeg_has_encoder( 'libopus' ) ) {
+					array_push( $args, '-c:a', 'libopus', '-b:a', $audio . 'k' );
+				} else {
+					array_push( $args, '-c:a', 'libvorbis', '-b:a', $audio . 'k' );
+				}
 			} else {
-				array_push( $args, '-c:a', 'libvorbis', '-b:a', $audio . 'k' );
+				array_push( $args, '-map', '0:v:0', '-an' );
 			}
 
 			$args[] = $tmp;
 
 			$run = self::run( $ffmpeg, $args );
+			if ( is_wp_error( $run ) && false !== strpos( $run->get_error_message(), 'tonemap' ) ) {
+				// Fallback if the host's FFmpeg build lacks tonemap filter.
+				$fallback_args = array();
+				foreach ( $args as $arg ) {
+					$fallback_args[] = str_replace( array( ',tonemap=tonemap=hable:desat=0', 'tonemap=tonemap=hable:desat=0' ), '', $arg );
+				}
+				$run = self::run( $ffmpeg, $fallback_args );
+			}
 			if ( is_wp_error( $run ) ) {
 				wp_delete_file( $tmp );
 				return $run;
@@ -392,6 +474,26 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 			}
 
 			return (int) filesize( $dest );
+		}
+
+		/**
+		 * Check whether the video has an audio stream.
+		 *
+		 * @since 1.0.2
+		 * @param string $file Video path.
+		 * @return bool
+		 */
+		private static function has_audio( $file ) {
+			if ( ! function_exists( 'wp_read_video_metadata' ) && file_exists( ABSPATH . 'wp-admin/includes/media.php' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/media.php';
+			}
+			if ( function_exists( 'wp_read_video_metadata' ) ) {
+				$meta = wp_read_video_metadata( $file );
+				if ( is_array( $meta ) ) {
+					return ! empty( $meta['audio'] );
+				}
+			}
+			return true;
 		}
 
 		/**

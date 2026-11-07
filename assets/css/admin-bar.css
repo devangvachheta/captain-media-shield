@@ -5,511 +5,511 @@
 
 /* ── Top Bar Item & Icon Centering ──────────────────────────────── */
 #wpadminbar #wp-admin-bar-capms-admin-bar > .ab-item {
-    display: flex !important;
-    align-items: center !important;
-    height: 100% !important;
-    padding: 0 10px 0 9px !important;
-    text-decoration: none !important;
-    gap: 0 !important;
-    cursor: pointer !important;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 10px 0 9px;
+    text-decoration: none;
+    gap: 0;
+    cursor: pointer;
 }
 
 #wpadminbar #wp-admin-bar-capms-admin-bar .ab-icon {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 18px !important;
-    height: 100% !important;
-    margin: 0 6px 0 0 !important;
-    padding: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 100%;
+    margin: 0 6px 0 0;
+    padding: 0;
     float: none !important;
-    line-height: 1 !important;
+    line-height: 1;
 }
 
 #wpadminbar #wp-admin-bar-capms-admin-bar .capms-bar-icon-svg {
-    display: block !important;
-    width: 16px !important;
-    height: 16px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    vertical-align: middle !important;
+    display: block;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
 }
 
 #wpadminbar #wp-admin-bar-capms-admin-bar .ab-label {
-    display: inline-flex !important;
-    align-items: center !important;
-    height: 100% !important;
-    line-height: inherit !important;
-    font-weight: 500 !important;
-    font-size: 13px !important;
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    line-height: inherit;
+    font-weight: 500;
+    font-size: 13px;
 }
 
 /* ── Status Dot in Top Bar ──────────────────────────────────────── */
 #wpadminbar #wp-admin-bar-capms-admin-bar .capms-bar-top-dot {
-    display: inline-block !important;
-    width: 7px !important;
-    height: 7px !important;
-    min-width: 7px !important;
-    border-radius: 50% !important;
-    margin-left: 6px !important;
-    vertical-align: middle !important;
-    align-self: center !important;
-    transition: all 0.25s ease !important;
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    min-width: 7px;
+    border-radius: 50%;
+    margin-left: 6px;
+    vertical-align: middle;
+    align-self: center;
+    transition: all 0.25s ease;
 }
 
 #wpadminbar #wp-admin-bar-capms-admin-bar .capms-bar-dot--idle {
-    background: #64748b !important;
-    opacity: 0.55 !important;
+    background: #64748b;
+    opacity: 0.55;
 }
 
 #wpadminbar #wp-admin-bar-capms-admin-bar .capms-bar-dot--green {
-    background: #10b981 !important;
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.9) !important;
+    background: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.9);
 }
 
 #wpadminbar #wp-admin-bar-capms-admin-bar .capms-bar-dot--amber {
-    background: #f59e0b !important;
-    box-shadow: 0 0 8px rgba(245, 158, 11, 0.9) !important;
+    background: #f59e0b;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.9);
 }
 
 /* ── Dropdown Submenu Container ─────────────────────────────────── */
 #wpadminbar #wp-admin-bar-capms-admin-bar .ab-sub-wrapper {
-    min-width: 320px !important;
-    max-width: 335px !important;
-    background: linear-gradient(180deg, #161c28 0%, #0e121a 100%) !important;
-    border: 1px solid #283347 !important;
-    border-radius: 0 0 12px 12px !important;
-    box-shadow: 0 20px 42px -10px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
-    overflow: hidden !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    min-width: 320px;
+    max-width: 335px;
+    background: linear-gradient(180deg, #161c28 0%, #0e121a 100%);
+    border: 1px solid #283347;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 20px 42px -10px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
 }
 
 #wpadminbar #wp-admin-bar-capms-admin-bar .ab-submenu {
-    padding: 10px 15px !important;
-    margin: 0 !important;
-    box-sizing: border-box !important;
+    padding: 10px 15px;
+    margin: 0;
+    box-sizing: border-box;
 }
 
 #wpadminbar #wp-admin-bar-capms-admin-bar .capms-bar-inspector-container {
-    height: auto !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    background: transparent !important;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    background: transparent;
 }
 
 #wpadminbar #wp-admin-bar-capms-admin-bar .capms-bar-inspector-container > .ab-item {
-    height: auto !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    white-space: normal !important;
-    background: transparent !important;
-    cursor: default !important;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    white-space: normal;
+    background: transparent;
+    cursor: default;
 }
 
 /* ── Inspector Card (Flex Column with 15px Gap) ─────────────────── */
 #wpadminbar .capms-bar-card {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 15px !important;
-    background: transparent !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    color: #e2e8f0 !important;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif !important;
-    box-sizing: border-box !important;
-    width: 100% !important;
-    height: auto !important;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    color: #e2e8f0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    box-sizing: border-box;
+    width: 100%;
+    height: auto;
 }
 
 #wpadminbar .capms-bar-card,
 #wpadminbar .capms-bar-card * {
-    box-sizing: border-box !important;
+    box-sizing: border-box;
 }
 
 /* ── Header ─────────────────────────────────────────────────────── */
 #wpadminbar .capms-bar-card-header {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 8px !important;
-    margin: 0 !important;
-    padding: 0 0 10px 0 !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-    height: auto !important;
-    line-height: 1 !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 0;
+    padding: 0 0 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    height: auto;
+    line-height: 1;
 }
 
 #wpadminbar .capms-bar-card-title-wrap {
-    display: flex !important;
-    align-items: center !important;
-    gap: 7px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    height: auto;
 }
 
 #wpadminbar .capms-bar-card-icon {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 20px !important;
-    height: 20px !important;
-    min-width: 20px !important;
-    border-radius: 5px !important;
-    background: rgba(8, 95, 99, 0.3) !important;
-    color: #38bdf8 !important;
-    flex-shrink: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    line-height: 1 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border-radius: 5px;
+    background: rgba(8, 95, 99, 0.3);
+    color: #38bdf8;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
 }
 
 #wpadminbar .capms-bar-card-icon svg {
-    display: block !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    display: block;
+    margin: 0;
+    padding: 0;
 }
 
 #wpadminbar .capms-bar-card-title {
-    font-size: 11px !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.06em !important;
-    color: #cbd5e1 !important;
-    line-height: 1.2 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #cbd5e1;
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+    height: auto;
 }
 
 /* ── Status Badge ───────────────────────────────────────────────── */
 #wpadminbar .capms-bar-card-badge {
-    display: inline-block !important;
-    font-size: 10px !important;
-    font-weight: 600 !important;
-    padding: 3px 8px !important;
-    border-radius: 999px !important;
-    background: rgba(148, 163, 184, 0.12) !important;
-    color: #94a3b8 !important;
-    border: 1px solid rgba(148, 163, 184, 0.25) !important;
-    line-height: 1.2 !important;
-    height: auto !important;
-    margin: 0 !important;
-    transition: all 0.2s ease !important;
-    vertical-align: middle !important;
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.12);
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    line-height: 1.2;
+    height: auto;
+    margin: 0;
+    transition: all 0.2s ease;
+    vertical-align: middle;
 }
 
 #wpadminbar .capms-bar-card-badge--green {
-    background: rgba(16, 185, 129, 0.14) !important;
-    color: #34d399 !important;
-    border: 1px solid rgba(16, 185, 129, 0.35) !important;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.15) !important;
+    background: rgba(16, 185, 129, 0.14);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
 }
 
 #wpadminbar .capms-bar-card-badge--amber {
-    background: rgba(245, 158, 11, 0.14) !important;
-    color: #fbbf24 !important;
-    border: 1px solid rgba(245, 158, 11, 0.35) !important;
-    box-shadow: 0 0 10px rgba(245, 158, 11, 0.15) !important;
+    background: rgba(245, 158, 11, 0.14);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.15);
 }
 
 #wpadminbar .capms-bar-card-badge--idle {
-    background: rgba(148, 163, 184, 0.12) !important;
-    color: #94a3b8 !important;
-    border: 1px solid rgba(148, 163, 184, 0.25) !important;
+    background: rgba(148, 163, 184, 0.12);
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.25);
 }
 
 /* ── 3-Column Metrics Grid ──────────────────────────────────────── */
 #wpadminbar .capms-bar-metrics-grid {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 7px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    height: auto;
 }
 
 #wpadminbar .capms-bar-metric-box {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background: rgba(255, 255, 255, 0.035) !important;
-    border: 1px solid rgba(255, 255, 255, 0.07) !important;
-    border-radius: 8px !important;
-    padding: 10px 4px 8px !important;
-    text-align: center !important;
-    margin: 0 !important;
-    height: auto !important;
-    transition: all 0.2s ease !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 8px;
+    padding: 10px 4px 8px;
+    text-align: center;
+    margin: 0;
+    height: auto;
+    transition: all 0.2s ease;
 }
 
 #wpadminbar .capms-bar-metric-box:hover {
-    background: rgba(255, 255, 255, 0.055) !important;
-    border-color: rgba(255, 255, 255, 0.12) !important;
+    background: rgba(255, 255, 255, 0.055);
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
 #wpadminbar .capms-bar-metric-box--green {
-    background: rgba(16, 185, 129, 0.04) !important;
-    border-color: rgba(16, 185, 129, 0.15) !important;
+    background: rgba(16, 185, 129, 0.04);
+    border-color: rgba(16, 185, 129, 0.15);
 }
 
 #wpadminbar .capms-bar-metric-box--amber {
-    background: rgba(245, 158, 11, 0.04) !important;
-    border-color: rgba(245, 158, 11, 0.15) !important;
+    background: rgba(245, 158, 11, 0.04);
+    border-color: rgba(245, 158, 11, 0.15);
 }
 
 #wpadminbar .capms-bar-metric-num {
-    display: block !important;
-    font-size: 19px !important;
-    font-weight: 800 !important;
-    line-height: 1.1 !important;
-    color: #ffffff !important;
-    margin: 0 0 4px 0 !important;
-    padding: 0 !important;
-    height: auto !important;
-    font-variant-numeric: tabular-nums !important;
+    display: block;
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #ffffff;
+    margin: 0 0 4px 0;
+    padding: 0;
+    height: auto;
+    font-variant-numeric: tabular-nums;
 }
 
 #wpadminbar .capms-bar-val--green {
-    color: #10b981 !important;
+    color: #10b981;
 }
 
 #wpadminbar .capms-bar-val--amber {
-    color: #f59e0b !important;
+    color: #f59e0b;
 }
 
 #wpadminbar .capms-bar-metric-tag {
-    display: block !important;
-    font-size: 9.5px !important;
-    color: #94a3b8 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.04em !important;
-    font-weight: 600 !important;
-    line-height: 1.2 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
+    display: block;
+    font-size: 9.5px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+    height: auto;
 }
 
 /* ── Description Box ────────────────────────────────────────────── */
 #wpadminbar .capms-bar-desc-box {
-    display: flex !important;
-    align-items: center !important;
-    gap: 9px !important;
-    background: rgba(255, 255, 255, 0.03) !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    border-radius: 8px !important;
-    padding: 9px 11px !important;
-    margin: 0 !important;
-    height: auto !important;
-    box-sizing: border-box !important;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 9px 11px;
+    margin: 0;
+    height: auto;
+    box-sizing: border-box;
 }
 
 #wpadminbar .capms-bar-desc-icon {
-    font-size: 14px !important;
-    line-height: 1 !important;
-    flex-shrink: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
+    font-size: 14px;
+    line-height: 1;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
+    height: auto;
 }
 
 #wpadminbar .capms-bar-desc-text {
-    font-size: 11.5px !important;
-    line-height: 1.2 !important;
-    color: #cbd5e1 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    white-space: normal !important;
-    height: auto !important;
+    font-size: 11.5px;
+    line-height: 1.2;
+    color: #cbd5e1;
+    margin: 0;
+    padding: 0;
+    white-space: normal;
+    height: auto;
 }
 
 /* ── Unoptimized Tools Row ──────────────────────────────────────── */
 #wpadminbar .capms-bar-tools-row {
-    display: flex !important;
-    gap: 8px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
+    display: flex;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    height: auto;
 }
 
 #wpadminbar .capms-bar-tool-btn {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 5px !important;
-    flex: 1 1 0 !important;
-    padding: 6px 9px !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 6px !important;
-    color: #cbd5e1 !important;
-    font-size: 11px !important;
-    font-weight: 600 !important;
-    line-height: 1.2 !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    margin: 0 !important;
-    height: auto !important;
-    white-space: nowrap !important;
-    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    flex: 1 1 0;
+    padding: 6px 9px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: #cbd5e1;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0;
+    height: auto;
+    white-space: nowrap;
+    text-decoration: none;
 }
 
 #wpadminbar .capms-bar-tool-btn:hover {
-    background: rgba(255, 255, 255, 0.1) !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
-    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
 }
 
 #wpadminbar .capms-bar-tool-btn.capms-tool-btn--active {
-    background: rgba(245, 158, 11, 0.18) !important;
-    border-color: rgba(245, 158, 11, 0.45) !important;
-    color: #fbbf24 !important;
-    box-shadow: 0 0 8px rgba(245, 158, 11, 0.2) !important;
+    background: rgba(245, 158, 11, 0.18);
+    border-color: rgba(245, 158, 11, 0.45);
+    color: #fbbf24;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.2);
 }
 
 #wpadminbar .capms-bar-tool-btn svg {
-    display: block !important;
-    flex-shrink: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    display: block;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
 }
 
 /* ── Expandable Thumbnail List ──────────────────────────────────── */
 #wpadminbar .capms-bar-thumb-list-wrap {
-    background: rgba(0, 0, 0, 0.3) !important;
-    border: 1px solid rgba(255, 255, 255, 0.07) !important;
-    border-radius: 8px !important;
-    padding: 8px !important;
-    margin: 0 !important;
-    height: auto !important;
-    box-sizing: border-box !important;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 8px;
+    padding: 8px;
+    margin: 0;
+    height: auto;
+    box-sizing: border-box;
 }
 
 #wpadminbar .capms-bar-thumb-list-head {
-    font-size: 10px !important;
-    font-weight: 600 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.04em !important;
-    color: #94a3b8 !important;
-    padding: 0 0 6px 2px !important;
-    margin: 0 0 6px 0 !important;
-    line-height: 1.2 !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-    height: auto !important;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #94a3b8;
+    padding: 0 0 6px 2px;
+    margin: 0 0 6px 0;
+    line-height: 1.2;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    height: auto;
 }
 
 #wpadminbar .capms-bar-thumb-list {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 4px !important;
-    max-height: 155px !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    margin: 0 !important;
-    padding: 0 2px 0 0 !important;
-    height: auto !important;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 155px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0 2px 0 0;
+    height: auto;
 }
 
 #wpadminbar .capms-bar-thumb-list::-webkit-scrollbar {
-    width: 4px !important;
+    width: 4px;
 }
 
 #wpadminbar .capms-bar-thumb-list::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.18) !important;
-    border-radius: 4px !important;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 4px;
 }
 
 #wpadminbar .capms-bar-thumb-item {
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    padding: 5px 7px !important;
-    border-radius: 6px !important;
-    background: rgba(255, 255, 255, 0.03) !important;
-    border: 1px solid transparent !important;
-    cursor: pointer !important;
-    transition: all 0.18s ease !important;
-    margin: 0 !important;
-    height: auto !important;
-    text-align: left !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 7px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    margin: 0;
+    height: auto;
+    text-align: left;
 }
 
 #wpadminbar .capms-bar-thumb-item:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border-color: rgba(56, 189, 248, 0.3) !important;
-    transform: translateX(2px) !important;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(56, 189, 248, 0.3);
+    transform: translateX(2px);
 }
 
 #wpadminbar .capms-bar-thumb-img {
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    border-radius: 4px !important;
-    object-fit: cover !important;
-    background: #1e293b !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    display: block !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: 4px;
+    object-fit: cover;
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: block;
+    margin: 0;
+    padding: 0;
 }
 
 #wpadminbar .capms-bar-thumb-info {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2px !important;
-    flex: 1 1 0 !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
 }
 
 #wpadminbar .capms-bar-thumb-name {
-    font-size: 11px !important;
-    font-weight: 600 !important;
-    color: #e2e8f0 !important;
-    line-height: 1.2 !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    display: block !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    font-size: 11px;
+    font-weight: 600;
+    color: #e2e8f0;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    margin: 0;
+    padding: 0;
 }
 
 #wpadminbar .capms-bar-thumb-meta {
-    font-size: 9.5px !important;
-    color: #38bdf8 !important;
-    line-height: 1.1 !important;
-    display: block !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    font-size: 9.5px;
+    color: #38bdf8;
+    line-height: 1.1;
+    display: block;
+    margin: 0;
+    padding: 0;
 }
 
 #wpadminbar .capms-bar-thumb-locate-icon {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    color: #94a3b8 !important;
-    flex-shrink: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    transition: transform 0.15s ease !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
+    transition: transform 0.15s ease;
 }
 
 #wpadminbar .capms-bar-thumb-item:hover .capms-bar-thumb-locate-icon {
-    color: #38bdf8 !important;
-    transform: translateX(2px) !important;
+    color: #38bdf8;
+    transform: translateX(2px);
 }
 
 /* ── Live Page Highlight & Pulse Styles (Targeted on webpage <img>) ── */
 img.capms-page-highlighted {
-    outline: 3px dashed #f59e0b !important;
-    outline-offset: 3px !important;
-    box-shadow: 0 0 16px rgba(245, 158, 11, 0.7) !important;
-    transition: outline 0.25s ease, box-shadow 0.25s ease !important;
+    outline: 3px dashed #f59e0b;
+    outline-offset: 3px;
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.7);
+    transition: outline 0.25s ease, box-shadow 0.25s ease;
 }
 
 @keyframes capmsPulseGlow {
@@ -532,109 +532,189 @@ img.capms-page-highlighted {
 }
 
 img.capms-highlight-pulse {
-    animation: capmsPulseGlow 1.1s ease-in-out 2 !important;
-    position: relative !important;
-    z-index: 99999 !important;
+    animation: capmsPulseGlow 1.1s ease-in-out 2;
+    position: relative;
+    z-index: 99999;
 }
 
 /* ── 1-Click Action Button ──────────────────────────────────────── */
 #wpadminbar .capms-bar-action-wrap {
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
+    margin: 0;
+    padding: 0;
+    height: auto;
 }
 
 #wpadminbar .capms-bar-btn-action {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 7px !important;
-    width: 100% !important;
-    padding: 9px 12px !important;
-    background: linear-gradient(135deg, #2271b1 0%, #135e96 100%) !important;
-    color: #ffffff !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    border-radius: 8px !important;
-    font-size: 12px !important;
-    font-weight: 700 !important;
-    text-align: center !important;
-    cursor: pointer !important;
-    box-sizing: border-box !important;
-    box-shadow: 0 4px 14px rgba(34, 113, 177, 0.35) !important;
-    transition: all 0.2s ease !important;
-    margin: 0 !important;
-    height: auto !important;
-    line-height: 1.3 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: 100%;
+    padding: 9px 12px;
+    background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    box-shadow: 0 4px 14px rgba(34, 113, 177, 0.35);
+    transition: all 0.2s ease;
+    margin: 0;
+    height: auto;
+    line-height: 1.3;
 }
 
 #wpadminbar .capms-bar-btn-action:hover:not(:disabled) {
-    background: linear-gradient(135deg, #1A5D96 0%, #0c4a75 100%) !important;
-    box-shadow: 0 6px 18px rgba(34, 113, 177, 0.5) !important;
-    transform: translateY(-1px) !important;
-    color: #ffffff !important;
+    background: linear-gradient(135deg, #1A5D96 0%, #0c4a75 100%);
+    box-shadow: 0 6px 18px rgba(34, 113, 177, 0.5);
+    transform: translateY(-1px);
+    color: #ffffff;
 }
 
 #wpadminbar .capms-bar-btn-action:disabled {
-    opacity: 0.65 !important;
-    cursor: wait !important;
-    transform: none !important;
+    opacity: 0.65;
+    cursor: wait;
+    transform: none;
 }
 
 #wpadminbar .capms-bar-btn-icon {
-    font-size: 13px !important;
-    line-height: 1 !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    font-size: 13px;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
 }
 
 /* ── Card Footer ────────────────────────────────────────────────── */
 #wpadminbar .capms-bar-card-footer {
-    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-    padding: 11px 0 0 0 !important;
-    margin: 0 !important;
-    height: auto !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 11px 0 0 0;
+    margin: 0;
+    height: auto;
 }
 
 #wpadminbar .capms-bar-footer-link {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    font-size: 11px !important;
-    font-weight: 500 !important;
-    color: #94a3b8 !important;
-    text-decoration: none !important;
-    transition: color 0.15s ease !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
-    line-height: 1.2 !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 500;
+    color: #94a3b8;
+    text-decoration: none;
+    transition: color 0.15s ease;
+    margin: 0;
+    padding: 0;
+    height: auto;
+    line-height: 1.2;
 }
 
 #wpadminbar .capms-bar-footer-link:hover {
-    color: #38bdf8 !important;
+    color: #38bdf8;
 }
 
 #wpadminbar .capms-bar-footer-link svg {
-    display: block !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    transition: transform 0.15s ease !important;
+    display: block;
+    margin: 0;
+    padding: 0;
+    transition: transform 0.15s ease;
 }
 
 #wpadminbar .capms-bar-footer-link:hover svg {
-    transform: translateX(2px) !important;
+    transform: translateX(2px);
 }
 
 /* ── Mobile Responsive ──────────────────────────────────────────── */
 @media screen and (max-width: 782px) {
     #wpadminbar #wp-admin-bar-capms-admin-bar > .ab-item {
-        padding: 0 8px !important;
+        padding: 0 8px;
     }
     #wpadminbar #wp-admin-bar-capms-admin-bar .ab-icon {
-        margin: 0 !important;
+        margin: 0;
     }
     #wpadminbar #wp-admin-bar-capms-admin-bar .capms-bar-icon-svg {
-        width: 18px !important;
-        height: 18px !important;
+        width: 18px;
+        height: 18px;
+    }
+    #wpadminbar #wp-admin-bar-capms-admin-bar .ab-sub-wrapper {
+        min-width: 290px;
+        max-width: 92vw;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #wpadminbar #wp-admin-bar-capms-admin-bar .ab-sub-wrapper {
+        width: calc(100vw - 20px);
+        max-width: 100vw;
+        left: 10px;
+        right: 10px;
+        border-radius: 8px;
+    }
+}
+
+/* ── Accessibility & Reduced Motion ────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    #wpadminbar #wp-admin-bar-capms-admin-bar *,
+    #wpadminbar .capms-bar-card,
+    #wpadminbar .capms-bar-metric-box,
+    #wpadminbar .capms-bar-tool-btn,
+    #wpadminbar .capms-bar-btn-action,
+    #wpadminbar .capms-bar-thumb-item,
+    img.capms-page-highlighted,
+    img.capms-highlight-pulse {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* ── Real Dark Mode Styles ──────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+    #wpadminbar #wp-admin-bar-capms-admin-bar .ab-sub-wrapper {
+        background: #090d16 !important;
+        border-color: #1e293b !important;
+        box-shadow: 0 20px 42px -10px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+    }
+    #wpadminbar .capms-bar-card {
+        color: #f1f5f9 !important;
+    }
+    #wpadminbar .capms-bar-metric-box {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    #wpadminbar .capms-bar-metric-box:hover {
+        background: rgba(255, 255, 255, 0.06) !important;
+        border-color: rgba(255, 255, 255, 0.15) !important;
+    }
+    #wpadminbar .capms-bar-desc-box {
+        background: rgba(0, 0, 0, 0.5) !important;
+        border-color: rgba(255, 255, 255, 0.06) !important;
+    }
+    #wpadminbar .capms-bar-tool-btn {
+        background: rgba(255, 255, 255, 0.04) !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+        color: #e2e8f0 !important;
+    }
+    #wpadminbar .capms-bar-tool-btn:hover {
+        background: rgba(255, 255, 255, 0.09) !important;
+        border-color: rgba(255, 255, 255, 0.18) !important;
+        color: #ffffff !important;
+    }
+    #wpadminbar .capms-bar-thumb-list-wrap {
+        background: rgba(0, 0, 0, 0.55) !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    #wpadminbar .capms-bar-thumb-item {
+        background: rgba(255, 255, 255, 0.02) !important;
+    }
+    #wpadminbar .capms-bar-thumb-item:hover {
+        background: rgba(255, 255, 255, 0.07) !important;
+        border-color: rgba(56, 189, 248, 0.35) !important;
+    }
+    #wpadminbar .capms-bar-footer-link {
+        color: #94a3b8 !important;
+    }
+    #wpadminbar .capms-bar-footer-link:hover {
+        color: #38bdf8 !important;
     }
 }

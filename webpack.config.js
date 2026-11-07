@@ -1,26 +1,9 @@
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 
 /**
- * src/router/routes.js splits every page except Dashboard into its own
- * React.lazy() chunk to keep the main index.js bundle under wp-scripts'
- * size warning threshold. By default, webpack/mini-css-extract-plugin
- * mirrors that JS split for CSS too -- giving each route its own
- * "<route>.css" / "<route>-rtl.css" pair (e.g. edit-feed.css, docs.css).
- *
- * That's a problem for RTL: WordPress only knows how to swap in an
- * "-rtl.css" file for stylesheets that are actually enqueued via
- * wp_enqueue_style() + wp_style_add_data(..., 'rtl', 'replace') (see
- * includes/admin/class-capms-menu.php). The per-route CSS chunks above
- * are injected directly by webpack's own runtime when a lazy chunk loads
- * -- they never pass through WP's style queue, so the RTL swap can never
- * reach them, and RTL site visitors would always get the LTR version of
- * every page except the Dashboard.
- *
- * The fix: keep the JS split (that's what actually fixes the size
- * warning), but force ALL stylesheets -- including ones only imported by
- * a lazy-loaded route -- back into the single main "index" CSS output.
- * That's the file WordPress enqueues and RTL-swaps, so RTL now works
- * everywhere again, exactly as it did before routes were split.
+ * Captain Media Shield Webpack Configuration.
+ * Bundles all JavaScript into build/index.js and ensures all styling
+ * is extracted into a single index.css and index-rtl.css pair enqueued by WordPress.
  */
 module.exports = {
 	...defaultConfig,

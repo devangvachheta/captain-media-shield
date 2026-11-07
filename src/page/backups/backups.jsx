@@ -4,7 +4,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import useSettings from '../../hooks/useSettings.js';
 import { ajax } from '../../services/api.js';
 import { setStats } from '../../redux/slice.jsx';
-import { PageHeader, Section, ToggleRow, SelectRow, Row, SaveBar, Notice, ConfirmModal, StatCard, Skeleton } from '../../components/ui.jsx';
+import { PageHeader, Section, ToggleRow, SelectRow, Row, Notice, ConfirmModal, StatCard, Skeleton } from '../../components/ui.jsx';
 import { IconBackup, IconClock, IconTrash, IconRestore, IconDatabase, IconRefresh } from '../../components/icons.jsx';
 
 const KEYS = [ 'backup_enabled', 'delete_originals', 'backup_retention' ];
@@ -107,7 +107,7 @@ const Backups = () => {
                 <Section
                     icon={ <IconBackup /> }
                     title={ __( 'Original Backups', 'captain-media-shield' ) }
-                    description={ __( 'The backup folder is protected from direct web access.', 'captain-media-shield' ) }
+                    description={ __( 'The backup folder is protected from direct web access on Apache/LiteSpeed (.htaccess) and IIS (web.config). On Nginx, add a deny rule or rely on the randomized folder name.', 'captain-media-shield' ) }
                 >
                     <ToggleRow
                         label={ sprintf( /* translators: %s: backup folder path. */ __( 'Save Original Backup in %s', 'captain-media-shield' ), capms_data?.backup_dir || 'wp-content/uploads/captain-ms-backups/' ) }

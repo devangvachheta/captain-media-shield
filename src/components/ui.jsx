@@ -108,9 +108,10 @@ export const Section = ( { icon, title, description, badge, children } ) => (
 export const Switcher = ( { checked, onChange, disabled, danger, label } ) => (
     <button
         type="button"
+        role="switch"
         className={ `capms-switcher ${ checked ? 'capms-switcher--on' : '' } ${ danger && checked ? 'capms-switcher--danger' : '' }` }
         onClick={ () => ! disabled && onChange( ! checked ) }
-        aria-pressed={ !! checked }
+        aria-checked={ !! checked }
         aria-label={ label }
         disabled={ disabled }
     >
@@ -135,15 +136,18 @@ export const ToggleRow = ( { label, hint, checked, onChange, disabled, danger, l
     </Row>
 );
 
-export const SelectRow = ( { label, hint, value, options, onChange, disabled, last } ) => (
-    <Row label={ label } hint={ hint } last={ last } locked={ disabled }>
-        <select className="capms-settings-select" value={ value } onChange={ ( e ) => onChange( e.target.value ) } disabled={ disabled }>
-            { options.map( ( opt ) => (
-                <option key={ opt.value } value={ opt.value }>{ opt.label }</option>
-            ) ) }
-        </select>
-    </Row>
-);
+export const SelectRow = ( { id, label, hint, value, options, onChange, disabled, last } ) => {
+    const selectId = id || ( typeof label === 'string' ? 'capms-sel-' + label.toLowerCase().replace( /[^a-z0-9]+/g, '-' ) : undefined );
+    return (
+        <Row label={ selectId ? <label htmlFor={ selectId }>{ label }</label> : label } hint={ hint } last={ last } locked={ disabled }>
+            <select id={ selectId } className="capms-settings-select" value={ value } onChange={ ( e ) => onChange( e.target.value ) } disabled={ disabled }>
+                { options.map( ( opt ) => (
+                    <option key={ opt.value } value={ opt.value }>{ opt.label }</option>
+                ) ) }
+            </select>
+        </Row>
+    );
+};
 
 export const Pill = ( { tone = 'blue', children } ) => (
     <span className={ `capms-scard-subcard-pill capms-scard-subcard-pill--${ tone } capms-pill` }>{ children }</span>
@@ -173,12 +177,6 @@ export const StatCard = ( { icon, label, value, sub, tone = 'blue' } ) => (
         </div>
     </div>
 );
-
-/**
- * Legacy sticky footer - deprecated in favor of top-header SaveActions.
- * Kept as empty component for backward compatibility.
- */
-export const SaveBar = () => null;
 
 export const ConfirmModal = ( { title, children, confirmLabel, danger, busy, onConfirm, onClose, icon } ) => (
     <SettingsCardModal

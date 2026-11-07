@@ -31,3 +31,29 @@
 .capms-snippet-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .capms-snippet-box { width: 100%; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; line-height: 1.5; padding: 12px; border-radius: 8px; border: 1px solid var(--capms-border); background: var(--capms-bg-input); color: var(--capms-text-primary); resize: vertical; }
 .capms-snippet-box--edit { font-size: 13px; }
+
+.capms-cl-safety-tab {
+    .capms-cl-empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--capms-text-muted);
+        svg {
+            width: 44px;
+            height: 44px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--capms-text-primary);
+            margin: 0 0 8px 0;
+        }
+        p {
+            font-size: 13px;
+            max-width: 520px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+    }
+}

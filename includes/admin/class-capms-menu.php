@@ -52,6 +52,9 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 			add_action( 'admin_menu', array( $this, 'capms_admin_menu' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'capms_admin_enqueue_scripts' ), 10, 1 );
 			add_filter( 'plugin_action_links_' . plugin_basename( CAPMS_FILE ), array( $this, 'capms_action_links' ) );
+			add_filter( 'load_script_translation_file', array( $this, 'capms_load_script_translation_file' ), 10, 3 );
+			add_action( 'in_admin_header', array( $this, 'capms_suppress_admin_notices' ), 1000 );
+			add_action( 'admin_head', array( $this, 'capms_suppress_admin_notices' ), 1 );
 		}
 
 		/**
@@ -80,6 +83,38 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 			if ( $hook_suffix ) {
 				add_action( 'load-' . $hook_suffix, array( $this, 'capms_suppress_admin_notices' ) );
 			}
+		}
+
+		/**
+		 * Suppress admin notices on the plugin's React admin page.
+		 *
+		 * @since 1.0.3
+		 * @return void
+		 */
+		public function capms_suppress_admin_notices() {
+			$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+			if ( ! $screen || 'media_page_captain-media-shield' !== $screen->id ) {
+				return;
+			}
+
+			remove_all_actions( 'admin_notices' );
+			remove_all_actions( 'all_admin_notices' );
+			remove_all_actions( 'user_admin_notices' );
+			remove_all_actions( 'network_admin_notices' );
+
+			echo '<style id="capms-suppress-notices">'
+				. '.media_page_captain-media-shield #wpbody-content > .notice,'
+				. '.media_page_captain-media-shield #wpbody-content > .update-nag,'
+				. '.media_page_captain-media-shield #wpbody-content > div.error,'
+				. '.media_page_captain-media-shield #wpbody-content > div.updated,'
+				. '.media_page_captain-media-shield #wpbody-content > .is-dismissible,'
+				. '.media_page_captain-media-shield #wpbody-content > div[class*="notice"],'
+				. '.media_page_captain-media-shield #wpbody-content > div[class*="e-notice"],'
+				. '.media_page_captain-media-shield .elementor-message,'
+				. '.media_page_captain-media-shield .e-notice {'
+				. '    display: none !important;'
+				. '}'
+				. '</style>';
 		}
 
 		/**
@@ -141,8 +176,36 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 			wp_enqueue_style( 'capms-admin-app', CAPMS_URL . 'build/index.css', array(), $build_css_ver );
 			wp_style_add_data( 'capms-admin-app', 'rtl', 'replace' );
 
+			wp_add_inline_style(
+				'capms-admin-app',
+				'body.media_page_captain-media-shield #wpbody-content > .notice,
+				body.media_page_captain-media-shield #wpbody-content > .notice-warning,
+				body.media_page_captain-media-shield #wpbody-content > .notice-error,
+				body.media_page_captain-media-shield #wpbody-content > .notice-info,
+				body.media_page_captain-media-shield #wpbody-content > .notice-success,
+				body.media_page_captain-media-shield #wpbody-content > .update-nag,
+				body.media_page_captain-media-shield #wpbody-content > div.error,
+				body.media_page_captain-media-shield #wpbody-content > div.updated,
+				body.media_page_captain-media-shield #wpbody-content > .is-dismissible,
+				body.media_page_captain-media-shield #wpbody-content > * > .notice,
+				body.media_page_captain-media-shield #wpbody-content > * > .update-nag,
+				body.media_page_captain-media-shield #wpbody-content > * > div.error,
+				body.media_page_captain-media-shield #wpbody-content > * > div.updated,
+				body.media_page_captain-media-shield #wpbody-content > * > .is-dismissible,
+				body.media_page_captain-media-shield .notice:not(.capms-notice),
+				body.media_page_captain-media-shield .update-nag,
+				body.media_page_captain-media-shield div.error:not(.capms-notice),
+				body.media_page_captain-media-shield div.updated:not(.capms-notice),
+				body.media_page_captain-media-shield #wpbody-content > div[class*="notice"],
+				body.media_page_captain-media-shield #wpbody-content > div[class*="e-notice"],
+				body.media_page_captain-media-shield .e-notice,
+				body.media_page_captain-media-shield .elementor-message {
+					display: none !important;
+				}'
+			);
+
 			wp_enqueue_script( 'capms-admin-app', CAPMS_URL . 'build/index.js', $asset['dependencies'], $build_js_ver, true );
-			wp_set_script_translations( 'capms-admin-app', 'captain-media-shield' );
+			wp_set_script_translations( 'capms-admin-app', 'captain-media-shield', CAPMS_PATH . 'languages' );
 
 			wp_localize_script(
 				'capms-admin-app',
@@ -158,6 +221,37 @@ if ( ! class_exists( 'Capms_Menu' ) ) {
 					'backup_dir'    => 'wp-content/uploads/' . CAPMS_BACKUP_DIR_NAME . '/',
 				)
 			);
+		}
+
+		/**
+		 * Fallback loader for script translations with strict exact handle match only.
+		 *
+		 * @since 1.0.3
+		 * @param string|false $file   Path to the translation file or false.
+		 * @param string       $handle Script handle.
+		 * @param string       $domain Text domain.
+		 * @return string|false
+		 */
+		public function capms_load_script_translation_file( $file, $handle, $domain ) {
+			if ( 'captain-media-shield' !== $domain ) {
+				return $file;
+			}
+
+			if ( $file && file_exists( $file ) ) {
+				return $file;
+			}
+
+			// Strictly check exact handle file: languages/captain-media-shield-{locale}-{handle}.json
+			// No arbitrary glob fallback to prevent loading unrelated handle translations.
+			$locale     = determine_locale();
+			$lang_dir   = trailingslashit( CAPMS_PATH ) . 'languages/';
+			$exact_file = $lang_dir . $domain . '-' . $locale . '-' . $handle . '.json';
+
+			if ( file_exists( $exact_file ) ) {
+				return $exact_file;
+			}
+
+			return $file;
 		}
 	}
 

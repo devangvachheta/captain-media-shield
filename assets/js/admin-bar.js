@@ -166,11 +166,38 @@
             }
             if (cardBadge) {
                 cardBadge.className   = 'capms-bar-card-badge capms-bar-card-badge--amber';
-                cardBadge.textContent = unoptCount + ' Unoptimized';
+                cardBadge.textContent = i18n.partially_optimized || 'Needs Optimization';
             }
             if (descIcon) descIcon.textContent = '⚡';
             var template = i18n.needs_optimize_desc || '%d original image(s) on this page can be optimized.';
             descText.textContent = template.replace('%d', unoptCount);
+
+            // Handle Rewrite delivery (.htaccess / Nginx): verify if server serves Next-Gen under same URL
+            if (config.delivery_method === 'htaccess' && unoptItems.length > 0) {
+                var sampleUrl = unoptItems[0].src;
+                fetch(sampleUrl, { method: 'HEAD' })
+                    .then(function(res) {
+                        var ct = res.headers.get('content-type') || '';
+                        if (ct.indexOf('webp') !== -1 || ct.indexOf('avif') !== -1) {
+                            statNextGen.textContent = totalCount;
+                            statUnopt.textContent   = '0';
+                            if (topDot) {
+                                topDot.className = 'capms-bar-top-dot capms-bar-dot--green';
+                                topDot.title = i18n.all_optimized_desc || 'All images are delivered in Next Gen format via server rewrite.';
+                            }
+                            if (cardBadge) {
+                                cardBadge.className = 'capms-bar-card-badge capms-bar-card-badge--green';
+                                cardBadge.textContent = 'Rewrite Active';
+                            }
+                            if (descIcon) descIcon.textContent = '⚡';
+                            descText.textContent = i18n.rewrite_active_desc || 'Next-Gen delivery is active via server rewrite (.htaccess / Nginx). Images are served in WebP/AVIF automatically.';
+                            actionWrap.style.display = 'none';
+                            if (toolsRow) toolsRow.style.display = 'none';
+                            if (thumbListWrap) thumbListWrap.style.display = 'none';
+                        }
+                    })
+                    .catch(function() {});
+            }
 
             // Configure Tools Row based on mode
             if (toolsRow) {
@@ -207,7 +234,7 @@
                     row.className = 'capms-bar-thumb-item';
                     row.setAttribute('role', 'button');
                     row.setAttribute('tabindex', '0');
-                    row.title = 'Click to scroll & locate on page';
+                    row.title = (i18n.locate || 'Locate') + ' on page';
 
                     var imgEl = document.createElement('img');
                     imgEl.className = 'capms-bar-thumb-img';
@@ -224,7 +251,7 @@
                     var ext = (item.filename.split('.').pop() || 'IMG').toUpperCase();
                     var metaEl = document.createElement('span');
                     metaEl.className = 'capms-bar-thumb-meta';
-                    metaEl.textContent = ext + ' · Click to locate';
+                    metaEl.textContent = ext + ' · ' + (i18n.locate || 'Locate');
 
                     infoEl.appendChild(nameEl);
                     infoEl.appendChild(metaEl);
@@ -353,16 +380,16 @@
                                 window.location.reload();
                             }, 800);
                         } else {
-                            btnAction.textContent = (json.data && json.data.message) ? json.data.message : 'Images already up to date.';
+                            btnAction.textContent = (json.data && json.data.message) ? json.data.message : (i18n.images_up_to_date || 'Images already up to date.');
                             btnAction.disabled    = false;
                         }
                     } else {
-                        btnAction.textContent = (json && json.data && json.data.message) ? json.data.message : 'Optimization failed.';
+                        btnAction.textContent = (json && json.data && json.data.message) ? json.data.message : (i18n.opt_failed || 'Optimization failed.');
                         btnAction.disabled    = false;
                     }
                 })
                 .catch(function() {
-                    btnAction.textContent = 'Request failed. Check server.';
+                    btnAction.textContent = i18n.request_failed || 'Request failed. Check server.';
                     btnAction.disabled    = false;
                 });
             };

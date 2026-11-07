@@ -126,6 +126,12 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			if ( Capms_Settings::get( 'backup_enabled' ) ) {
 				$backup          = Capms_Backup::backup_file( $file );
 				$entry['backup'] = $backup ? $backup : '';
+				if ( $backup && $image && Capms_Settings::get( 'strip_metadata' ) ) {
+					$abs_backup = Capms_Backup::absolute( $backup );
+					if ( $abs_backup && is_file( $abs_backup ) ) {
+						Capms_Image_Optimizer::strip_metadata( $abs_backup, $mime );
+					}
+				}
 			}
 
 			if ( $image ) {
@@ -280,21 +286,31 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			set_transient( $lock_key, time(), 90 );
 
 			// Re-optimizing an already optimized item: restore untouched original from backup if available so we don't double-compress.
+			$skip_main_recompress = false;
 			if ( $force && $existing && 'optimized' === $existing['status'] ) {
+				$has_valid_backup = false;
 				if ( ! empty( $existing['backup_path'] ) ) {
 					$backup_abs = Capms_Backup::absolute( $existing['backup_path'] );
 					if ( $backup_abs && is_file( $backup_abs ) ) {
+						$has_valid_backup = true;
 						$uploads = wp_get_upload_dir();
 						$target  = trailingslashit( $uploads['basedir'] ) . $existing['backup_path'];
+						$copied  = false;
 						if ( wp_normalize_path( $target ) === wp_normalize_path( $file ) ) {
-							@copy( $backup_abs, $file );
+							$copied = @copy( $backup_abs, $file );
 						} elseif ( function_exists( 'wp_get_original_image_path' ) && ( $orig_path = wp_get_original_image_path( $attachment_id ) ) && wp_normalize_path( $target ) === wp_normalize_path( $orig_path ) ) {
-							@copy( $backup_abs, $orig_path );
+							$copied = @copy( $backup_abs, $orig_path );
 						} else {
-							@copy( $backup_abs, $file );
+							$copied = @copy( $backup_abs, $file );
+						}
+						if ( ! $copied ) {
+							delete_transient( $lock_key );
+							return new WP_Error( 'capms_backup_copy_failed', __( 'Could not restore original file from backup prior to re-optimization.', 'captain-media-shield' ) );
 						}
 					}
 				}
+				// If backup is missing or was purged, guard against generational degradation: do NOT re-compress the already compressed main original.
+				$skip_main_recompress = ! $has_valid_backup;
 				$old_meta = wp_get_attachment_metadata( $attachment_id );
 				self::remove_generated_files( $attachment_id, $file, $old_meta );
 			}
@@ -321,10 +337,15 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			}
 
 			$entry = array(
-				'original_size' => (int) filesize( $file ),
+				'original_size' => ( $existing && ! empty( $existing['original_size'] ) ) ? (int) $existing['original_size'] : (int) filesize( $file ),
 				'backup'        => '',
 				'recompressed'  => false,
 			);
+
+			$skip_main_recompress = false;
+			if ( $existing && 'optimized' === $existing['status'] && empty( $existing['backup_path'] ) ) {
+				$skip_main_recompress = true;
+			}
 
 			if ( Capms_Settings::get( 'backup_enabled' ) ) {
 				if ( ! empty( $existing['backup_path'] ) ) {
@@ -339,9 +360,11 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 			}
 
 			if ( Capms_Image_Optimizer::is_supported( $mime ) ) {
-				$this->start_editor_guard();
-				$entry['recompressed'] = Capms_Image_Optimizer::maybe_resize( $file, $mime );
-				$this->stop_editor_guard();
+				if ( empty( $skip_main_recompress ) ) {
+					$this->start_editor_guard();
+					$entry['recompressed'] = Capms_Image_Optimizer::maybe_resize( $file, $mime );
+					$this->stop_editor_guard();
+				}
 
 				$metadata = wp_get_attachment_metadata( $attachment_id );
 
@@ -364,7 +387,14 @@ if ( ! class_exists( 'Capms_Processor' ) ) {
 				$this->process_image( $attachment_id, is_array( $metadata ) ? $metadata : array(), $entry, true );
 				wp_update_attachment_metadata( $attachment_id, $this->refresh_filesizes( $attachment_id, $metadata ) );
 			} elseif ( Capms_Video_Optimizer::is_supported( $mime ) ) {
-				$this->process_video( $attachment_id, $entry );
+				if ( defined( 'WP_CLI' ) && WP_CLI ) {
+					$this->process_video( $attachment_id, $entry );
+				} else {
+					$this->queue_video( $attachment_id, $entry );
+					if ( function_exists( 'spawn_cron' ) ) {
+						spawn_cron();
+					}
+				}
 			} else {
 				delete_transient( $lock_key );
 				return new WP_Error( 'capms_unsupported', __( 'Unsupported file type.', 'captain-media-shield' ) );

@@ -192,7 +192,7 @@ if ( ! class_exists( 'Capms_Settings' ) ) {
 						break;
 
 					case 'admin_bar_inspector_mode':
-						$clean[ $key ] = in_array( (string) $value, array( 'list', 'highlight', 'both' ), true ) ? (string) $value : 'list';
+						$clean[ $key ] = in_array( (string) $value, array( 'list', 'highlight', 'both' ), true ) ? (string) $value : $current[ $key ];
 						break;
 
 					case 'video_resolution':
@@ -301,7 +301,7 @@ if ( ! class_exists( 'Capms_Settings' ) ) {
 				$file = get_attached_file( $attachment_id );
 			}
 			if ( ! $file ) {
-				return false;
+				return (bool) apply_filters( 'capms_is_excluded', false, $attachment_id, $file );
 			}
 
 			$uploads  = wp_get_upload_dir();
@@ -317,7 +317,14 @@ if ( ! class_exists( 'Capms_Settings' ) ) {
 				}
 
 				if ( false !== strpbrk( $pattern, '*?' ) ) {
-					if ( function_exists( 'fnmatch' ) && ( fnmatch( $pattern, $relative ) || fnmatch( '*' . $pattern, $relative ) ) ) {
+					$matched = false;
+					if ( function_exists( 'fnmatch' ) ) {
+						$matched = fnmatch( $pattern, $relative ) || fnmatch( '*' . $pattern, $relative ) || fnmatch( $pattern . '*', $relative );
+					} else {
+						$regex   = '#^.*?' . str_replace( array( '\*', '\?' ), array( '.*', '.' ), preg_quote( $pattern, '#' ) ) . '.*$#i';
+						$matched = (bool) preg_match( $regex, $relative );
+					}
+					if ( $matched ) {
 						return true;
 					}
 				} elseif ( false !== strpos( $relative, $pattern ) ) {

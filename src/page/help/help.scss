@@ -182,6 +182,159 @@
         }
     }
 
+    // ── Video Tutorials (1 row, 4 small cards) ────────────────────
+    .capms-help-videos {
+        margin-bottom: 32px;
+
+        .capms-help-videos-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .capms-help-video-card {
+            background: var(--capms-bg-card, var(--capms-bg-primary));
+            border: 1px solid var(--capms-border);
+            border-radius: $rs_medium;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: $transition;
+
+            &:hover {
+                border-color: var(--capms-primary);
+                box-shadow: 0 4px 14px rgba(34, 113, 177, 0.1);
+            }
+
+            .capms-help-video-media {
+                position: relative;
+                width: 100%;
+                padding-top: 56.25%; /* 16:9 ratio */
+                border-radius: $rs_small;
+                overflow: hidden;
+                background: #000;
+
+                iframe,
+                .capms-help-video-poster {
+                    position: absolute;
+                    inset: 0;
+                    width: 100%;
+                    height: 100%;
+                    border: 0;
+                }
+
+                .capms-help-video-poster {
+                    padding: 0;
+                    margin: 0;
+                    cursor: pointer;
+                    background: #000;
+                    display: block;
+                    border: none;
+                    outline: none;
+
+                    .capms-help-video-local-poster {
+                        position: absolute;
+                        inset: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 16px;
+                        gap: 10px;
+                        box-sizing: border-box;
+
+                        .capms-help-video-brand-badge {
+                            position: absolute;
+                            top: 10px;
+                            left: 10px;
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 5px;
+                            background: rgba(0, 0, 0, 0.55);
+                            backdrop-filter: blur(4px);
+                            padding: 3px 8px;
+                            border-radius: 999px;
+                            font-size: 11px;
+                            font-weight: 600;
+                            color: #f1f5f9;
+
+                            svg {
+                                width: 14px;
+                                height: 14px;
+                                flex-shrink: 0;
+                            }
+                        }
+
+                        .capms-help-video-play {
+                            position: relative;
+                            top: auto;
+                            left: auto;
+                            transform: none;
+                            width: 52px;
+                            height: 36px;
+                            transition: transform 0.2s ease;
+
+                            svg {
+                                display: block;
+                                width: 100%;
+                                height: 100%;
+                                filter: drop-shadow(0 4px 12px rgba(255, 0, 0, 0.45));
+                            }
+                        }
+
+                        .capms-help-video-prompt {
+                            font-size: 11.5px;
+                            font-weight: 500;
+                            color: #94a3b8;
+                            text-align: center;
+                            line-height: 1.3;
+                        }
+                    }
+
+                    &:hover .capms-help-video-local-poster .capms-help-video-play {
+                        transform: scale(1.1);
+                    }
+                }
+            }
+
+            h4 {
+                font-size: 13.5px;
+                font-weight: 600;
+                color: var(--capms-text-primary);
+                margin: 0;
+                line-height: 1.35;
+            }
+
+            p {
+                font-size: 12px;
+                color: var(--capms-text-secondary);
+                margin: 0;
+                line-height: 1.45;
+            }
+        }
+
+        .capms-help-video-privacy-note {
+            margin-top: 12px;
+            font-size: 11.5px;
+            color: var(--capms-text-muted);
+            line-height: 1.4;
+
+            a {
+                color: var(--capms-primary, #2271b1);
+                text-decoration: none;
+                font-weight: 500;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+
     // ── FAQ ────────────────────────────────────────────────────────
     .capms-help-faq {
         background: var(--capms-bg-card, var(--capms-bg-primary));
@@ -253,7 +406,8 @@
 }
 
 @media (max-width: 1200px) {
-    .capms-help-wrapper .capms-help-social-cards {
+    .capms-help-wrapper .capms-help-social-cards,
+    .capms-help-wrapper .capms-help-videos .capms-help-videos-grid {
         grid-template-columns: repeat(2, 1fr) !important;
     }
 }
@@ -261,7 +415,8 @@
 @media (max-width: $bp_tablet) {
     .capms-help-wrapper {
         .capms-help-cards,
-        .capms-help-social-cards {
+        .capms-help-social-cards,
+        .capms-help-videos .capms-help-videos-grid {
             grid-template-columns: 1fr !important;
         }
         padding: 16px;

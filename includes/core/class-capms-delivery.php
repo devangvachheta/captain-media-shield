@@ -76,6 +76,13 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 				add_filter( 'widget_block_content', array( $this, 'capms_filter_html' ), 999 );
 				add_filter( 'wp_get_attachment_image', array( $this, 'capms_filter_html' ), 999 );
 				add_filter( 'woocommerce_single_product_image_thumbnail_html', array( $this, 'capms_filter_html' ), 999 );
+				add_filter( 'woocommerce_product_get_image', array( $this, 'capms_filter_html' ), 999 );
+				add_filter( 'woocommerce_cart_item_thumbnail', array( $this, 'capms_filter_html' ), 999 );
+				add_filter( 'get_custom_logo', array( $this, 'capms_filter_html' ), 999 );
+				add_filter( 'get_header_image_tag', array( $this, 'capms_filter_html' ), 999 );
+				add_filter( 'render_block', array( $this, 'capms_filter_html' ), 999 );
+				add_filter( 'rest_prepare_post', array( $this, 'capms_filter_rest_post' ), 999, 3 );
+				add_filter( 'rest_prepare_page', array( $this, 'capms_filter_rest_post' ), 999, 3 );
 			}
 
 			if ( ! is_admin() && ( Capms_Settings::get( 'webm_enabled' ) || Capms_Settings::get( 'video_poster' ) ) ) {
@@ -222,7 +229,7 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 		 * @return string
 		 */
 		public function capms_filter_html( $html ) {
-			if ( ! is_string( $html ) || false === stripos( $html, '<img' ) || is_feed() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) || ( function_exists( 'wp_is_json_request' ) && wp_is_json_request() ) ) {
+			if ( ! is_string( $html ) || false === stripos( $html, '<img' ) || is_feed() ) {
 				return $html;
 			}
 
@@ -236,6 +243,27 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 			}
 
 			return implode( '', $parts );
+		}
+
+		/**
+		 * Filter REST API responses to deliver Next-Gen pictures in rendered post/page content.
+		 *
+		 * @since 1.0.2
+		 * @param WP_REST_Response $response Response object.
+		 * @param WP_Post          $post     Post object.
+		 * @param WP_REST_Request  $request  Request object.
+		 * @return WP_REST_Response
+		 */
+		public function capms_filter_rest_post( $response, $post, $request ) {
+			unset( $post, $request );
+			if ( ! is_wp_error( $response ) && is_object( $response ) && method_exists( $response, 'get_data' ) && method_exists( $response, 'set_data' ) ) {
+				$data = $response->get_data();
+				if ( isset( $data['content']['rendered'] ) && is_string( $data['content']['rendered'] ) ) {
+					$data['content']['rendered'] = $this->capms_filter_html( $data['content']['rendered'] );
+					$response->set_data( $data );
+				}
+			}
+			return $response;
 		}
 
 		/**
@@ -340,9 +368,6 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 			$baseurl = set_url_scheme( $this->uploads['baseurl'] );
 			$url     = set_url_scheme( $url );
 
-			if ( 0 === strpos( $url, '//' ) ) {
-				$url = ( is_ssl() ? 'https:' : 'http:' ) . $url;
-			}
 			if ( 0 !== strpos( $url, $baseurl ) ) {
 				return false;
 			}
@@ -521,11 +546,19 @@ if ( ! class_exists( 'Capms_Delivery' ) ) {
 				$try[]   = '$uri$capms_webp';
 			}
 			$lines[] = '';
-			$lines[] = '# 2) Add this location block inside your server { } block, then reload Nginx.';
+			$lines[] = '# 2) In your server { } block, declare Vary Accept so upstream caches separate formats:';
+			$lines[] = 'add_header Vary Accept;';
+			$lines[] = '';
+			$lines[] = '# 3) Add this location block inside the same server { } block, then reload Nginx.';
 			$lines[] = '#    Make sure your mime.types file contains image/avif (avif) and image/webp (webp).';
 			$lines[] = 'location ~* ^' . $regex . '/.+\.(jpe?g|png)$ {';
-			$lines[] = '    add_header Vary Accept;';
 			$lines[] = '    try_files ' . implode( ' ', $try ) . ' $uri =404;';
+			$lines[] = '}';
+			$lines[] = '';
+			$lines[] = '# 4) Block direct web access to original backups on Nginx:';
+			$lines[] = 'location ^~ ' . $path . '/captain-ms-backups {';
+			$lines[] = '    deny all;';
+			$lines[] = '    return 403;';
 			$lines[] = '}';
 
 			return implode( "\n", $lines );

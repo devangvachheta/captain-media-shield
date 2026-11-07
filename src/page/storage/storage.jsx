@@ -137,7 +137,7 @@ const Storage = () => {
                             <Section title={ __( 'By file type', 'captain-media-shield' ) }>
                                 <div className="capms-cl-body"><Bars rows={ types } total={ total } /></div>
                             </Section>
-                            <Section title={ __( 'By upload year (largest)', 'captain-media-shield' ) }>
+                            <Section title={ __( 'By upload folder / year', 'captain-media-shield' ) }>
                                 <div className="capms-cl-body"><Bars rows={ folders } total={ total } /></div>
                             </Section>
                         </div>

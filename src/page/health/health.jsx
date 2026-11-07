@@ -17,12 +17,23 @@ const Line = ( { label, children, hint } ) => (
 const Health = () => {
     const [ env, setEnv ]         = useState( null );
     const [ loading, setLoading ] = useState( false );
+    const [ error, setError ]     = useState( '' );
 
     const load = async ( refresh = false ) => {
         setLoading( true );
-        const result = await ajax( 'get_environment', refresh ? { refresh: 1 } : {} );
-        setLoading( false );
-        if ( result.success ) setEnv( result.data );
+        setError( '' );
+        try {
+            const result = await ajax( 'get_environment', refresh ? { refresh: 1 } : {} );
+            if ( result && result.success ) {
+                setEnv( result.data );
+            } else {
+                setError( result?.data?.message || __( 'Could not retrieve server health details.', 'captain-media-shield' ) );
+            }
+        } catch ( err ) {
+            setError( err?.message || __( 'Server error while checking environment.', 'captain-media-shield' ) );
+        } finally {
+            setLoading( false );
+        }
     };
 
     useEffect( () => {
@@ -42,6 +53,8 @@ const Health = () => {
                 }
             />
 
+            { error && <Notice tone="error">{ error }</Notice> }
+
             { ! env ? <Skeleton height={ 320 } /> : (
                 <div className="capms-settings-sections">
                     { ! env.uploads_writable && (
@@ -54,15 +67,15 @@ const Health = () => {
                                 <Line label={ __( 'GD Library', 'captain-media-shield' ) } hint={ env.gd_version }><StatusPill ok={ env.gd } yes={ __( 'Installed', 'captain-media-shield' ) } no={ __( 'Missing', 'captain-media-shield' ) } /></Line>
                                 <Line label={ __( 'GD WebP / AVIF', 'captain-media-shield' ) }>
                                     <span className="capms-pill-pair">
-                                        <StatusPill ok={ env.gd_webp } yes="WebP" no="WebP" />
-                                        <StatusPill ok={ env.gd_avif } yes="AVIF" no="AVIF" />
+                                        <StatusPill ok={ env.gd_webp } yes={ __( 'WebP Supported', 'captain-media-shield' ) } no={ __( 'WebP Missing', 'captain-media-shield' ) } />
+                                        <StatusPill ok={ env.gd_avif } yes={ __( 'AVIF Supported', 'captain-media-shield' ) } no={ __( 'AVIF Missing', 'captain-media-shield' ) } />
                                     </span>
                                 </Line>
                                 <Line label={ __( 'Imagick', 'captain-media-shield' ) } hint={ env.imagick_version }><StatusPill ok={ env.imagick } yes={ __( 'Installed', 'captain-media-shield' ) } no={ __( 'Missing', 'captain-media-shield' ) } /></Line>
                                 <Line label={ __( 'Imagick WebP / AVIF', 'captain-media-shield' ) }>
                                     <span className="capms-pill-pair">
-                                        <StatusPill ok={ env.imagick_webp } yes="WebP" no="WebP" />
-                                        <StatusPill ok={ env.imagick_avif } yes="AVIF" no="AVIF" />
+                                        <StatusPill ok={ env.imagick_webp } yes={ __( 'WebP Supported', 'captain-media-shield' ) } no={ __( 'WebP Missing', 'captain-media-shield' ) } />
+                                        <StatusPill ok={ env.imagick_avif } yes={ __( 'AVIF Supported', 'captain-media-shield' ) } no={ __( 'AVIF Missing', 'captain-media-shield' ) } />
                                     </span>
                                 </Line>
                                 <Line label={ __( 'WebP output (WordPress)', 'captain-media-shield' ) }><StatusPill ok={ env.webp } /></Line>

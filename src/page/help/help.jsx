@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import './help.scss';
+import { OVERVIEW_VIDEO_URL, VIDEO_TUTORIALS, youtubeEmbedUrl } from '../../constants/videos.js';
 
 const IconDiscord = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -34,6 +35,7 @@ const SOCIAL_LINKS = {
 };
 
 const Help = () => {
+    const [ playingVideo, setPlayingVideo ] = useState( null );
     const faqs = [
         {
             question: __( 'How does Captain Media Shield optimize images?', 'captain-media-shield' ),
@@ -76,7 +78,7 @@ const Help = () => {
             title: __( 'YouTube Video Tutorials', 'captain-media-shield' ),
             desc: __( 'Watch step-by-step visual setup tutorials, feature tours, and walkthroughs.', 'captain-media-shield' ),
             linkText: __( 'Watch on YouTube', 'captain-media-shield' ),
-            href: SOCIAL_LINKS.youtube,
+            href: OVERVIEW_VIDEO_URL,
         },
         {
             icon: <IconX />,
@@ -172,6 +174,60 @@ const Help = () => {
                         </span>
                     </a>
                 ) ) }
+            </div>
+
+            <div className="capms-help-videos">
+                <div className="capms-help-section-header">
+                    <h2 className="capms-help-section-title">{ __( 'Video Tutorials', 'captain-media-shield' ) }</h2>
+                    <p className="capms-help-section-subtitle">{ __( 'Step-by-step visual guides to get the most out of Captain Media Shield.', 'captain-media-shield' ) }</p>
+                </div>
+
+                <div className="capms-help-videos-grid">
+                    { VIDEO_TUTORIALS.map( ( video, idx ) => (
+                        <div className="capms-help-video-card" key={ idx }>
+                            <div className="capms-help-video-media">
+                                { playingVideo === idx ? (
+                                    <iframe
+                                        src={ `${ youtubeEmbedUrl( video.id ) }?autoplay=1` }
+                                        title={ video.title }
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                    />
+                                ) : (
+                                    <button
+                                        type="button"
+                                        className="capms-help-video-poster"
+                                        onClick={ () => setPlayingVideo( idx ) }
+                                        aria-label={ `${ __( 'Play video:', 'captain-media-shield' ) } ${ video.title }` }
+                                    >
+                                        <div className="capms-help-video-local-poster">
+                                            <div className="capms-help-video-brand-badge">
+                                                <IconYouTube />
+                                                <span>YouTube</span>
+                                            </div>
+                                            <span className="capms-help-video-play" aria-hidden="true">
+                                                <svg viewBox="0 0 68 48">
+                                                    <path d="M66.5 7.7c-.8-2.9-2.9-5.2-5.8-6C55.8 0 34 0 34 0S12.2 0 7.3 1.6C4.4 2.4 2.3 4.8 1.5 7.7 0 12.6 0 24 0 24s0 11.4 1.5 16.3c.8 2.9 2.9 5.2 5.8 6C12.2 48 34 48 34 48s21.8 0 26.7-1.6c2.9-.8 5-3.1 5.8-6C68 35.4 68 24 68 24s0-11.4-1.5-16.3z" fill="#ff0000" />
+                                                    <path d="M27 34l18-10-18-10v20z" fill="#fff" />
+                                                </svg>
+                                            </span>
+                                            <span className="capms-help-video-prompt">{ __( 'Click to play tutorial', 'captain-media-shield' ) }</span>
+                                        </div>
+                                    </button>
+                                ) }
+                            </div>
+                            <h4>{ video.title }</h4>
+                            <p>{ video.desc }</p>
+                        </div>
+                    ) ) }
+                </div>
+                <p className="capms-help-video-privacy-note">
+                    { __( 'Privacy Note: Clicking play connects to YouTube (Google LLC) and may send your IP address. No cookies or external requests occur before clicking play.', 'captain-media-shield' ) }
+                    { ' · ' }
+                    <a href={ OVERVIEW_VIDEO_URL } target="_blank" rel="noopener noreferrer">
+                        { __( 'Watch directly on YouTube ↗', 'captain-media-shield' ) }
+                    </a>
+                </p>
             </div>
 
             <div className="capms-help-faq">

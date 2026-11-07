@@ -36,7 +36,7 @@ if ( ! class_exists( 'Capms_Image_Optimizer' ) ) {
 		 *
 		 * @var array
 		 */
-		const SUPPORTED_MIMES = array( 'image/jpeg', 'image/png' );
+		const SUPPORTED_MIMES = array( 'image/jpeg', 'image/png', 'image/gif' );
 
 		/**
 		 * Get effective image quality for an attachment (custom per-image override or global default).

@@ -4,7 +4,7 @@ import { __ } from '@wordpress/i18n';
 import useSettings from '../../hooks/useSettings.js';
 import { ajax } from '../../services/api.js';
 import { setSettingsData } from '../../redux/slice.jsx';
-import { PageHeader, TabBar, Section, ToggleRow, SelectRow, Row, SaveBar, Notice, Pill, StatusPill, Skeleton } from '../../components/ui.jsx';
+import { PageHeader, TabBar, Section, ToggleRow, SelectRow, Row, Notice, Pill, StatusPill, Skeleton } from '../../components/ui.jsx';
 import { IconVideo, IconZap, IconMusic, IconShield, IconTerminal, IconRefresh, IconSliders } from '../../components/icons.jsx';
 
 const KEYS = [ 'video_enabled', 'webm_enabled', 'faststart_enabled', 'video_resolution', 'audio_bitrate', 'video_strip_meta', 'ffmpeg_path', 'video_poster', 'gif_to_video' ];

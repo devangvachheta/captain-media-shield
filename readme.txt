@@ -1,10 +1,10 @@
 === Captain Media Shield ===
 Contributors: devangvachheta
 Tags: image optimizer, webp converter, avif converter, media cleanup, speed optimization
-Requires at least: 6.0
-Tested up to: 7.1
+Requires at least: 6.6
+Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,12 +16,17 @@ Optimize images and videos on your own server, then reclaim disk space: find unu
 
 Everything runs 100% on your own hosting server - no external APIs, no image credits, no third-party accounts, and zero monthly subscriptions.
 
-[YouTube Tutorials](https://www.youtube.com/@captaininfokit) | [Free Support](https://wordpress.org/support/plugin/captain-media-shield)
+https://www.youtube.com/watch?v=yUrMv-WrrrU
+
+[Official Plugin Page](https://wordpress.org/plugins/captain-media-shield/) | [YouTube Tutorials](https://www.youtube.com/@captaininfokit) | [Free Support](https://wordpress.org/support/plugin/captain-media-shield)
 
 <strong>🛡️ Why Choose Captain Media Shield?</strong>
 
 * <strong>100% Free & Unlimited</strong> : No third-party API dependencies, no monthly quotas, and no subscription paywalls. Optimize thousands of images and videos without worrying about limits.
 * <strong>Next Generation WebP & AVIF Formats</strong> : Generate ultra-compact WebP and AVIF copies for original images and every registered thumbnail size.
+* <strong>Live Page Media Inspector (Admin Bar)</strong> : Real-time media analysis from your front-end top toolbar with instant highlight on page and 1-click batch optimization.
+* <strong>In-Browser Upload Rescue Assistant</strong> : Automatically downscales oversized images directly in the browser when they exceed hosting upload limits.
+* <strong>Server Limit Booster Guide</strong> : Interactive helper with ready directives for Apache, .htaccess, and php.ini to boost upload and execution limits.
 * <strong>Per-Image Custom Quality Override</strong> : Set global compression quality (1-100) or override quality for any individual image directly from the Media Library list view via the Quick Quality modal.
 * <strong>Media Cleanup & Storage Saver</strong> : Safely detect and clean orphaned media, byte-for-byte MD5 duplicate files, and leftover legacy thumbnails from retired themes.
 * <strong>Storage Diagnostics & Report</strong> : Visual breakdown of your entire uploads directory by file category, file extension, upload year, and largest files.
@@ -34,9 +39,9 @@ Everything runs 100% on your own hosting server - no external APIs, no image cre
 <strong>📸 Next Generation Image Optimization & Delivery</strong>
 
 * <strong>Automated Next Generation Conversion</strong> : Converts JPEG and PNG uploads to high-efficiency WebP and AVIF copies.
-* <strong>Compression Quality Slider</strong> : Choose your default quality sweet spot (1-100) with recommended presets (Balanced, Aggressive, Near-lossless).
+* <strong>Compression Quality Slider</strong> : Choose your default quality sweet spot (1-100) with recommended presets (Balanced, Aggressive, High Quality).
 * <strong>Media Library Quick Quality Modal</strong> : Click "Quick Quality" on any list-view item to adjust quality (e.g. 40-50% for heavy graphics) and re-optimize instantly.
-* <strong>Privacy & EXIF Metadata Removal</strong> : Losslessly strips camera EXIF data, GPS coordinates, IPTC, and editing history while preserving colour profiles.
+* <strong>Privacy & EXIF Metadata Removal</strong> : Strips camera EXIF data, GPS coordinates, IPTC, and editing history while preserving colour profiles.
 * <strong>Auto-Resize Large Uploads</strong> : Automatically scales down oversized camera images (e.g. 4000px+) before thumbnails are generated.
 * <strong>Flexible Delivery Methods</strong> : Serve Next Generation formats via high-speed <code>.htaccess</code> rewrite rules (Apache/LiteSpeed) or HTML <code>&lt;picture&gt;</code> tag replacement.
 * <strong>Nginx Configuration Generator</strong> : Ready-to-copy server configuration snippet for seamless Next Generation delivery on Nginx servers.
@@ -108,6 +113,7 @@ Everything runs 100% on your own hosting server - no external APIs, no image cre
 
 == YouTube Tutorials ==
 
+* [Captain Media Shield - Full Plugin Overview & Tutorial](https://www.youtube.com/watch?v=yUrMv-WrrrU) : Complete video walkthrough covering Next Generation WebP/AVIF setup, Media Library Quick Quality, Video compression with FastStart streaming, and Deep Media Cleanup.
 * [Captain InfoKit - Official YouTube Channel](https://www.youtube.com/@captaininfokit) : Subscribe to our official YouTube channel for step-by-step video tutorials, media optimization walkthroughs, performance tips, and WordPress server setup guides.
 
 == 🌟 OUR PRODUCTS ==
@@ -123,6 +129,28 @@ Everything runs 100% on your own hosting server - no external APIs, no image cre
 <strong>[🥇 Captain Funnel](https://wordpress.org/plugins/captain-funnel)</strong> : Automate WhatsApp messages for WooCommerce orders and form submissions using the official WhatsApp Cloud API by Meta.
 
 <strong>[🥇 Captain Live Chat](https://wordpress.org/plugins/captain-live-chat)</strong> : Self-hosted live chat for WordPress with an AI agent, canned replies and full conversation history - no monthly subscription.
+
+== WP-CLI Commands ==
+
+Manage image optimization and disk cleanup directly from your terminal:
+
+* `wp capms optimize` : Optimizes unoptimized media in your library.
+* `wp capms optimize --type=image` : Optimizes only image files.
+* `wp capms optimize --type=video` : Optimizes only video files.
+* `wp capms optimize --retry-failed` : Retries any previously failed or skipped files.
+* `wp capms optimize --ids=101,102,103` : Optimizes specific media attachments.
+* `wp capms restore <id>...` : Restores original files for specified attachment IDs.
+* `wp capms status` : Displays summary of optimized media, storage savings, and format breakdown.
+* `wp capms cleanup unused` : Finds and removes media not used across posts, pages, or WooCommerce.
+* `wp capms cleanup duplicates` : Finds and cleans byte-for-byte identical files.
+* `wp capms cleanup thumbs` : Removes unregistered and obsolete thumbnail files.
+* `wp capms purge_backups` : Deletes all original backups to permanently reclaim disk space.
+
+== Privacy & Security ==
+
+* <strong>100% On-Server Processing</strong> : All compression and conversion tasks run entirely on your local server. No image, video, metadata, or telemetry data is ever sent to external third parties.
+* <strong>EXIF & GPS Stripping</strong> : Removes sensitive location data, device models, and camera profiles before saving or serving images.
+* <strong>Protected Backups</strong> : Backups are stored in a dedicated directory protected by Apache `.htaccess` and Nginx server denial directives to prevent direct public access.
 
 == Installation ==
 
@@ -144,7 +172,7 @@ Everything runs 100% on your own hosting server - no external APIs, no image cre
 
 = Can I set different compression quality for specific images? =
 
-Yes! While the global compression quality slider sets the default quality for all uploads (recommended: 75-80%), you can override quality for any individual image directly in the Media Library list view via the <strong>Quick Quality</strong> modal or in the attachment edit screen. You can set aggressive compression (e.g. 40-50%) for heavy banner graphics or near-lossless (90-95%) for sensitive photography.
+Yes! While the global compression quality slider sets the default quality for all uploads (recommended: 75-80%), you can override quality for any individual image directly in the Media Library list view via the <strong>Quick Quality</strong> modal or in the attachment edit screen. You can set aggressive compression (e.g. 40-50%) for heavy banner graphics or high quality (90-95%) for sensitive photography.
 
 = I converted my images but I cannot find any .webp files. Where are they? =
 
@@ -190,6 +218,18 @@ Yes, in a positive way! By serving WebP/AVIF and compressing large images, your 
 
 Upon deactivation or uninstallation, the plugin cleans up its database tables and scheduled events. Your original media files, converted Next Generation copies, and backups remain completely untouched on your server unless you choose to purge them.
 
+= How does the Admin Bar Page Media Inspector work? =
+
+When logged in as an administrator, the Page Media Inspector appears in your WordPress top toolbar on front-end pages. It scans all image elements rendered on the page, categorizing them into Next Generation (WebP/AVIF) and Original (JPG/PNG). You can click "Highlight on Page" to visually locate unoptimized images, or click "Optimize Page Images" to optimize all detected media in one click.
+
+= How does the Media Upload Rescue Assistant work? =
+
+If your web hosting imposes a low upload limit (e.g. 2 MB or 8 MB) and you attempt to upload a large camera photo (e.g. 15 MB), the built-in Rescue Assistant automatically steps in right inside your browser. It uses modern HTML5 canvas technology to downscale the image to web dimensions before sending it to WordPress, preventing frustrating HTTP 413 or 500 server errors.
+
+= Does Captain Media Shield send any data or images to external servers? =
+
+No. Never. Captain Media Shield operates 100% independently on your own web server using native PHP extensions (GD / Imagick) and local FFmpeg. Your media files, database records, and site information never leave your hosting server.
+
 == Screenshots ==
 
 1. Analytics & Server Health Dashboard: Visual storage savings overview, compression ratio, active Next Generation formats, and server environment status.
@@ -201,14 +241,35 @@ Upon deactivation or uninstallation, the plugin cleans up its database tables an
 
 == Changelog ==
 
+= 1.0.3 (07/11/2026) =
+
+* Fix: Plugin Uninstallation : Resolved "Deletion failed:" error when deleting the plugin from WordPress admin by ensuring uninstall.php safely yields execution control back to WordPress filesystem cleanup.
+* Fix: Video HDR Tone-Mapping & Stream Mapping : Added Hable tone-mapping for HDR/HEVC video conversion to standard 8-bit BT.709 SDR to prevent washed-out colors. Preserved stream rotation/display matrix metadata via `-map_metadata:g -1` and dropped extra foreign/commentary audio tracks.
+* Fix: First-Generation WebM Encoding : Reversed video companion pipeline order so WebM is encoded directly from the original source file, completely eliminating double-lossy recompression.
+* Fix: Quick Quality Modal Live Row Synchronization : Ensured all row action links across the Media Library list view immediately update their data attributes and quality indicators after saving in the Quick Quality modal.
+* Fix: Admin Page Notice Isolation : Suppressed third-party plugin notices (Elementor, WooCommerce, update nags) on Captain Media Shield admin screen to ensure a clean, uncluttered interface.
+* Fix: Privacy & GPS Metadata in Backups : Automatically strip camera EXIF/GPS coordinate metadata from original backup files when metadata stripping is enabled.
+* Fix: Re-compression Degradation Guard : Safeguard already compressed original images from generational quality degradation if re-optimized after backup purge.
+* Fix: Async Video Processing : Transition video optimization from synchronous AJAX requests to WP-Cron background queue to avoid gateway timeouts on large media.
+* Fix: Extended Picture Tag Delivery : Integrated responsive <picture> delivery filters for WooCommerce product/cart thumbnails, Full Site Editing block themes, and REST API rendered content.
+* Fix: Safety Copies for Intermediate Sub-sizes : Ensure intermediate thumbnail sizes are preserved alongside the original image in the deleted safety archive.
+* Fix: Unused Thumbnail Cleanup Safety : Added one-click safety backup toggle and automatic pre-selection on unused thumbnail scans.
+* Fix: Admin Bar Rewrite Detection : Accurate detection of Apache/Nginx URL rewrite delivery in the Admin Bar inspector to avoid false "Needs Optimization" indicators.
+* Improve: Admin Bar Real Dark Mode & Accessibility : Added real dark mode theme styling, `@media (prefers-reduced-motion: reduce)`, and 480px mobile breakpoint to admin-bar.css.
+* Improve: Video Tutorials UI : Added a dedicated 4-card compact video tutorial section to the Help page and a quick "Watch Tutorial" link button in the Analytics & Server Health header.
+* Improve: Full POT Internationalization : Complete language template regeneration with 640+ translation keys.
+
 = 1.0.2 (06/11/2026) =
 
+* New: WP-CLI Integration : Full command-line support with `wp capms optimize`, `wp capms restore`, `wp capms stats`, and `wp capms cleanup` for automated headless server management.
+* New: Animated GIF to MP4/WebM Conversion : Seamlessly convert bulky animated GIFs into lightweight MP4 and WebM video loops, saving up to 90% disk space while keeping animation smooth.
 * New: Media Limit Bypass : Automatically resizes oversized image uploads (exceeding limits like 2 MB) directly in-browser for seamless WordPress uploads.
 * New: Server Limit Booster Guide : Interactive popup modal with quick Apache/htaccess and php.ini directives to boost upload limit, including WAMP/local server quick steps.
 * New: Front-End Admin Bar Click Protection : Prevents accidental page redirects when hovering over the Media Shield top admin bar node on front-end pages.
 * Improve: Bulk Media Optimizer Celebratory UI : Re-engineered bulk optimizer completion state with brand blue styling, celebratory badge, and high-contrast green progress bar.
 * Improve: Single Attachment Edit Layout : Optimized single media edit page (`post.php?action=edit`) to render spacious, comfortable full-width card controls while preserving compact sidebar display in modal view.
 * Fix: Prevent plupload prototype collision and optimize mutation observer on WordPress upload screens.
+* Fix: Salted secure backup root directory protection with dedicated Nginx and Apache deny directives.
 * Fix: Minor UI polish, responsive layout refinements, and code stability enhancements.
 
 = 1.0.1 (04/11/2026) =
@@ -231,7 +292,7 @@ Upon deactivation or uninstallation, the plugin cleans up its database tables an
 = 1.0.0 (03/11/2026) =
 
 * Initial release.
-* New: Automated conversion : Automated Next Generation image conversion (WebP and AVIF) with lossless visual quality retention.
+* New: Automated conversion : Automated Next Generation image conversion (WebP and AVIF) with optimized visual quality retention.
 * New: Per-image custom compression : Per-image custom compression quality override and inline Quick Quality modal in Media Library list view.
 * New: Modern tabbed navigation : Modern tabbed navigation on Images & Formats and Video & Streaming settings pages to eliminate page scrolling.
 * New: Top-right header actions : Top-right header actions with "Save Changes", "Reset to Defaults", and status notifications.
@@ -252,6 +313,9 @@ Upon deactivation or uninstallation, the plugin cleans up its database tables an
 * New: Comprehensive WordPress Multisite : Comprehensive WordPress Multisite (WPMU) support.
 
 == Upgrade Notice ==
+
+= 1.0.3 =
+Version 1.0.3 fixes the plugin deletion error on WordPress admin, enhances backup privacy with EXIF stripping, adds generational compression guards, background video queuing, WooCommerce and FSE theme picture delivery, and accessibility improvements.
 
 = 1.0.2 =
 Version 1.0.2 introduces the in-browser Media Upload Rescue Assistant for oversized images, Server Limit Booster guide, improved Bulk Optimizer completion screen, and single attachment edit layout improvements.

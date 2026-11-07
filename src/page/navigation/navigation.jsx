@@ -6,7 +6,7 @@ import { __ } from '@wordpress/i18n';
 import { toggleTheme, toggleSidebar } from '../../redux/slice.jsx';
 import { IconDashboard, IconImage, IconVideo, IconBackup, IconBulk, IconHealth, IconDocs, IconDatabase, IconTrash, IconHelp, IconProducts, IconGear } from '../../components/icons.jsx';
 
-const PLUGIN_VERSION = ( typeof capms_data !== 'undefined' && capms_data?.capms_version ) ? capms_data.capms_version : '1.0.2';
+const PLUGIN_VERSION = ( typeof capms_data !== 'undefined' && capms_data?.capms_version ) ? capms_data.capms_version : '1.0.3';
 
 const IconChevron = ( { open } ) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
@@ -134,7 +134,9 @@ const Navigation = () => {
 
                     <div className="capms-nav-group">
                         <button
+                            type="button"
                             className={ `capms-nav-group-header ${ optimizeOpen ? 'capms-nav-group-header--open' : '' }` }
+                            aria-expanded={ optimizeOpen }
                             onClick={ () => setOptimizeOpen( ( o ) => ! o ) }
                         >
                             <span className="capms-nav-group-label">{ __( 'Optimization', 'captain-media-shield' ) }</span>
@@ -156,7 +158,9 @@ const Navigation = () => {
 
                     <div className="capms-nav-group">
                         <button
+                            type="button"
                             className={ `capms-nav-group-header ${ toolsOpen ? 'capms-nav-group-header--open' : '' }` }
+                            aria-expanded={ toolsOpen }
                             onClick={ () => setToolsOpen( ( o ) => ! o ) }
                         >
                             <span className="capms-nav-group-label">{ __( 'Storage & System', 'captain-media-shield' ) }</span>
@@ -180,17 +184,15 @@ const Navigation = () => {
                                     <span className="capms-nav-icon"><IconHealth /></span>
                                     <span>{ __( 'Server Health', 'captain-media-shield' ) }</span>
                                 </Link>
-                                <Link to="/docs/overview" className={ subLinkClass( '/docs' ) } onClick={ closeMobile }>
-                                    <span className="capms-nav-icon"><IconDocs /></span>
-                                    <span>{ __( 'Documentation', 'captain-media-shield' ) }</span>
-                                </Link>
                             </div>
                         ) }
                     </div>
 
                     <div className="capms-nav-group">
                         <button
+                            type="button"
                             className={ `capms-nav-group-header ${ extraOpen ? 'capms-nav-group-header--open' : '' }` }
+                            aria-expanded={ extraOpen }
                             onClick={ () => setExtraOpen( ( o ) => ! o ) }
                         >
                             <span className="capms-nav-group-label">{ __( 'Extra Options', 'captain-media-shield' ) }</span>
@@ -201,6 +203,10 @@ const Navigation = () => {
                                 <Link to="/settings" className={ subLinkClass( '/settings' ) } onClick={ closeMobile }>
                                     <span className="capms-nav-icon"><IconGear /></span>
                                     <span>{ __( 'Settings', 'captain-media-shield' ) }</span>
+                                </Link>
+                                <Link to="/docs/overview" className={ subLinkClass( '/docs' ) } onClick={ closeMobile }>
+                                    <span className="capms-nav-icon"><IconDocs /></span>
+                                    <span>{ __( 'Documentation', 'captain-media-shield' ) }</span>
                                 </Link>
                                 <Link to="/help" className={ subLinkClass( '/help' ) } onClick={ closeMobile }>
                                     <span className="capms-nav-icon"><IconHelp /></span>

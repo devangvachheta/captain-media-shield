@@ -66,7 +66,7 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 				backup_created DATETIME NULL DEFAULT NULL,
 				message TEXT NULL,
 				processed_at DATETIME NOT NULL,
-				PRIMARY KEY (id),
+				PRIMARY KEY  (id),
 				UNIQUE KEY attachment_id (attachment_id),
 				KEY status (status),
 				KEY media_type (media_type)
@@ -152,6 +152,7 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 				),
 				array( 'attachment_id' => absint( $attachment_id ) )
 			);
+			wp_cache_delete( 'capms_stats_summary', 'capms' );
 		}
 
 		/**
@@ -228,12 +229,22 @@ if ( ! class_exists( 'Capms_Stats' ) ) {
 				'processed'      => 0,
 				'original_size'  => 0,
 				'optimized_size' => 0,
-				'nextgen_saved'  => 0,
 			);
 
 			foreach ( (array) $rows as $row ) {
-				$type = 'video' === $row['media_type'] ? 'video' : 'image';
-				$data = array_map( 'intval', $row );
+				$type = ( isset( $row['media_type'] ) && 'video' === $row['media_type'] ) ? 'video' : 'image';
+				$data = array(
+					'media_type'     => $type,
+					'processed'      => isset( $row['processed'] ) ? (int) $row['processed'] : 0,
+					'original_size'  => isset( $row['original_size'] ) ? (int) $row['original_size'] : 0,
+					'optimized_size' => isset( $row['optimized_size'] ) ? (int) $row['optimized_size'] : 0,
+					'webp_size'      => isset( $row['webp_size'] ) ? (int) $row['webp_size'] : 0,
+					'avif_size'      => isset( $row['avif_size'] ) ? (int) $row['avif_size'] : 0,
+					'webm_size'      => isset( $row['webm_size'] ) ? (int) $row['webm_size'] : 0,
+					'webp_count'     => isset( $row['webp_count'] ) ? (int) $row['webp_count'] : 0,
+					'avif_count'     => isset( $row['avif_count'] ) ? (int) $row['avif_count'] : 0,
+					'webm_count'     => isset( $row['webm_count'] ) ? (int) $row['webm_count'] : 0,
+				);
 
 				$by_type[ $type ] = $data;
 

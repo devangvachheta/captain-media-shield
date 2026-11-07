@@ -171,60 +171,6 @@ const OurProducts = () => {
     const theme = useSelector( ( state ) => state.theme );
     const logoColor = theme === 'dark' ? '#ffffff' : '#2271b1';
 
-    const [ productStatus, setProductStatus ] = useState( {} );
-
-    const installableSlugs = PRODUCTS.filter( ( p ) => p.slug ).map( ( p ) => p.slug );
-
-    useEffect( () => {
-        if ( typeof capms_data === 'undefined' || ! installableSlugs.length ) return;
-
-        const initial = {};
-        installableSlugs.forEach( ( slug ) => { initial[ slug ] = 'checking'; } );
-        setProductStatus( initial );
-
-        const fd = new FormData();
-        fd.append( 'action', 'capms_dashboard_ajax_call' );
-        fd.append( 'nonce', capms_data.capms_nonce );
-        fd.append( 'type', 'get_products_status' );
-        fd.append( 'slugs', installableSlugs.join( ',' ) );
-
-        fetch( capms_data.ajax_url, { method: 'POST', body: fd } )
-            .then( ( r ) => r.json() )
-            .then( ( res ) => {
-                if ( res.success && res.data ) {
-                    setProductStatus( ( prev ) => ( { ...prev, ...res.data } ) );
-                }
-            } )
-            .catch( () => {} );
-    }, [] ); // eslint-disable-line react-hooks/exhaustive-deps
-
-    const handleInstallActivate = useCallback( async ( slug ) => {
-        if ( typeof capms_data === 'undefined' ) return;
-        setProductStatus( ( prev ) => ( { ...prev, [ slug ]: 'installing' } ) );
-
-        const fd = new FormData();
-        fd.append( 'action', 'capms_dashboard_ajax_call' );
-        fd.append( 'nonce', capms_data.capms_nonce );
-        fd.append( 'type', 'install_activate_product' );
-        fd.append( 'slug', slug );
-
-        try {
-            const res = await fetch( capms_data.ajax_url, { method: 'POST', body: fd } ).then( ( r ) => r.json() );
-            const nextStatus = res.success ? ( res.data?.status || 'active' ) : 'error';
-            setProductStatus( ( prev ) => ( { ...prev, [ slug ]: nextStatus } ) );
-        } catch ( e ) {
-            setProductStatus( ( prev ) => ( { ...prev, [ slug ]: 'error' } ) );
-        }
-    }, [] );
-
-    const getInstallBtnLabel = ( status ) => {
-        if ( status === 'checking' ) return __( 'Checking…', 'captain-media-shield' );
-        if ( status === 'installing' ) return __( 'Installing…', 'captain-media-shield' );
-        if ( status === 'installed' ) return __( 'Activate', 'captain-media-shield' );
-        if ( status === 'error' ) return __( 'Failed, Try Again', 'captain-media-shield' );
-        return __( 'Install Plugin', 'captain-media-shield' );
-    };
-
     return (
         <div className="capms-products-wrapper">
             <div className="capms-products-header">
@@ -235,8 +181,7 @@ const OurProducts = () => {
             <div className="capms-products-grid">
                 { PRODUCTS.map( ( product, i ) => {
                     const LogoComp = product.Logo;
-                    const status = product.slug ? ( productStatus[ product.slug ] || 'checking' ) : null;
-                    const isActive = product.badgeType === 'active' || status === 'active';
+                    const isActive = product.badgeType === 'active';
 
                     return (
                         <div key={ i } className="capms-product-card">
@@ -251,29 +196,16 @@ const OurProducts = () => {
                             </div>
                             <p className="capms-product-card-desc">{ product.description }</p>
                             <div className="capms-product-card-actions">
-                                { isActive ? null : (
-                                    <button
-                                        type="button"
-                                        disabled={ status === 'installing' || status === 'checking' }
-                                        onClick={ () => handleInstallActivate( product.slug ) }
-                                        className={ `capms-product-card-cta${ status === 'installed' ? ' is-activate' : '' }${ ( status === 'installing' || status === 'checking' ) ? ' is-loading' : '' }${ status === 'error' ? ' is-error' : '' }` }
-                                    >
-                                        { ( status === 'installing' || status === 'checking' )
-                                            ? <span className="capms-product-card-spinner" aria-hidden="true" />
-                                            : status === 'installed' ? <IconZap /> : status === 'error' ? <IconRetry /> : <IconDownload /> }
-                                        { getInstallBtnLabel( status ) }
-                                    </button>
-                                ) }
+                                <a
+                                    href={ product.url }
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="capms-product-card-cta"
+                                >
+                                    <IconDownload />
+                                    { __( 'View on WordPress.org', 'captain-media-shield' ) }
+                                </a>
                                 <div className="capms-product-card-subactions">
-                                    <a
-                                        href={ product.url }
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="capms-product-card-link"
-                                    >
-                                        { __( 'View on WordPress.org', 'captain-media-shield' ) }
-                                        <IconExternal />
-                                    </a>
                                     <a
                                         href={ product.rateUrl }
                                         target="_blank"

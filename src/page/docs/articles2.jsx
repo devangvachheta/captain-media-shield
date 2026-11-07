@@ -196,7 +196,7 @@ export const Privacy = () => (
             <DocList items={ [
                 { term: __( 'Deactivate', T ), text: __( 'The .htaccess rules block is removed. Your media and converted copies stay.', T ) },
                 { term: __( 'Delete the plugin', T ), text: __( 'Removes settings, the statistics table, plugin data and scheduled events.', T ) },
-                { term: __( 'Files are kept', T ), text: __( 'Media files, WebP, AVIF, WebM copies and the backup folder are never deleted automatically. Remove them yourself if you want the space back.', T ) },
+                { term: __( 'Files on disk', T ), text: __( 'Live media files, WebP, AVIF, and WebM copies remain untouched upon plugin deletion. Backups follow your configured retention schedule.', T ) },
             ] } />
         </DocSection>
     </DocArticle>

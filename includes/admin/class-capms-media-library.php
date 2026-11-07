@@ -456,8 +456,8 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 
 			// Live Slider
 			$html .= '<div class="capms-quality-slider-row">';
-			$html .= '<input type="range" class="capms-quality-slider" min="20" max="100" step="1" value="' . esc_attr( $active_q ) . '" data-global="' . esc_attr( $global_q ) . '" data-id="' . absint( $attachment_id ) . '" />';
-			$html .= '<input type="hidden" class="capms-selected-quality" name="capms_custom_quality" value="' . esc_attr( $active_q ) . '" />';
+			$html .= '<input type="range" class="capms-quality-slider" min="1" max="100" step="1" value="' . esc_attr( $active_q ) . '" data-global="' . esc_attr( $global_q ) . '" data-id="' . absint( $attachment_id ) . '" />';
+			$html .= '<input type="hidden" class="capms-selected-quality" name="attachments[' . absint( $attachment_id ) . '][capms_custom_quality]" value="' . esc_attr( $active_q ) . '" />';
 			$html .= '</div>';
 
 			// Quick Preset Pills
@@ -588,7 +588,7 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 			$do = isset( $_GET['do'] ) ? sanitize_key( wp_unslash( $_GET['do'] ) ) : '';
 			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
-			if ( ! $id || ! in_array( $do, array( 'optimize', 'restore' ), true ) ) {
+			if ( ! $id || ! in_array( $do, array( 'optimize', 'restore' ), true ) || 'attachment' !== get_post_type( $id ) ) {
 				wp_die( esc_html__( 'Invalid request.', 'captain-media-shield' ) );
 			}
 			check_admin_referer( 'capms_media_' . $do . '_' . $id );
@@ -679,8 +679,8 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 			$do      = isset( $_POST['do'] ) ? sanitize_key( wp_unslash( $_POST['do'] ) ) : '';
 			$context = isset( $_POST['context'] ) ? sanitize_key( wp_unslash( $_POST['context'] ) ) : 'modal';
 
-			if ( ! $id || ! in_array( $do, array( 'optimize', 'restore', 'save_quality' ), true ) ) {
-				wp_send_json_error( array( 'message' => esc_html__( 'Invalid request.', 'captain-media-shield' ) ) );
+			if ( ! $id || ! in_array( $do, array( 'optimize', 'restore', 'save_quality' ), true ) || 'attachment' !== get_post_type( $id ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'Invalid request or attachment ID.', 'captain-media-shield' ) ) );
 			}
 
 			if ( 'restore' === $do ) {
@@ -743,6 +743,7 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 			$js_file = CAPMS_PATH . 'assets/js/media-library.js';
 			$js_ver  = file_exists( $js_file ) ? filemtime( $js_file ) : CAPMS_VERSION;
 			wp_enqueue_script( 'capms-media-library', CAPMS_URL . 'assets/js/media-library.js', array( 'jquery' ), $js_ver, true );
+			wp_set_script_translations( 'capms-media-library', 'captain-media-shield' );
 			$max_bytes     = wp_max_upload_size();
 			$max_formatted = size_format( $max_bytes );
 			$php_ini_file  = ( current_user_can( 'manage_options' ) && function_exists( 'php_ini_loaded_file' ) ) ? (string) php_ini_loaded_file() : '';
@@ -767,6 +768,17 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 						'fits_under'           => sprintf( __( 'Fits under %s', 'captain-media-shield' ), $max_formatted ),
 						'increase_limit_btn'   => sprintf( __( 'Increase %s Limit', 'captain-media-shield' ), $max_formatted ),
 						'select_files_to_comp' => __( 'Select File(s) to Compress & Upload', 'captain-media-shield' ),
+						'saving'               => __( 'Saving…', 'captain-media-shield' ),
+						'save_quality_only'    => __( 'Save Quality Only', 'captain-media-shield' ),
+						'default_preset'       => __( 'Default (%d%%)', 'captain-media-shield' ),
+						'opt_failed'           => __( 'Optimization failed.', 'captain-media-shield' ),
+						'server_error'         => __( 'Server error occurred during optimization.', 'captain-media-shield' ),
+						'quality_saved'        => __( 'Quality setting saved.', 'captain-media-shield' ),
+						'optimized'            => __( 'Optimized', 'captain-media-shield' ),
+						'failed'               => __( 'Failed', 'captain-media-shield' ),
+						'not_optimized'        => __( 'Not Optimized', 'captain-media-shield' ),
+						'restored'             => __( 'Restored', 'captain-media-shield' ),
+						'skipped'              => __( 'Skipped', 'captain-media-shield' ),
 					),
 				)
 			);
@@ -848,8 +860,8 @@ if ( ! class_exists( 'Capms_Media_Library' ) ) {
 							</div>
 
 							<div class="capms-slider-track-wrap">
-								<span class="capms-slider-extreme"><?php esc_html_e( 'Max Saving (20%)', 'captain-media-shield' ); ?></span>
-								<input type="range" id="capms-modal-slider" class="capms-quality-slider capms-modal-range" min="20" max="100" step="1" value="<?php echo esc_attr( $global_q ); ?>" data-global="<?php echo esc_attr( $global_q ); ?>" />
+								<span class="capms-slider-extreme"><?php esc_html_e( 'Max Saving (1%)', 'captain-media-shield' ); ?></span>
+								<input type="range" id="capms-modal-slider" class="capms-quality-slider capms-modal-range" min="1" max="100" step="1" value="<?php echo esc_attr( $global_q ); ?>" data-global="<?php echo esc_attr( $global_q ); ?>" />
 								<span class="capms-slider-extreme"><?php esc_html_e( 'Max Quality (100%)', 'captain-media-shield' ); ?></span>
 							</div>
 

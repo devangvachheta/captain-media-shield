@@ -135,10 +135,15 @@ if ( ! class_exists( 'Capms_Backup' ) ) {
 		 */
 		public static function absolute( $relative ) {
 			$relative = ltrim( wp_normalize_path( (string) $relative ), '/' );
-			if ( '' === $relative || false !== strpos( $relative, '..' ) ) {
+			if ( '' === $relative || preg_match( '#(^|/)\.\.(/|$)#', $relative ) ) {
 				return false;
 			}
-			return self::get_root() . '/' . $relative;
+			$root = wp_normalize_path( self::get_root() );
+			$path = wp_normalize_path( $root . '/' . $relative );
+			if ( 0 !== strpos( $path, trailingslashit( $root ) ) && $path !== $root ) {
+				return false;
+			}
+			return $path;
 		}
 
 		/**

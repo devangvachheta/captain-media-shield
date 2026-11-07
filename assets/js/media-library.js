@@ -44,6 +44,23 @@
         return null;
     }
 
+    /**
+     * Keep all quick-quality triggers in the table row (including the row-action link
+     * under the title column) in sync with the latest quality setting and status.
+     */
+    function refreshRowQualityData(id, newQuality, globalQ, newStatus) {
+        var isCustom = (parseInt(newQuality, 10) !== parseInt(globalQ, 10));
+        var $triggers = $('.capms-open-quick-quality[data-id="' + id + '"], tr#post-' + id + ' .capms-open-quick-quality');
+        $triggers.each(function () {
+            var $t = $(this);
+            $t.attr('data-quality', newQuality).data('quality', newQuality);
+            $t.attr('data-is-custom', isCustom ? '1' : '0').data('is-custom', isCustom ? '1' : '0');
+            if (newStatus) {
+                $t.attr('data-status', newStatus).data('status', newStatus);
+            }
+        });
+    }
+
     // Handle Live Quality Slider input (Modal Sidebar & Generic)
     $(document).on('input change', '.capms-quality-slider', function () {
         var $slider = $(this);
@@ -191,30 +208,38 @@
         // Status badge & saved text
         var $badge = $('#capms-modal-status-badge');
         var $savedText = $('#capms-modal-saved-text');
+        var mlI18n = (window.capms_media_vars && window.capms_media_vars.i18n) || {};
         $badge.removeClass('capms-badge--success capms-badge--warning capms-badge--danger capms-badge--neutral');
 
         if (status === 'optimized') {
-            $badge.addClass('capms-badge--success').html('<span class="capms-badge-dot"></span> Optimized');
+            $badge.addClass('capms-badge--success').html('<span class="capms-badge-dot"></span> ' + (mlI18n.optimized || 'Optimized'));
             $savedText.text(saved || '').show();
         } else if (status === 'failed') {
-            $badge.addClass('capms-badge--danger').html('<span class="capms-badge-dot"></span> Failed');
+            $badge.addClass('capms-badge--danger').html('<span class="capms-badge-dot"></span> ' + (mlI18n.failed || 'Failed'));
+            $savedText.hide();
+        } else if (status === 'restored') {
+            $badge.addClass('capms-badge--neutral').html('<span class="capms-badge-dot"></span> ' + (mlI18n.restored || 'Restored'));
+            $savedText.hide();
+        } else if (status === 'skipped') {
+            $badge.addClass('capms-badge--warning').html('<span class="capms-badge-dot"></span> ' + (mlI18n.skipped || 'Skipped'));
             $savedText.hide();
         } else {
-            $badge.addClass('capms-badge--neutral').html('<span class="capms-badge-dot"></span> Not Optimized');
+            $badge.addClass('capms-badge--neutral').html('<span class="capms-badge-dot"></span> ' + (mlI18n.not_optimized || 'Not Optimized'));
             $savedText.hide();
         }
 
         // Setup slider & presets
         var $slider = $('#capms-modal-slider');
         $slider.data('global', globalQ).val(quality);
-        $('#capms-modal-preset-default').text('Default (' + globalQ + '%)');
+        var defText = (mlI18n.default_preset || 'Default (%d%%)').replace('%d', globalQ);
+        $('#capms-modal-preset-default').text(defText);
 
         // Trigger input to update labels & buttons
         $slider.trigger('input');
 
         // Reset button states
         $('#capms-modal-apply-optimize').prop('disabled', false).removeClass('is-busy');
-        $('#capms-modal-save-only').prop('disabled', false).removeClass('is-busy').text('Save Quality Only');
+        $('#capms-modal-save-only').prop('disabled', false).removeClass('is-busy').text(mlI18n.save_quality_only || 'Save Quality Only');
 
         // Open modal
         $modal.fadeIn(150);
@@ -303,16 +328,19 @@
                 if ($target && $target.length) {
                     $target.replaceWith($(res.data.html));
                 }
+                refreshRowQualityData(id, quality, globalQ, 'optimized');
                 closeModal();
                 showToast(title + ' optimized at ' + quality + '%!', true);
             } else {
-                var err = (res && res.data && res.data.message) ? res.data.message : 'Optimization failed.';
+                var mlI18n = (window.capms_media_vars && window.capms_media_vars.i18n) || {};
+                var err = (res && res.data && res.data.message) ? res.data.message : (mlI18n.opt_failed || 'Optimization failed.');
                 alert(err);
             }
         }).fail(function () {
+            var mlI18n = (window.capms_media_vars && window.capms_media_vars.i18n) || {};
             $btn.removeClass('is-busy').prop('disabled', false).find('.capms-btn-label').text(origText);
             $('#capms-modal-save-only').prop('disabled', false);
-            alert('Server error occurred during optimization.');
+            alert(mlI18n.server_error || 'Server error occurred during optimization.');
         });
     });
 
@@ -335,7 +363,8 @@
             return;
         }
 
-        $btn.addClass('is-busy').prop('disabled', true).text('Saving…');
+        var mlI18n = (window.capms_media_vars && window.capms_media_vars.i18n) || {};
+        $btn.addClass('is-busy').prop('disabled', true).text(mlI18n.saving || 'Saving…');
         $('#capms-modal-apply-optimize').prop('disabled', true);
 
         var ajaxUrl = (window.capms_media_vars && window.capms_media_vars.ajax_url)
@@ -358,7 +387,7 @@
                 quality: sendQuality
             }
         }).done(function (res) {
-            $btn.removeClass('is-busy').prop('disabled', false).text('Save Quality Only');
+            $btn.removeClass('is-busy').prop('disabled', false).text(mlI18n.save_quality_only || 'Save Quality Only');
             $('#capms-modal-apply-optimize').prop('disabled', false);
 
             if (res && res.success && res.data && res.data.html) {
@@ -366,14 +395,16 @@
                 if ($target && $target.length) {
                     $target.replaceWith($(res.data.html));
                 }
+                refreshRowQualityData(id, quality, globalQ);
                 closeModal();
-                showToast('✓ Quality setting saved (' + quality + '%)!', true);
+                var savedMsg = mlI18n.quality_saved || 'Quality setting saved';
+                showToast(savedMsg + ' (' + quality + '%)!', true);
             } else {
                 var err = (res && res.data && res.data.message) ? res.data.message : 'Save failed.';
                 alert(err);
             }
         }).fail(function () {
-            $btn.removeClass('is-busy').prop('disabled', false).text('Save Quality Only');
+            $btn.removeClass('is-busy').prop('disabled', false).text(mlI18n.save_quality_only || 'Save Quality Only');
             $('#capms-modal-apply-optimize').prop('disabled', false);
             alert('Server error occurred while saving quality.');
         });

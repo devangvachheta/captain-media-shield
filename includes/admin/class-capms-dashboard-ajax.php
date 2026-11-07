@@ -98,13 +98,10 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 				case 'cleanup_delete':
 				case 'cleanup_clean_thumbs':
 				case 'cleanup_duplicate_groups':
+				case 'cleanup_safety_list':
+				case 'cleanup_safety_restore':
+				case 'cleanup_safety_purge':
 					$response = $this->cleanup_request( $type );
-					break;
-				case 'get_products_status':
-					$response = $this->get_products_status();
-					break;
-				case 'install_activate_product':
-					$response = $this->install_activate_product();
 					break;
 				default:
 					$response = $this->capms_set_response( false, esc_html__( 'Invalid type.', 'captain-media-shield' ), esc_html__( 'Something went wrong.', 'captain-media-shield' ) );
@@ -456,8 +453,36 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 					);
 
 				case 'cleanup_clean_thumbs':
-					$result = Capms_Cleanup::clean_thumbnails( $this->read_ids( 'ids', 25 ) );
+					$keep   = ! empty( $_POST['keep'] );
+					$result = Capms_Cleanup::clean_thumbnails( $this->read_ids( 'ids', 25 ), $keep );
 					return $this->capms_set_response( true, '', '', $result );
+
+				case 'cleanup_safety_list':
+					$items = Capms_Cleanup::list_safety_copies();
+					$total_bytes = 0;
+					foreach ( $items as $it ) {
+						$total_bytes += (int) $it['size'];
+					}
+					return $this->capms_set_response( true, '', '', array(
+						'items'       => $items,
+						'total_count' => count( $items ),
+						'total_bytes' => $total_bytes,
+					) );
+
+				case 'cleanup_safety_restore':
+					$rel = isset( $_POST['file'] ) ? sanitize_text_field( wp_unslash( $_POST['file'] ) ) : '';
+					$res = Capms_Cleanup::restore_safety_copy( $rel );
+					return $this->capms_set_response( $res['success'], $res['message'], $res['success'] ? '' : $res['message'], $res );
+
+				case 'cleanup_safety_purge':
+					$res = Capms_Cleanup::purge_safety_copies();
+					return $this->capms_set_response(
+						true,
+						/* translators: 1: count, 2: formatted size */
+						sprintf( __( 'Safety archive cleared: removed %1$d file(s) (%2$s freed).', 'captain-media-shield' ), $res['count'], size_format( $res['bytes'], 2 ) ? size_format( $res['bytes'], 2 ) : '0 B' ),
+						'',
+						$res
+					);
 			}
 
 			return $this->capms_set_response( false, esc_html__( 'Invalid type.', 'captain-media-shield' ) );
@@ -499,129 +524,6 @@ if ( ! class_exists( 'Capms_Dashboard_Ajax' ) ) {
 				'',
 				$last
 			);
-		}
-
-		/**
-		 * Check install & activation status for the other Captain plugins.
-		 *
-		 * @since 0.1.0
-		 * @return array
-		 */
-		public function get_products_status() {
-			if ( ! current_user_can( 'activate_plugins' ) ) {
-				return $this->capms_set_response( false, esc_html__( 'Permission denied.', 'captain-media-shield' ) );
-			}
-
-			$slugs_raw = isset( $_POST['slugs'] ) ? sanitize_text_field( wp_unslash( $_POST['slugs'] ) ) : '';
-			$slugs     = array_filter( array_map( 'sanitize_key', explode( ',', $slugs_raw ) ) );
-
-			if ( ! function_exists( 'get_plugins' ) ) {
-				require_once ABSPATH . 'wp-admin/includes/plugin.php';
-			}
-
-			$installed = get_plugins();
-			$statuses  = array();
-
-			foreach ( $slugs as $slug ) {
-				$status      = 'not_installed';
-				$plugin_file = '';
-
-				foreach ( array_keys( $installed ) as $file ) {
-					if ( 0 === strpos( $file, $slug . '/' ) ) {
-						$plugin_file = $file;
-						break;
-					}
-				}
-
-				if ( $plugin_file ) {
-					$status = is_plugin_active( $plugin_file ) ? 'active' : 'installed';
-				}
-
-				$statuses[ $slug ] = $status;
-			}
-
-			return $this->capms_set_response( true, esc_html__( 'Status fetched.', 'captain-media-shield' ), '', $statuses );
-		}
-
-		/**
-		 * Install and activate a plugin from WordPress.org.
-		 *
-		 * @since 0.1.0
-		 * @return array
-		 */
-		public function install_activate_product() {
-			if ( ! current_user_can( 'install_plugins' ) || ! current_user_can( 'activate_plugins' ) ) {
-				return $this->capms_set_response( false, esc_html__( 'Permission denied.', 'captain-media-shield' ) );
-			}
-
-			$slug          = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
-			$allowed_slugs = array( 'captain-advance-filter', 'captain-widgets-kit', 'captain-feed-for-youtube', 'captain-social-review', 'captain-funnel', 'captain-live-chat' );
-			if ( ! in_array( $slug, $allowed_slugs, true ) ) {
-				return $this->capms_set_response( false, esc_html__( 'Invalid plugin.', 'captain-media-shield' ) );
-			}
-
-			if ( ! function_exists( 'get_plugins' ) ) {
-				require_once ABSPATH . 'wp-admin/includes/plugin.php';
-			}
-
-			$installed   = get_plugins();
-			$plugin_file = '';
-			foreach ( array_keys( $installed ) as $file ) {
-				if ( 0 === strpos( $file, $slug . '/' ) ) {
-					$plugin_file = $file;
-					break;
-				}
-			}
-
-			if ( $plugin_file ) {
-				if ( is_plugin_active( $plugin_file ) ) {
-					return $this->capms_set_response( true, esc_html__( 'Plugin is already active.', 'captain-media-shield' ), '', array( 'status' => 'active' ) );
-				}
-				$activated = activate_plugin( $plugin_file );
-				if ( is_wp_error( $activated ) ) {
-					return $this->capms_set_response( false, esc_html__( 'Activation failed.', 'captain-media-shield' ), $activated->get_error_message() );
-				}
-				return $this->capms_set_response( true, esc_html__( 'Plugin activated successfully.', 'captain-media-shield' ), '', array( 'status' => 'active' ) );
-			}
-
-			// Install from WordPress.org
-			require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-			require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
-
-			$api = plugins_api( 'plugin_information', array( 'slug' => $slug, 'fields' => array( 'sections' => false ) ) );
-			if ( is_wp_error( $api ) ) {
-				return $this->capms_set_response( false, esc_html__( 'Could not fetch plugin information.', 'captain-media-shield' ), $api->get_error_message() );
-			}
-
-			$skin     = new WP_Ajax_Upgrader_Skin();
-			$upgrader = new Plugin_Upgrader( $skin );
-			$install  = $upgrader->install( $api->download_link );
-
-			if ( is_wp_error( $install ) || ! $install ) {
-				$msg = is_wp_error( $install ) ? $install->get_error_message() : ( ! empty( $skin->get_errors()->get_error_message() ) ? $skin->get_errors()->get_error_message() : esc_html__( 'Installation failed.', 'captain-media-shield' ) );
-				return $this->capms_set_response( false, esc_html__( 'Installation failed.', 'captain-media-shield' ), $msg );
-			}
-
-			$plugin_file = $upgrader->plugin_info();
-			if ( ! $plugin_file ) {
-				$installed = get_plugins();
-				foreach ( array_keys( $installed ) as $file ) {
-					if ( 0 === strpos( $file, $slug . '/' ) ) {
-						$plugin_file = $file;
-						break;
-					}
-				}
-			}
-
-			if ( $plugin_file ) {
-				$activated = activate_plugin( $plugin_file );
-				if ( is_wp_error( $activated ) ) {
-					return $this->capms_set_response( true, esc_html__( 'Installed, but activation failed. You can activate it manually.', 'captain-media-shield' ), $activated->get_error_message(), array( 'status' => 'installed' ) );
-				}
-				return $this->capms_set_response( true, esc_html__( 'Plugin installed and activated successfully.', 'captain-media-shield' ), '', array( 'status' => 'active' ) );
-			}
-
-			return $this->capms_set_response( true, esc_html__( 'Plugin installed.', 'captain-media-shield' ), '', array( 'status' => 'installed' ) );
 		}
 
 		/**

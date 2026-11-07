@@ -16,6 +16,19 @@ const AppContent = () => {
         }
     }, [ theme ] );
 
+    // Hide any third-party notices injected outside the React root
+    useEffect( () => {
+        const wpbody = document.getElementById( 'wpbody-content' );
+        if ( wpbody ) {
+            const notices = wpbody.querySelectorAll( '.notice, .e-notice, .update-nag, .elementor-message, div[class*="notice"]' );
+            notices.forEach( ( el ) => {
+                if ( ! el.closest( '#captain-media-shield-app' ) ) {
+                    el.style.display = 'none';
+                }
+            } );
+        }
+    }, [] );
+
     return (
         <div className="capms-app" data-capms-theme={ theme } data-capms-sidebar={ sidebarCollapsed ? 'collapsed' : 'expanded' }>
             <Navigation />

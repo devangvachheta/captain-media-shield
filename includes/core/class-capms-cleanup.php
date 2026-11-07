@@ -592,12 +592,19 @@ if ( ! class_exists( 'Capms_Cleanup' ) ) {
 		 * Delete the unused thumbnail sizes of the given attachments.
 		 *
 		 * @since 0.1.0
-		 * @param int[] $ids Attachment IDs.
+		 * @param int[] $ids  Attachment IDs.
+		 * @param bool  $keep Whether to copy thumbnails to deleted/ folder before deleting.
 		 * @return array { files, bytes }
 		 */
-		public static function clean_thumbnails( $ids ) {
+		public static function clean_thumbnails( $ids, $keep = false ) {
 			$files = 0;
 			$bytes = 0;
+
+			$deleted_dir = '';
+			if ( $keep && Capms_Backup::ensure_root() ) {
+				$deleted_dir = trailingslashit( Capms_Backup::get_root() ) . 'deleted/thumbnails/';
+				wp_mkdir_p( $deleted_dir );
+			}
 
 			foreach ( $ids as $id ) {
 				$sizes = self::find_unused_sizes( $id );
@@ -611,9 +618,14 @@ if ( ! class_exists( 'Capms_Cleanup' ) ) {
 				foreach ( $sizes as $size ) {
 					$path = $dir . $size['file'];
 					foreach ( array( '', '.webp', '.avif' ) as $suffix ) {
-						if ( is_file( $path . $suffix ) ) {
-							$bytes += (int) filesize( $path . $suffix );
-							wp_delete_file( $path . $suffix );
+						$target_file = $path . $suffix;
+						if ( is_file( $target_file ) ) {
+							$bytes += (int) filesize( $target_file );
+							if ( $deleted_dir ) {
+								$target_copy = $deleted_dir . $id . '-' . basename( $target_file );
+								@copy( $target_file, $target_copy );
+							}
+							wp_delete_file( $target_file );
 							++$files;
 						}
 					}
@@ -709,7 +721,230 @@ if ( ! class_exists( 'Capms_Cleanup' ) ) {
 			$target = trailingslashit( $root ) . 'deleted/' . $id . '-' . ltrim( $relative, '/' );
 			wp_mkdir_p( dirname( $target ) );
 
-			return copy( $file, $target ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+			$copied = copy( $file, $target ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+
+			// Also preserve all intermediate thumbnail sizes in the safety backup folder.
+			$meta = wp_get_attachment_metadata( $id );
+			if ( is_array( $meta ) && ! empty( $meta['sizes'] ) && is_array( $meta['sizes'] ) ) {
+				$source_dir = dirname( $file );
+				$target_dir = dirname( $target );
+				foreach ( $meta['sizes'] as $size_data ) {
+					if ( ! empty( $size_data['file'] ) ) {
+						$sub_source = trailingslashit( $source_dir ) . $size_data['file'];
+						$sub_target = trailingslashit( $target_dir ) . $size_data['file'];
+						if ( is_file( $sub_source ) ) {
+							@copy( $sub_source, $sub_target );
+						}
+					}
+				}
+			}
+
+			return $copied;
+		}
+
+		/**
+		 * Scan safety copies stored in deleted/ backup folder.
+		 *
+		 * @since 1.0.3
+		 * @return array
+		 */
+		public static function list_safety_copies() {
+			$root = trailingslashit( Capms_Backup::get_root() ) . 'deleted';
+			if ( ! is_dir( $root ) ) {
+				return array();
+			}
+
+			$items = array();
+			$iterator = new RecursiveIteratorIterator(
+				new RecursiveDirectoryIterator( $root, FilesystemIterator::SKIP_DOTS ),
+				RecursiveIteratorIterator::CHILD_FIRST
+			);
+
+			$root_len = strlen( wp_normalize_path( trailingslashit( $root ) ) );
+
+			foreach ( $iterator as $file_info ) {
+				if ( ! $file_info->isFile() ) {
+					continue;
+				}
+
+				$real_path       = wp_normalize_path( $file_info->getPathname() );
+				$relative_path   = substr( $real_path, $root_len );
+				$filename        = $file_info->getFilename();
+				$size            = $file_info->getSize();
+				$mtime           = $file_info->getMTime();
+				$is_thumb        = ( 0 === strpos( $relative_path, 'thumbnails/' ) );
+
+				// Extract ID if prefix like "855-" exists.
+				$base_target = $is_thumb ? substr( $relative_path, 11 ) : $relative_path;
+				$id          = 0;
+				if ( preg_match( '/^(\d+)-(.*)$/', $base_target, $matches ) ) {
+					$id          = (int) $matches[1];
+					$orig_name   = $matches[2];
+				} else {
+					$orig_name   = $filename;
+				}
+
+				$items[] = array(
+					'rel_path'  => $relative_path,
+					'filename'  => $filename,
+					'orig_name' => basename( $orig_name ),
+					'id'        => $id,
+					'size'      => $size,
+					'mtime'     => $mtime,
+					'date'      => date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $mtime ),
+					'is_thumb'  => $is_thumb,
+				);
+			}
+
+			// Sort newest first.
+			usort( $items, function( $a, $b ) {
+				return $b['mtime'] - $a['mtime'];
+			} );
+
+			return $items;
+		}
+
+		/**
+		 * Restore a safety copy back to uploads directory.
+		 *
+		 * @since 1.0.3
+		 * @param string $relative_path Relative path inside deleted/ folder.
+		 * @return array
+		 */
+		public static function restore_safety_copy( $relative_path ) {
+			if ( empty( $relative_path ) || false !== strpos( $relative_path, '..' ) ) {
+				return array( 'success' => false, 'message' => __( 'Invalid file path.', 'captain-media-shield' ) );
+			}
+
+			$root = trailingslashit( Capms_Backup::get_root() ) . 'deleted/';
+			$source_file = wp_normalize_path( $root . ltrim( $relative_path, '/' ) );
+
+			if ( ! is_file( $source_file ) ) {
+				return array( 'success' => false, 'message' => __( 'Safety copy file does not exist on disk.', 'captain-media-shield' ) );
+			}
+
+			$upload_dir = wp_upload_dir();
+			$basedir    = wp_normalize_path( $upload_dir['basedir'] );
+
+			$is_thumb = ( 0 === strpos( $relative_path, 'thumbnails/' ) );
+
+			if ( $is_thumb ) {
+				// E.g. thumbnails/855-image-150x150.jpg -> restore thumbnail into uploads folder.
+				$base_file = substr( $relative_path, 11 );
+				$orig_file = preg_replace( '/^\d+-/', '', $base_file );
+				$dest_file = trailingslashit( $basedir ) . $orig_file;
+
+				wp_mkdir_p( dirname( $dest_file ) );
+				if ( ! @copy( $source_file, $dest_file ) ) {
+					return array( 'success' => false, 'message' => __( 'Could not write thumbnail file to uploads.', 'captain-media-shield' ) );
+				}
+				@unlink( $source_file );
+
+				return array(
+					'success' => true,
+					'message' => sprintf( __( 'Restored thumbnail %s successfully.', 'captain-media-shield' ), basename( $dest_file ) ),
+				);
+			}
+
+			// Original media file: e.g. "855-2024/05/sample.jpg" or "855-sample.jpg"
+			$dest_rel = preg_replace( '/^\d+-/', '', $relative_path );
+			$dest_file = trailingslashit( $basedir ) . ltrim( $dest_rel, '/' );
+
+			wp_mkdir_p( dirname( $dest_file ) );
+			if ( ! @copy( $source_file, $dest_file ) ) {
+				return array( 'success' => false, 'message' => __( 'Could not copy file back to uploads directory.', 'captain-media-shield' ) );
+			}
+
+			// Also restore sub-sizes if saved in the same deleted sub-folder.
+			$source_dir = dirname( $source_file );
+			$dest_dir   = dirname( $dest_file );
+			$base_prefix = '';
+			if ( preg_match( '/^(\d+)-/', $relative_path, $m ) ) {
+				$attach_id = (int) $m[1];
+			} else {
+				$attach_id = 0;
+			}
+
+			if ( is_dir( $source_dir ) && $handle = opendir( $source_dir ) ) {
+				while ( false !== ( $entry = readdir( $handle ) ) ) {
+					if ( '.' === $entry || '..' === $entry ) {
+						continue;
+					}
+					$sub_source = trailingslashit( $source_dir ) . $entry;
+					if ( is_file( $sub_source ) && $sub_source !== $source_file ) {
+						$sub_dest = trailingslashit( $dest_dir ) . $entry;
+						@copy( $sub_source, $sub_dest );
+					}
+				}
+				closedir( $handle );
+			}
+
+			// Restore attachment in WordPress database if missing or in trash.
+			if ( $attach_id > 0 ) {
+				$post = get_post( $attach_id );
+				if ( $post ) {
+					if ( 'trash' === $post->post_status ) {
+						wp_untrash_post( $attach_id );
+					}
+					update_attached_file( $attach_id, $dest_file );
+				} else {
+					// Re-create attachment entry in Media Library.
+					$filetype = wp_check_filetype( basename( $dest_file ), null );
+					$attachment = array(
+						'guid'           => trailingslashit( $upload_dir['baseurl'] ) . _wp_relative_upload_path( $dest_file ),
+						'post_mime_type' => $filetype['type'] ? $filetype['type'] : 'image/jpeg',
+						'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $dest_file ) ),
+						'post_content'   => '',
+						'post_status'    => 'inherit',
+					);
+					$new_id = wp_insert_attachment( $attachment, $dest_file );
+					if ( ! is_wp_error( $new_id ) && $new_id > 0 ) {
+						require_once ABSPATH . 'wp-admin/includes/image.php';
+						$meta = wp_generate_attachment_metadata( $new_id, $dest_file );
+						wp_update_attachment_metadata( $new_id, $meta );
+					}
+				}
+			}
+
+			@unlink( $source_file );
+
+			return array(
+				'success' => true,
+				'message' => sprintf( __( 'Successfully restored %s to Media Library.', 'captain-media-shield' ), basename( $dest_file ) ),
+			);
+		}
+
+		/**
+		 * Purge all safety copies in deleted/ folder.
+		 *
+		 * @since 1.0.3
+		 * @return array
+		 */
+		public static function purge_safety_copies() {
+			$root = trailingslashit( Capms_Backup::get_root() ) . 'deleted';
+			if ( ! is_dir( $root ) ) {
+				return array( 'count' => 0, 'bytes' => 0 );
+			}
+
+			$count = 0;
+			$bytes = 0;
+			$files = new RecursiveIteratorIterator(
+				new RecursiveDirectoryIterator( $root, FilesystemIterator::SKIP_DOTS ),
+				RecursiveIteratorIterator::CHILD_FIRST
+			);
+
+			foreach ( $files as $file ) {
+				if ( $file->isDir() ) {
+					@rmdir( $file->getRealPath() );
+				} else {
+					$bytes += $file->getSize();
+					$count++;
+					@unlink( $file->getRealPath() );
+				}
+			}
+			@rmdir( $root );
+
+			return array( 'count' => $count, 'bytes' => $bytes );
 		}
 
 		/**

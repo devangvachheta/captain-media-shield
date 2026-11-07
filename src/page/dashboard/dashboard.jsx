@@ -4,21 +4,35 @@ import { useDispatch, useSelector } from 'react-redux';
 import { __, sprintf } from '@wordpress/i18n';
 import { ajax, formatBytes, percentSaved } from '../../services/api.js';
 import { setStats } from '../../redux/slice.jsx';
-import { PageHeader, Section, StatCard, StatusPill, Skeleton } from '../../components/ui.jsx';
+import { PageHeader, Section, StatCard, StatusPill, Skeleton, Notice } from '../../components/ui.jsx';
 import { IconDatabase, IconZap, IconPercent, IconBackup, IconImage, IconVideo, IconHealth, IconRefresh, IconBulk } from '../../components/icons.jsx';
+import { OVERVIEW_VIDEO_URL } from '../../constants/videos.js';
 
 const Dashboard = () => {
     const dispatch = useDispatch();
     const stats    = useSelector( state => state.stats );
     const [ env, setEnv ]         = useState( null );
     const [ loading, setLoading ] = useState( false );
+    const [ error, setError ]     = useState( '' );
 
     const load = async () => {
         setLoading( true );
-        const [ s, e ] = await Promise.all( [ ajax( 'get_stats' ), ajax( 'get_environment' ) ] );
-        setLoading( false );
-        if ( s.success ) dispatch( setStats( s.data ) );
-        if ( e.success ) setEnv( e.data );
+        setError( '' );
+        try {
+            const [ s, e ] = await Promise.all( [ ajax( 'get_stats' ), ajax( 'get_environment' ) ] );
+            if ( s && s.success ) {
+                dispatch( setStats( s.data ) );
+            } else if ( s && s.data && s.data.message ) {
+                setError( s.data.message );
+            }
+            if ( e && e.success ) {
+                setEnv( e.data );
+            }
+        } catch ( err ) {
+            setError( err?.message || __( 'Failed to load dashboard data. Please try again.', 'captain-media-shield' ) );
+        } finally {
+            setLoading( false );
+        }
     };
 
     useEffect( () => {
@@ -38,12 +52,29 @@ const Dashboard = () => {
                 title={ __( 'Analytics & Server Health', 'captain-media-shield' ) }
                 subtitle={ __( 'What Captain Media Shield has saved on your server so far.', 'captain-media-shield' ) }
                 actions={
-                    <button type="button" className="capms-btn capms-btn--ghost" onClick={ load } disabled={ loading }>
-                        <IconRefresh />
-                        { loading ? __( 'Refreshing…', 'captain-media-shield' ) : __( 'Refresh', 'captain-media-shield' ) }
-                    </button>
+                    <>
+                        <a
+                            href={ OVERVIEW_VIDEO_URL }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="capms-btn capms-btn--ghost"
+                            style={ { textDecoration: 'none' } }
+                            title={ __( 'Watch Plugin Overview & Tutorial', 'captain-media-shield' ) }
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="#ff0000" style={ { flexShrink: 0 } }>
+                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                            </svg>
+                            <span>{ __( 'Watch Tutorial', 'captain-media-shield' ) }</span>
+                        </a>
+                        <button type="button" className="capms-btn capms-btn--ghost" onClick={ load } disabled={ loading }>
+                            <IconRefresh />
+                            { loading ? __( 'Refreshing…', 'captain-media-shield' ) : __( 'Refresh', 'captain-media-shield' ) }
+                        </button>
+                    </>
                 }
             />
+
+            { error && <Notice tone="error">{ error }</Notice> }
 
             { ! summary ? (
                 <div className="capms-stat-grid">

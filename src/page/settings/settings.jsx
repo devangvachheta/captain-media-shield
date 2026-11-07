@@ -79,7 +79,7 @@ const Settings = () => {
                 >
                     <ToggleRow
                         label={ __( 'Preserve settings if plugin is removed', 'captain-media-shield' ) }
-                        hint={ __( 'Keeps all your plugin configurations and optimization records in the database even if the plugin is uninstalled.', 'captain-media-shield' ) }
+                        hint={ __( 'Keeps all your plugin configurations and optimization records in the database if the plugin is uninstalled.', 'captain-media-shield' ) }
                         checked={ !! draft.preserve_settings }
                         onChange={ handlePreserveChange }
                     />

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import useSettings from '../../hooks/useSettings.js';
 import { ajax } from '../../services/api.js';
-import { PageHeader, TabBar, Section, ToggleRow, SelectRow, Row, SaveBar, Notice, Pill, Skeleton } from '../../components/ui.jsx';
+import { PageHeader, TabBar, Section, ToggleRow, SelectRow, Row, Notice, Pill, Skeleton } from '../../components/ui.jsx';
 import { IconLayers, IconSliders, IconShield, IconResize, IconGlobe, IconTerminal, IconX } from '../../components/icons.jsx';
 
 const KEYS = [ 'optimize_on_upload', 'webp_enabled', 'avif_enabled', 'image_quality', 'strip_metadata', 'resize_enabled', 'max_width', 'max_height', 'delivery_method', 'admin_bar_menu', 'exclude_paths', 'exclude_ids' ];

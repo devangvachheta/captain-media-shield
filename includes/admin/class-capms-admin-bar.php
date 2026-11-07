@@ -89,6 +89,7 @@ if ( ! class_exists( 'Capms_Admin_Bar' ) ) {
 				$js_file = CAPMS_PATH . 'assets/js/admin-bar.js';
 				$js_ver  = file_exists( $js_file ) ? filemtime( $js_file ) : CAPMS_VERSION;
 				wp_enqueue_script( 'capms-admin-bar', CAPMS_URL . 'assets/js/admin-bar.js', array(), $js_ver, true );
+				wp_set_script_translations( 'capms-admin-bar', 'captain-media-shield' );
 				wp_localize_script(
 					'capms-admin-bar',
 					'capms_admin_bar_vars',
@@ -113,6 +114,10 @@ if ( ! class_exists( 'Capms_Admin_Bar' ) ) {
 							'view_unoptimized'    => esc_html__( 'View Images (%d)', 'captain-media-shield' ),
 							'hide_unoptimized'    => esc_html__( 'Hide List', 'captain-media-shield' ),
 							'locate'              => esc_html__( 'Locate', 'captain-media-shield' ),
+							'images_up_to_date'   => esc_html__( 'Images already up to date.', 'captain-media-shield' ),
+							'opt_failed'          => esc_html__( 'Optimization failed.', 'captain-media-shield' ),
+							'request_failed'      => esc_html__( 'Request failed. Check server.', 'captain-media-shield' ),
+							'rewrite_active_desc' => esc_html__( 'Next-Gen delivery is active via server rewrite (.htaccess / Nginx). Images are served in WebP/AVIF automatically.', 'captain-media-shield' ),
 						),
 					)
 				);
@@ -143,7 +148,7 @@ if ( ! class_exists( 'Capms_Admin_Bar' ) ) {
 						esc_html__( 'Media Shield', 'captain-media-shield' ),
 						esc_attr__( 'Captain Media Shield', 'captain-media-shield' )
 					),
-					'href'  => false, // Disabled click navigation so hover dropdown does not accidentally redirect.
+					'href'  => admin_url( 'upload.php?page=captain-media-shield' ),
 					'meta'  => array(
 						'title' => esc_html__( 'Captain Media Shield - Media Optimizer & Storage Saver', 'captain-media-shield' ),
 					),
