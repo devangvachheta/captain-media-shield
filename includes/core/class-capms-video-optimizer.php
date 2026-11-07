@@ -245,13 +245,59 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 		 * @return string Empty when keeping the original resolution.
 		 */
 		/**
-		 * Scale filter argument based on max width setting, with HDR-to-SDR tonemapping.
+		 * Detect if an input video has HDR color transfer (PQ / HLG / BT.2020).
+		 *
+		 * @since 1.0.3
+		 * @param string $ffmpeg Binary.
+		 * @param string $file   Video file path.
+		 * @return bool
+		 */
+		private static function is_hdr( $ffmpeg, $file ) {
+			if ( ! function_exists( 'exec' ) || ! file_exists( $file ) ) {
+				return false;
+			}
+
+			// Try ffprobe first if available.
+			$ffprobe = Capms_Environment::get_ffprobe();
+			if ( $ffprobe ) {
+				$cmd    = escapeshellarg( $ffprobe ) . ' -v error -select_streams v:0 -show_entries stream=color_transfer,color_primaries,color_space -of default=noprint_wrappers=1:nokey=1 ' . escapeshellarg( $file ) . ' 2>&1';
+				$output = array();
+				$code   = 0;
+				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec
+				@exec( $cmd, $output, $code ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+				if ( 0 === $code && ! empty( $output ) ) {
+					$text = strtolower( implode( ' ', $output ) );
+					if ( false !== strpos( $text, 'smpte2084' ) || false !== strpos( $text, 'arib-std-b67' ) || false !== strpos( $text, 'bt2020' ) ) {
+						return true;
+					}
+					return false;
+				}
+			}
+
+			// Fallback: probe file with ffmpeg itself.
+			$cmd    = escapeshellarg( $ffmpeg ) . ' -hide_banner -i ' . escapeshellarg( $file ) . ' 2>&1';
+			$output = array();
+			$code   = 0;
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec
+			@exec( $cmd, $output, $code ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			$text = strtolower( implode( ' ', $output ) );
+			if ( false !== strpos( $text, 'smpte2084' ) || false !== strpos( $text, 'arib-std-b67' ) || false !== strpos( $text, 'bt2020' ) ) {
+				return true;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Scale filter argument based on max width setting, with proper HDR-to-SDR tonemapping only when needed.
 		 *
 		 * @since 0.0.1
-		 * @param array $settings Settings.
-		 * @return string Empty when keeping the original resolution without tonemap.
+		 * @param array  $settings Settings.
+		 * @param string $ffmpeg   Binary.
+		 * @param string $file     Source file path.
+		 * @return string Filter string, or empty.
 		 */
-		private static function scale_filter( $settings ) {
+		private static function scale_filter( $settings, $ffmpeg = '', $file = '' ) {
 			$max   = 'original' === $settings['video_resolution'] ? 0 : absint( $settings['video_resolution'] );
 			$parts = array();
 
@@ -260,10 +306,49 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 				$parts[] = sprintf( "scale='if(gt(iw,ih),-2,min(%1\$d,iw))':'if(gt(iw,ih),min(%1\$d,ih),-2)'", $max );
 			}
 
-			// Tone-map HDR/HEVC colors to 8-bit BT.709 SDR to avoid washed-out colors.
-			$parts[] = 'tonemap=tonemap=hable:desat=0';
+			// Tone-map HDR/HEVC colors to 8-bit BT.709 SDR ONLY when source video is actually HDR.
+			// Normal SDR videos never touch tonemap to preserve authentic colors and maximize encoding speed.
+			if ( ! empty( $ffmpeg ) && ! empty( $file ) && self::is_hdr( $ffmpeg, $file ) ) {
+				// Full linear-light float chain required by FFmpeg's tonemap filter:
+				if ( Capms_Environment::ffmpeg_has_filter( 'zscale' ) && Capms_Environment::ffmpeg_has_filter( 'tonemap' ) ) {
+					$parts[] = 'zscale=t=linear:npl=100,format=gbrpf32le,tonemap=tonemap=hable:desat=0,zscale=p=bt709:t=bt709:m=bt709,format=yuv420p';
+				}
+			}
 
 			return implode( ',', $parts );
+		}
+
+		/**
+		 * Cleanly remove tonemapping filter chain from args during fallback.
+		 * If -vf becomes empty (e.g. Original resolution), cleanly removes both '-vf' and its empty value.
+		 *
+		 * @since 1.0.3
+		 * @param array $args Command arguments.
+		 * @return array
+		 */
+		private static function strip_filter_fallback( $args ) {
+			$clean = array();
+			$count = count( $args );
+
+			for ( $i = 0; $i < $count; $i++ ) {
+				if ( '-vf' === $args[ $i ] && isset( $args[ $i + 1 ] ) ) {
+					// Remove the tonemapping chain from the filter expression.
+					$filter = preg_replace( '/,?(?:zscale=[^,]+,format=gbrpf32le,tonemap=[^,]+,zscale=[^,]+,format=yuv420p)/', '', $args[ $i + 1 ] );
+					$filter = trim( $filter, " ,\t\n\r\0\x0B" );
+
+					if ( '' !== $filter ) {
+						$clean[] = '-vf';
+						$clean[] = $filter;
+					}
+					// Skip next arg since we processed it with -vf
+					$i++;
+					continue;
+				}
+
+				$clean[] = $args[ $i ];
+			}
+
+			return $clean;
 		}
 
 		/**
@@ -296,7 +381,7 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 				 * @param int $crf Default 26.
 				 */
 				$crf   = (int) apply_filters( 'capms_video_crf', 26 );
-				$scale = self::scale_filter( $settings );
+				$scale = self::scale_filter( $settings, $ffmpeg, $file );
 
 				array_push(
 					$args,
@@ -341,13 +426,11 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 			$args[] = $tmp;
 
 			$run = self::run( $ffmpeg, $args );
-			if ( is_wp_error( $run ) && false !== strpos( $run->get_error_message(), 'tonemap' ) ) {
-				// Fallback if the host's FFmpeg build lacks tonemap filter.
-				$fallback_args = array();
-				foreach ( $args as $arg ) {
-					$fallback_args[] = str_replace( array( ',tonemap=tonemap=hable:desat=0', 'tonemap=tonemap=hable:desat=0' ), '', $arg );
-				}
-				$run = self::run( $ffmpeg, $fallback_args );
+			if ( is_wp_error( $run ) && ( false !== strpos( $run->get_error_message(), 'tonemap' ) || false !== strpos( $run->get_error_message(), 'zscale' ) ) ) {
+				// Fallback if the host's FFmpeg build has issues with the tonemap/zscale filter chain.
+				// If -vf becomes empty (e.g. Original resolution), cleanly remove both -vf and its empty value.
+				$fallback_args = self::strip_filter_fallback( $args );
+				$run           = self::run( $ffmpeg, $fallback_args );
 			}
 			if ( is_wp_error( $run ) ) {
 				wp_delete_file( $tmp );
@@ -392,7 +475,7 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 
 			$dest  = $file . '.webm';
 			$tmp   = $dest . '.part.webm';
-			$scale = self::scale_filter( $settings );
+			$scale = self::scale_filter( $settings, $ffmpeg, $file );
 
 			/**
 			 * Filter the VP9 CRF value for WebM output.
@@ -450,13 +533,11 @@ if ( ! class_exists( 'Capms_Video_Optimizer' ) ) {
 			$args[] = $tmp;
 
 			$run = self::run( $ffmpeg, $args );
-			if ( is_wp_error( $run ) && false !== strpos( $run->get_error_message(), 'tonemap' ) ) {
-				// Fallback if the host's FFmpeg build lacks tonemap filter.
-				$fallback_args = array();
-				foreach ( $args as $arg ) {
-					$fallback_args[] = str_replace( array( ',tonemap=tonemap=hable:desat=0', 'tonemap=tonemap=hable:desat=0' ), '', $arg );
-				}
-				$run = self::run( $ffmpeg, $fallback_args );
+			if ( is_wp_error( $run ) && ( false !== strpos( $run->get_error_message(), 'tonemap' ) || false !== strpos( $run->get_error_message(), 'zscale' ) ) ) {
+				// Fallback if the host's FFmpeg build has issues with the tonemap/zscale filter chain.
+				// If -vf becomes empty (e.g. Original resolution), cleanly remove both -vf and its empty value.
+				$fallback_args = self::strip_filter_fallback( $args );
+				$run           = self::run( $ffmpeg, $fallback_args );
 			}
 			if ( is_wp_error( $run ) ) {
 				wp_delete_file( $tmp );

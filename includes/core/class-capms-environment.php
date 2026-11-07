@@ -202,6 +202,65 @@ if ( ! class_exists( 'Capms_Environment' ) ) {
 		}
 
 		/**
+		 * Does the ffmpeg build include a given filter?
+		 *
+		 * @since 1.0.3
+		 * @param string $filter Filter name (e.g. zscale, tonemap).
+		 * @return bool
+		 */
+		public static function ffmpeg_has_filter( $filter ) {
+			static $filters = null;
+			$binary = self::get_ffmpeg();
+			if ( ! $binary || ! function_exists( 'exec' ) ) {
+				return false;
+			}
+			if ( null === $filters ) {
+				$output = array();
+				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec
+				@exec( escapeshellarg( $binary ) . ' -hide_banner -filters 2>&1', $output ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+				$filters = implode( "\n", $output );
+			}
+			return (bool) preg_match( '/\b' . preg_quote( $filter, '/' ) . '\b/', $filters );
+		}
+
+		/**
+		 * Find working ffprobe binary.
+		 *
+		 * @since 1.0.3
+		 * @return string|false
+		 */
+		public static function get_ffprobe() {
+			static $probe = null;
+			if ( null !== $probe ) {
+				return $probe;
+			}
+			$ffmpeg = self::get_ffmpeg();
+			if ( ! $ffmpeg ) {
+				$probe = false;
+				return false;
+			}
+			// Check same directory as ffmpeg binary.
+			$dir  = dirname( $ffmpeg );
+			$ext  = pathinfo( $ffmpeg, PATHINFO_EXTENSION );
+			$path = trailingslashit( $dir ) . 'ffprobe' . ( $ext ? '.' . $ext : '' );
+			if ( file_exists( $path ) ) {
+				$probe = $path;
+				return $probe;
+			}
+			// Try PATH.
+			$output = array();
+			$code   = 0;
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec
+			@exec( 'ffprobe -version 2>&1', $output, $code ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			if ( 0 === $code ) {
+				$probe = 'ffprobe';
+				return $probe;
+			}
+			$probe = false;
+			return false;
+		}
+
+		/**
 		 * Full report for the Server Health screen.
 		 *
 		 * @since 0.0.1

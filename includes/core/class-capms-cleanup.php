@@ -858,22 +858,32 @@ if ( ! class_exists( 'Capms_Cleanup' ) ) {
 			// Also restore sub-sizes if saved in the same deleted sub-folder.
 			$source_dir = dirname( $source_file );
 			$dest_dir   = dirname( $dest_file );
-			$base_prefix = '';
 			if ( preg_match( '/^(\d+)-/', $relative_path, $m ) ) {
 				$attach_id = (int) $m[1];
 			} else {
 				$attach_id = 0;
 			}
 
+			// Only restore thumbnail sub-sizes that belong strictly to this specific file.
+			// Never iterate or copy unrelated files from the deleted/ folder root.
+			$base_name = pathinfo( $dest_file, PATHINFO_FILENAME );
+			$base_ext  = pathinfo( $dest_file, PATHINFO_EXTENSION );
+
 			if ( is_dir( $source_dir ) && $handle = opendir( $source_dir ) ) {
 				while ( false !== ( $entry = readdir( $handle ) ) ) {
 					if ( '.' === $entry || '..' === $entry ) {
 						continue;
 					}
-					$sub_source = trailingslashit( $source_dir ) . $entry;
-					if ( is_file( $sub_source ) && $sub_source !== $source_file ) {
-						$sub_dest = trailingslashit( $dest_dir ) . $entry;
-						@copy( $sub_source, $sub_dest );
+					// Must match this specific file's thumbnail format (e.g. "sample-150x150.jpg" or "855-sample-150x150.jpg")
+					$pattern = '/^(?:' . ( $attach_id > 0 ? $attach_id . '-' : '\d+-' ) . ')?' . preg_quote( $base_name, '/' ) . '-\d+x\d+\.' . preg_quote( $base_ext, '/' ) . '$/i';
+					if ( preg_match( $pattern, $entry ) ) {
+						$sub_source = trailingslashit( $source_dir ) . $entry;
+						$sub_name   = preg_replace( '/^\d+-/', '', $entry );
+						$sub_dest   = trailingslashit( $dest_dir ) . $sub_name;
+						if ( is_file( $sub_source ) && $sub_source !== $source_file ) {
+							@copy( $sub_source, $sub_dest );
+							@unlink( $sub_source );
+						}
 					}
 				}
 				closedir( $handle );
